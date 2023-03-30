@@ -1,14 +1,15 @@
 // @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:hta/card_info_page_raise_bill_button_page.dart';
-import 'package:hta/home_page_card_info_page.dart';
-import 'package:hta/home_page_detailed_card_info_page.dart';
+
 import 'package:hta/home_page.dart';
-import 'package:hta/login_page.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/routes.dart';
 import 'card_info_page_pay_bill_button_page.dart';
-import 'utils/routes.dart';
+import 'home_page_detailed_card_info_page.dart';
+import 'login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
             colorScheme: ColorScheme.fromSwatch().copyWith(
           primary: Color.fromRGBO(62, 13, 59, 1),

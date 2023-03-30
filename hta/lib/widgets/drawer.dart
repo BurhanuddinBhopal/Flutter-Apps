@@ -1,9 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:hta/login_page.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../login_page.dart';
 import '../utils/routes.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -58,25 +59,38 @@ class _AppDrawerState extends State<AppDrawer> {
                     }),
                     icon: Icon(Icons.arrow_back)),
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
               Row(
                 children: [
-                  Icon(
-                    Icons.person_rounded,
-                    size: 80,
-                    color: Colors.black38,
+                  Container(
+                    margin: EdgeInsets.only(left: 12),
+                    child: Image.asset('assets/profile_img/profile_pic.jpg',
+                        width: MediaQuery.of(context).size.width * 0.15),
                   ),
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(finalName),
-                          Text(finalLastname),
-                        ],
-                      ),
-                      Text(finalNumber)
-                    ],
+                  Container(
+                    margin: EdgeInsets.only(left: 10),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(finalName),
+                            Container(
+                              margin: EdgeInsets.only(left: 5),
+                              child: Text(finalLastname),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 15),
+                        Text(finalNumber)
+                      ],
+                    ),
                   )
                 ],
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
               ListTile(
                 leading: Icon(

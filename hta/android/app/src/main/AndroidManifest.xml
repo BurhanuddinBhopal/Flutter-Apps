@@ -2,7 +2,7 @@
     package="com.example.hta">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="hta"
+        android:label="HTA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

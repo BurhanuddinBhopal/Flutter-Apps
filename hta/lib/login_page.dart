@@ -1,16 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'dart:convert';
-// import 'dart:html';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:hta/home_page.dart';
-import 'package:hta/utils/routes.dart';
+
 import 'package:http/http.dart' as http;
-import 'models/http_exception.dart';
+import '../models/http_exception.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -23,11 +21,6 @@ class _LoginPageState extends State<LoginPage> {
 
   bool isHiddenPassword = true;
   final _formKey = GlobalKey<FormState>();
-  var width;
-  var height;
-
-  // var physicalWidth = physicalScreenSize.width;
-  // var physicalHeight = physicalScreenSize.height;
 
   void _togglePasswordView() {
     if (isHiddenPassword == true) {
@@ -103,20 +96,6 @@ class _LoginPageState extends State<LoginPage> {
         _showErrorDialog(errorMessage);
       }
     }
-  }
-
-  @override
-  void initState() {
-    // var pixelRatio = window.devicePixelRatio;
-    // var physicalScreenSize = window.physicalSize.height;
-    // print('hellllo');
-    // print(pixelRatio);
-    // print(physicalScreenSize);
-    setState(() {
-      width = window.physicalSize.width;
-      height = window.physicalSize.height;
-    });
-    super.initState();
   }
 
   @override

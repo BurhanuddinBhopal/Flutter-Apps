@@ -1,18 +1,18 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, sort_child_properties_last
 
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:hta/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/home_page.dart';
-import 'package:hta/home_page_detailed_card_info_page.dart';
+
 import 'package:hta/widgets/refresh.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'card_info_page_pay_bill_button_page.dart';
+import 'home_page_detailed_card_info_page.dart';
 
 class DetailedCardPage extends StatefulWidget {
   final customerData;
@@ -27,8 +27,7 @@ class DetailedCardPage extends StatefulWidget {
 class _DetailedCardPageState extends State<DetailedCardPage> {
   var _customerData = {};
   var transactionData1 = [];
-  var width;
-  var height;
+
   bool isLoading = false;
 
   @override
@@ -37,12 +36,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     setState(() {
       _customerData = widget.customerData;
       _customerData = widget.customerData1;
-      width = window.physicalSize.width;
-      height = window.physicalSize.height;
     });
-    print(width);
-    print(height);
-    print(widget.customerData1);
+
+    print(_customerData);
 
     super.initState();
   }
@@ -51,7 +47,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     setState(() {
       isLoading = true;
     });
-    await Future.delayed(Duration(milliseconds: 200));
+
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
@@ -109,36 +105,30 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         ],
       ),
       body: Column(
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             children: [
               Container(
-                margin: EdgeInsets.only(
-                    left: 10 / 1080 * width,
-                    right: 10 / 1080 * width,
-                    top: 10 / 2361 * height),
-                height: 80 / 2361 * height,
+                margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                height: 80,
                 child: GestureDetector(
                   onTap: () {},
                   child: Card(
                     elevation: 0,
                     color: const Color.fromARGB(228, 244, 242, 242),
                     child: Container(
-                      margin: EdgeInsets.only(
-                          right: 10 / 1080 * width, top: 6 / 2361 * height),
+                      margin: EdgeInsets.only(right: 10, top: 6),
                       child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
-                                // margin: const EdgeInsets.all(6),
                                 child: Row(
                                   children: [
                                     Container(
-                                      margin: EdgeInsets.only(
-                                          left: 7 / 1080 * width),
+                                      margin: EdgeInsets.only(left: 7),
                                       child: const Icon(
                                         Icons.map_outlined,
                                         size: 17,
@@ -146,8 +136,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                       ),
                                     ),
                                     Container(
-                                      margin: EdgeInsets.only(
-                                          left: 10 / 1080 * width),
+                                      margin: EdgeInsets.only(left: 10),
                                       child: Text(
                                         '${_customerData["location"]}',
                                         style: TextStyle(
@@ -190,8 +179,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               Row(
                                 children: [
                                   Container(
-                                    margin:
-                                        EdgeInsets.only(top: 3 / 2361 * height),
+                                    margin: EdgeInsets.only(top: 3),
                                     child: Text(
                                       'Due amount',
                                       textAlign: TextAlign.right,
@@ -209,14 +197,11 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(
-                                      left: 6 / 1080 * width,
-                                      top: 6 / 2361 * height),
+                                  margin: EdgeInsets.only(left: 6, top: 6),
                                   child: Row(
                                     children: [
                                       Container(
-                                        margin: EdgeInsets.only(
-                                            right: 0 / 1080 * width),
+                                        margin: EdgeInsets.only(right: 0),
                                         child: Icon(
                                           Icons.call,
                                           size: 17,
@@ -225,7 +210,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                       ),
                                       Container(
                                         margin: EdgeInsets.only(
-                                          left: 10 / 1080 * width,
+                                          left: 10,
                                         ),
                                         child: Text(
                                           '${_customerData["mobileNumber"]}',
@@ -239,8 +224,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                   ),
                                 ),
                                 Container(
-                                  margin:
-                                      EdgeInsets.only(top: 3 / 2361 * height),
+                                  margin: EdgeInsets.only(top: 3),
                                   child: Row(
                                     children: [
                                       const Icon(
@@ -268,11 +252,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 ),
               ),
               Container(
-                height: MediaQuery.of(context).size.height * 0.719,
-                margin: EdgeInsets.only(
-                  left: 100 / 1080 * width,
-                  right: 20 / 1080 * width,
-                ),
+                height: MediaQuery.of(context).size.height * 0.7,
+                margin: EdgeInsets.only(left: 100, right: 20),
                 child: isLoading
                     ? Center(
                         child: CircularProgressIndicator(),
@@ -294,16 +275,15 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                             )));
                               }),
                               child: Container(
-                                margin:
-                                    EdgeInsets.only(top: 10 / 2361 * height),
+                                margin: EdgeInsets.only(top: 10),
                                 child: Card(
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   color: transactionData1[index]
                                               ["orderStatus"] ==
                                           'PAYMENT-COLLECTED'
-                                      ? Colors.green[300]
-                                      : Color.fromARGB(255, 243, 17, 17),
+                                      ? Color.fromRGBO(52, 135, 89, 1)
+                                      : Color.fromRGBO(186, 0, 0, 1),
                                   child: Container(
                                     child: Row(
                                       mainAxisAlignment:
@@ -311,9 +291,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                       children: [
                                         Container(
                                           margin: EdgeInsets.only(
-                                              top: 10 / 2361 * height,
-                                              left: 10 / 1080 * width,
-                                              bottom: 10 / 2361 * height),
+                                              top: 10, left: 10, bottom: 10),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -324,8 +302,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                     color: Colors.white),
                                               ),
                                               Container(
-                                                margin: EdgeInsets.only(
-                                                    top: 10 / 2361 * height),
+                                                margin:
+                                                    EdgeInsets.only(top: 10),
                                                 child: Row(
                                                   children: [
                                                     const Icon(
@@ -350,9 +328,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                         ),
                                         Container(
                                           margin: EdgeInsets.only(
-                                              bottom: 10 / 2361 * height,
-                                              right: 10 / 1080 * width,
-                                              top: 10 / 2361 * height),
+                                              bottom: 10, right: 10, top: 10),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.end,
@@ -364,15 +340,13 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                 ),
                                               ),
                                               Container(
-                                                margin: EdgeInsets.only(
-                                                    top: 10 / 2361 * height),
+                                                margin:
+                                                    EdgeInsets.only(top: 10),
                                                 child: Row(
                                                   children: [
                                                     Container(
                                                       margin: EdgeInsets.only(
-                                                          right: 20 /
-                                                              1080 *
-                                                              width),
+                                                          right: 20),
                                                       child: Icon(
                                                         Icons.calendar_today,
                                                         size: 18,
@@ -381,8 +355,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                     ),
                                                     Container(
                                                       margin: EdgeInsets.only(
-                                                          left:
-                                                              0 / 1080 * width),
+                                                          left: 0),
                                                       child: Text(
                                                         DateFormat('dd-MM-yyyy')
                                                             .format(DateTime.parse(
@@ -422,7 +395,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                     width: MediaQuery.of(context).size.width * 0.5,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[300],
+                          backgroundColor: Color.fromRGBO(52, 135, 89, 1),
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.zero,
                           )),
@@ -448,8 +421,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 243, 17, 17),
-                            shape: const RoundedRectangleBorder(
+                            backgroundColor: Color.fromRGBO(186, 0, 0, 1),
+                            shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.zero,
                             )),
                         onPressed: () {
@@ -471,7 +444,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 ],
               ),
             ],
-          )
+          ),
         ],
       ),
     );

@@ -35,39 +35,34 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   }
 
   Future<void> raiseBill() async {
-    // if (_formKey.currentState!.validate()) {
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
-    var token = sharedPreferences.getString('token');
-    print('hello1234');
+    if (_formKey.currentState!.validate()) {
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      var token = sharedPreferences.getString('token');
 
-    final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/transactions/addTransaction');
+      final url = Uri.parse(
+          'https://hta.hatimtechnologies.in/api/transactions/addTransaction');
 
-    final body = {
-      "orderId": "",
-      "customer": customerId1['_id'],
-      "amount": amount.text,
-      "createdAt": dateController.text,
-      "paymentStatus": "",
-      "message": description.text,
-      "picture": "",
-      "orderStatus": "PAYMENT-COLLECTED",
-      "pendingAmount": '7869820020'
-    };
-    final header = {
-      'Authorization': 'Bearer $token',
-    };
-    print('gfre');
-    print(body);
+      final body = {
+        "orderId": "",
+        "customer": customerId1['_id'],
+        "amount": amount.text,
+        "createdAt": dateController.text,
+        "paymentStatus": "",
+        "message": description.text,
+        "picture": "",
+        "orderStatus": "BILL-RAISED",
+        "pendingAmount": '7869820020'
+      };
+      final header = {
+        'Authorization': 'Bearer $token',
+      };
 
-    final response = await http.post(url, body: body, headers: header);
+      final response = await http.post(url, body: body, headers: header);
 
-    print('hello');
-
-    print(response.body);
-    _showErrorDialog();
-    // }
+      print(response.body);
+      _showErrorDialog();
+    }
   }
 
   void _showErrorDialog() {
@@ -110,10 +105,8 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        color: Color.fromARGB(255, 243, 17, 17),
+                        color: Color.fromRGBO(186, 0, 0, 1),
                         height: 130,
-
-                        // padding: EdgeInsets.only(left: 30, top: 50),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 35, vertical: 25),
@@ -158,7 +151,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                           controller: amount,
                           keyboardType: TextInputType.number,
                           validator: (value) {
-                            if (value != null) {
+                            if (value!.isEmpty) {
                               return 'Amount cannot be empty';
                             }
 
@@ -193,13 +186,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: TextFormField(
                           controller: description,
-                          validator: (value) {
-                            if (value != null) {
-                              return 'Description cannot be empty';
-                            }
-
-                            return null;
-                          },
                           decoration: InputDecoration(
                               hintText: "Type your comment here",
                               hintStyle: TextStyle(
@@ -257,14 +243,13 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                             vertical: 40.0, horizontal: 30),
                         child: ElevatedButton(
                           style: TextButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 243, 17, 17),
+                            backgroundColor: Color.fromRGBO(186, 0, 0, 1),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.zero),
                             minimumSize: Size(350, 50),
                           ),
                           onPressed: () {
                             raiseBill();
-                            _showErrorDialog();
                           },
                           child: Text("RAISE BILL"),
                         ),
