@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hta/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/home_page.dart';
 
@@ -13,13 +14,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'card_info_page_pay_bill_button_page.dart';
 import 'home_page_detailed_card_info_page.dart';
+import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
 
 class DetailedCardPage extends StatefulWidget {
   final customerData;
-  final customerData1;
 
-  const DetailedCardPage(
-      {required this.customerData, required this.customerData1});
+  const DetailedCardPage({required this.customerData});
   @override
   State<DetailedCardPage> createState() => _DetailedCardPageState();
 }
@@ -27,18 +27,20 @@ class DetailedCardPage extends StatefulWidget {
 class _DetailedCardPageState extends State<DetailedCardPage> {
   var _customerData = {};
   var transactionData1 = [];
-
+//pendingAmount
   bool isLoading = false;
+  var mobileNumber;
 
   @override
   void initState() {
     transactionData();
     setState(() {
       _customerData = widget.customerData;
-      _customerData = widget.customerData1;
+      mobileNumber = _customerData["mobileNumber"];
     });
+    print("asdfdsafadsfadsfadsfdsafdsaadsfdad");
 
-    print(_customerData);
+    print(_customerData["pendingAmount"]);
 
     super.initState();
   }
@@ -54,6 +56,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     final url = Uri.parse(
         'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction');
     final body = {"customer": _customerData["_id"]};
+
     final header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -67,18 +70,30 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       final responseData = jsonDecode(response.body.toString());
       setState(() {
         transactionData1 = responseData['allTransaction'];
+        _customerData = widget.customerData;
       });
 
       // print(response.body);
+
       print(transactionData1);
     }
     setState(() {
       isLoading = false;
     });
+
+    // void deleteUser(user) async {
+    //   var url = Uri.parse(
+    //       'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction/${user['_id']}');
+    //   http.delete(url);
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
@@ -95,7 +110,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
             icon: const Icon(Icons.notifications_none),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              UrlLauncher.launch("tel://$mobileNumber");
+            },
             icon: const Icon(Icons.call),
           ),
           IconButton(
@@ -256,9 +273,12 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 margin: EdgeInsets.only(left: 100, right: 20),
                 child: isLoading
                     ? Center(
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: Color.fromRGBO(62, 13, 59, 1),
+                        ),
                       )
                     : RefreshWidget(
+                        color: Color.fromRGBO(62, 13, 59, 1),
                         onRefresh: transactionData,
                         child: ListView.builder(
                           itemCount: transactionData1.length,
@@ -271,7 +291,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                         builder: (context) => DetailedInfoPage(
                                               customerOrganization:
                                                   transactionData1[index],
-                                              customerId: _customerData,
+                                              customerData: _customerData,
                                             )));
                               }),
                               child: Container(
@@ -296,11 +316,19 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'Bill Amount',
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ),
+                                              transactionData1[index]
+                                                          ["orderStatus"] ==
+                                                      'PAYMENT-COLLECTED'
+                                                  ? Text(
+                                                      'Paid Amount',
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    )
+                                                  : Text(
+                                                      'Bill Amount',
+                                                      style: TextStyle(
+                                                          color: Colors.white),
+                                                    ),
                                               Container(
                                                 margin:
                                                     EdgeInsets.only(top: 10),
@@ -333,12 +361,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.end,
                                             children: [
-                                              Text(
-                                                'Raised on',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                              transactionData1[index]
+                                                          ["orderStatus"] ==
+                                                      'PAYMENT-COLLECTED'
+                                                  ? Text(
+                                                      'Paid on',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      'Raised on',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
                                               Container(
                                                 margin:
                                                     EdgeInsets.only(top: 10),
@@ -404,13 +441,16 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PayBillPage(
-                                      customerId: _customerData,
+                                      customerData: _customerData,
                                     )));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_to_photos),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Icon(Icons.add_to_photos),
+                          ),
                           Text('PAY BILL'),
                         ],
                       ),
@@ -430,13 +470,16 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => RaiseBillPage(
-                                        customerId: _customerData,
+                                        customerData: _customerData,
                                       )));
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.menu_book_sharp),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: Icon(Icons.menu_book_sharp),
+                            ),
                             Text('RAISE BILL'),
                           ],
                         ),

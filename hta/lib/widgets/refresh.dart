@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 class RefreshWidget extends StatefulWidget {
   final Widget child;
   final Future Function() onRefresh;
+  Color color;
 
-  RefreshWidget({required this.onRefresh, required this.child});
+  RefreshWidget(
+      {required this.onRefresh, required this.child, required this.color});
 
   @override
   State<RefreshWidget> createState() => _RefreshWidgetState();
@@ -12,6 +14,9 @@ class RefreshWidget extends StatefulWidget {
 
 class _RefreshWidgetState extends State<RefreshWidget> {
   @override
-  Widget build(BuildContext context) =>
-      RefreshIndicator(child: widget.child, onRefresh: widget.onRefresh);
+  Widget build(BuildContext context) => RefreshIndicator(
+        child: widget.child,
+        onRefresh: widget.onRefresh,
+        color: widget.color,
+      );
 }

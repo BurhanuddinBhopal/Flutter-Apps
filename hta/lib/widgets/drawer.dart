@@ -1,11 +1,14 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:hta/Drawer%20Pages/aboutUs_page.dart';
+import 'package:hta/Drawer%20Pages/accountSetting_page.dart';
+import 'package:hta/Drawer%20Pages/contactUs_page.dart';
+import 'package:hta/Drawer%20Pages/privacyPolicy_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../login_page.dart';
-import '../utils/routes.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -49,79 +52,335 @@ class _AppDrawerState extends State<AppDrawer> {
       child: Material(
         color: Color.fromARGB(221, 255, 255, 255),
         child: Form(
-          child: ListView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                margin: EdgeInsets.only(right: 250),
-                child: IconButton(
-                    onPressed: (() {
-                      Navigator.pop(context);
-                    }),
-                    icon: Icon(Icons.arrow_back)),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.02,
-              ),
-              Row(
+              Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(left: 12),
-                    child: Image.asset('assets/profile_img/profile_pic.jpg',
-                        width: MediaQuery.of(context).size.width * 0.15),
+                    margin: EdgeInsets.only(right: 250, top: 40),
+                    child: IconButton(
+                        onPressed: (() {
+                          Navigator.pop(context);
+                        }),
+                        icon: Icon(Icons.arrow_back)),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 10),
-                    child: Column(
-                      children: [
-                        Row(
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 12),
+                        child: Image.asset('assets/profile_img/profile_pic.jpg',
+                            width: MediaQuery.of(context).size.width * 0.15),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(finalName),
-                            Container(
-                              margin: EdgeInsets.only(left: 5),
-                              child: Text(finalLastname),
+                            Text(
+                              'Welcome to HTA',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w500),
                             ),
+                            SizedBox(height: 10),
+                            Text(
+                              finalNumber,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black45),
+                            )
                           ],
                         ),
-                        SizedBox(height: 15),
-                        Text(finalNumber)
-                      ],
-                    ),
-                  )
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.04,
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountSettings()));
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.settings,
+                                    size: 28,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      'Account Settings',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 25,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ContactUs()));
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.message_outlined,
+                                    size: 28,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      'Contact Us',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 25,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Divider(
+                    indent: 60,
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AboutUs()));
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.info,
+                                    size: 28,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      'About Us',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 25,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PrivacyPolicy()));
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.lock,
+                                    size: 28,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      'Privacy Policy',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 25,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
+                  ),
                 ],
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.settings,
-                  size: 28,
-                ),
-                title: Text(
-                  'Settings',
-                  style: TextStyle(fontSize: 20),
-                ),
-                trailing: Icon(Icons.arrow_forward_ios),
-              ),
-              Divider(),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.555,
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 35),
-                height: MediaQuery.of(context).size.height * 0.055,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    SharedPreferences sharedPreferences =
-                        await SharedPreferences.getInstance();
-                    sharedPreferences.remove('mobileNumber');
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => LoginPage()));
-                  },
-                  child: Text('LOG OUT'),
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.black26),
-                ),
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 35, vertical: 60),
+                    height: MediaQuery.of(context).size.height * 0.055,
+                    width: MediaQuery.of(context).size.width * 0.55,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        SharedPreferences sharedPreferences =
+                            await SharedPreferences.getInstance();
+                        sharedPreferences.remove('mobileNumber');
+
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      },
+                      child: Text('LOG OUT'),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black26),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

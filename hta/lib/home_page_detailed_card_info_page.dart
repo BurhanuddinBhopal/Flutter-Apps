@@ -1,20 +1,21 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailedInfoPage extends StatefulWidget {
   final customerOrganization;
-  final customerId;
+  final customerData;
 
   const DetailedInfoPage(
-      {required this.customerOrganization, required this.customerId});
+      {required this.customerOrganization, required this.customerData});
 
   @override
   State<DetailedInfoPage> createState() => _DetailedInfoPageState();
@@ -22,9 +23,12 @@ class DetailedInfoPage extends StatefulWidget {
 
 class _DetailedInfoPageState extends State<DetailedInfoPage> {
   var _customerData = {};
-  var customerId1 = {};
   var _customerOrganization = {};
   var image;
+  var name;
+  var billAmount;
+  var pendingAmount;
+  var mobileNumber;
 
   bool isLoading = false;
 
@@ -33,11 +37,15 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     transactionData();
     setState(() {
       _customerOrganization = widget.customerOrganization;
-      customerId1 = widget.customerId;
+      _customerData = widget.customerData;
       image = _customerOrganization['picture'];
+      mobileNumber = _customerData['mobileNumber'];
+      name = _customerData["organisationName"];
+      billAmount = _customerOrganization["amount"];
+      pendingAmount = _customerData["pendingAmount"];
     });
+
     print(image);
-    print(customerId1);
 
     print(_customerOrganization);
     // TODO: implement initState
@@ -69,12 +77,42 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     });
   }
 
+  void _launchSms() async {
+    String uri =
+        'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount $image")}';
+    try {
+      if (await launchUrl(Uri.parse(uri))) {
+        await launchUrl(Uri.parse(uri));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Some error occurred. Please try again!'),
+        ),
+      );
+    }
+  }
+
+  void launchWhatsapp() async {
+    String uri =
+        'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount ')}';
+    if (await launch(uri)) {
+      await launch(uri);
+    } else {
+      throw 'Could not launch $uri';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return Scaffold(
       appBar: AppBar(
           backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
-          title: Text('${customerId1["organisationName"]}'),
+          title: Text('${_customerData["organisationName"]}'),
           actions: [
             IconButton(
               onPressed: () {},
@@ -182,10 +220,12 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                           child: Text('Unable to load image!!',
                               style: TextStyle(fontSize: 24))),
                       placeholder: (context, url) => Container(
-                        child: Center(
+                        child: Container(
+                          margin: EdgeInsets.only(top: 90),
                           child: Text(
                             'Please wait for a while',
-                            style: TextStyle(fontSize: 24),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 30),
                           ),
                         ),
                       ),
@@ -202,15 +242,18 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.zero,
                       )),
-                  onPressed: () {},
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Icon(Icons.message),
-                        Text('Send Message'),
-                      ],
-                    ),
+                  onPressed: () {
+                    _launchSms();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Icon(Icons.message),
+                      ),
+                      Text('Send Message'),
+                    ],
                   ),
                 ),
               ),
@@ -218,21 +261,25 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                   height: MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(37, 211, 102, 1),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                          )),
-                      onPressed: () {},
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: [
-                            Icon(Icons.whatsapp),
-                            Text('Whatsapp'),
-                          ],
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(37, 211, 102, 1),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        )),
+                    onPressed: () {
+                      launchWhatsapp();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 5),
+                          child: Icon(Icons.whatsapp),
                         ),
-                      )))
+                        Text('Whatsapp'),
+                      ],
+                    ),
+                  ))
             ],
           ),
         ],
