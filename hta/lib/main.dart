@@ -7,6 +7,7 @@ import 'package:hta/Drawer%20Pages/accountSetting_page.dart';
 import 'package:hta/Drawer%20Pages/contactUs_page.dart';
 import 'package:hta/Drawer%20Pages/privacyPolicy_page.dart';
 import 'package:hta/card_info_page_raise_bill_button_page.dart';
+import 'package:hta/Drawer%20Pages/report_page.dart';
 
 import 'package:hta/home_page.dart';
 
@@ -28,11 +29,18 @@ Future<void> main() async {
   runApp(MaterialApp(home: mobileNumber == null ? LoginPage() : HomePage()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   var _customerData;
+
   var transactionData1;
 
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -59,7 +67,8 @@ class MyApp extends StatelessWidget {
           MyRoutes.contactUsRoute: (context) => ContactUs(),
           MyRoutes.aboutUsRoute: (context) => AboutUs(),
           MyRoutes.privacyPolicyRoute: (context) => PrivacyPolicy(),
-          MyRoutes.forgotPasswordRoute: (context) => ForgotPassword()
+          MyRoutes.forgotPasswordRoute: (context) => ForgotPassword(),
+          MyRoutes.reportPageRoute: (context) => ReportPage()
         });
   }
 }

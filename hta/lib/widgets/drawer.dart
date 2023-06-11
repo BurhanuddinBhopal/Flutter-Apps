@@ -5,6 +5,7 @@ import 'package:hta/Drawer%20Pages/aboutUs_page.dart';
 import 'package:hta/Drawer%20Pages/accountSetting_page.dart';
 import 'package:hta/Drawer%20Pages/contactUs_page.dart';
 import 'package:hta/Drawer%20Pages/privacyPolicy_page.dart';
+import 'package:hta/Drawer%20Pages/report_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -103,6 +104,69 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                   Divider(
                     thickness: 1,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ReportPage()));
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.report,
+                                    size: 28,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      'Report',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 25,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.02,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.01,

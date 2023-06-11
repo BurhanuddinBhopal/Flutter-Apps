@@ -10,4 +10,5 @@ class MyRoutes {
   static String aboutUsRoute = "/aboutUs";
   static String privacyPolicyRoute = "/privacyPolicy";
   static String forgotPasswordRoute = "/forgotPassword";
+  static String reportPageRoute = "/reportPage";
 }

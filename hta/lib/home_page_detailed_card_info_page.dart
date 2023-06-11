@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/home_page_card_info_page.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -103,6 +104,32 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     }
   }
 
+  Future<bool> _onBackButtonPressed(BuildContext context) async {
+    bool exitApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Confirm Exit"),
+            content: Text("Are you sure you want to exit?"),
+            actions: <Widget>[
+              TextButton(
+                child: Text("YES"),
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+              ),
+              TextButton(
+                child: Text("NO"),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              )
+            ],
+          );
+        }) as bool;
+    return exitApp;
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -112,6 +139,15 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            (DetailedCardPage(customerData: _customerData))));
+              },
+              icon: Icon(Icons.arrow_back)),
           title: Text('${_customerData["organisationName"]}'),
           actions: [
             IconButton(
@@ -119,170 +155,173 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
               icon: const Icon(Icons.notifications_none),
             ),
           ]),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-            height: MediaQuery.of(context).size.height * 0.133,
-            child: Card(
-                elevation: 0,
-                color: Color.fromARGB(228, 244, 242, 242),
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Bill amount'),
-                          Text('Description'),
-                        ],
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 10),
-                        child: Row(
+      body: WillPopScope(
+        onWillPop: () => _onBackButtonPressed(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+              height: MediaQuery.of(context).size.height * 0.133,
+              child: Card(
+                  elevation: 0,
+                  color: Color.fromARGB(228, 244, 242, 242),
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.currency_rupee,
-                                  size: 18,
-                                  color: Color.fromRGBO(62, 13, 59, 1),
-                                ),
-                                Text('${_customerOrganization["amount"]}',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Color.fromRGBO(62, 13, 59, 1),
-                                    ))
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  _customerOrganization["message"],
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                )
-                              ],
-                            ),
+                            Text('Bill amount'),
+                            Text('Description'),
                           ],
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 10),
-                        child: Row(
-                          children: [
-                            Container(
-                              child: Icon(
-                                color: Color.fromRGBO(62, 13, 59, 1),
-                                Icons.calendar_month_outlined,
-                                size: 18,
-                              ),
-                            ),
-                            Container(
-                                margin: EdgeInsets.only(left: 8),
-                                child: Text(
-                                  DateFormat('dd-MM-yyyy').format(
-                                      DateTime.parse(
-                                          _customerOrganization["createdAt"])),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.currency_rupee,
+                                    size: 18,
                                     color: Color.fromRGBO(62, 13, 59, 1),
                                   ),
-                                ))
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
-          ),
-          Container(
-              height: MediaQuery.of(context).size.height * 0.63,
-              width: MediaQuery.of(context).size.width * 1,
-              child: image.isEmpty
-                  ? Container(
-                      margin: EdgeInsets.only(top: 90),
-                      child: Text(
-                        'No Image Found',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 30),
-                      ),
-                    )
-                  : CachedNetworkImage(
-                      imageUrl: _customerOrganization["picture"],
-                      errorWidget: (context, url, error) => Center(
-                          child: Text('Unable to load image!!',
-                              style: TextStyle(fontSize: 24))),
-                      placeholder: (context, url) => Container(
-                        child: Container(
-                          margin: EdgeInsets.only(top: 90),
-                          child: Text(
-                            'Please wait for a while',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 30),
+                                  Text('${_customerOrganization["amount"]}',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ))
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    _customerOrganization["message"],
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  )
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    )),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.08,
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromRGBO(62, 13, 59, 1),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            children: [
+                              Container(
+                                child: Icon(
+                                  color: Color.fromRGBO(62, 13, 59, 1),
+                                  Icons.calendar_month_outlined,
+                                  size: 18,
+                                ),
+                              ),
+                              Container(
+                                  margin: EdgeInsets.only(left: 8),
+                                  child: Text(
+                                    DateFormat('dd-MM-yyyy').format(
+                                        DateTime.parse(_customerOrganization[
+                                            "createdAt"])),
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromRGBO(62, 13, 59, 1),
+                                    ),
+                                  ))
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ),
+            Container(
+                height: MediaQuery.of(context).size.height * 0.63,
+                width: MediaQuery.of(context).size.width * 1,
+                child: image.isEmpty
+                    ? Container(
+                        margin: EdgeInsets.only(top: 90),
+                        child: Text(
+                          'No Image Found',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 30),
+                        ),
+                      )
+                    : CachedNetworkImage(
+                        imageUrl: _customerOrganization["picture"],
+                        errorWidget: (context, url, error) => Center(
+                            child: Text('Unable to load image!!',
+                                style: TextStyle(fontSize: 24))),
+                        placeholder: (context, url) => Container(
+                          child: Container(
+                            margin: EdgeInsets.only(top: 90),
+                            child: Text(
+                              'Please wait for a while',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 30),
+                            ),
+                          ),
+                        ),
                       )),
-                  onPressed: () {
-                    _launchSms();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5),
-                        child: Icon(Icons.message),
-                      ),
-                      Text('Send Message'),
-                    ],
-                  ),
-                ),
-              ),
-              Container(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Container(
                   height: MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(37, 211, 102, 1),
+                        backgroundColor: Color.fromRGBO(62, 13, 59, 1),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         )),
                     onPressed: () {
-                      launchWhatsapp();
+                      _launchSms();
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Icon(Icons.whatsapp),
+                          child: Icon(Icons.message),
                         ),
-                        Text('Whatsapp'),
+                        Text('Send Message'),
                       ],
                     ),
-                  ))
-            ],
-          ),
-        ],
+                  ),
+                ),
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.08,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Color.fromRGBO(37, 211, 102, 1),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          )),
+                      onPressed: () {
+                        launchWhatsapp();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: Icon(Icons.whatsapp),
+                          ),
+                          Text('Whatsapp'),
+                        ],
+                      ),
+                    ))
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

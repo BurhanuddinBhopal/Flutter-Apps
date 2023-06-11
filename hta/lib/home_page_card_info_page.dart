@@ -27,6 +27,7 @@ class DetailedCardPage extends StatefulWidget {
 class _DetailedCardPageState extends State<DetailedCardPage> {
   var _customerData = {};
   var transactionData1 = [];
+  var pendingAmount;
 //pendingAmount
   bool isLoading = false;
   var mobileNumber;
@@ -34,6 +35,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   @override
   void initState() {
     transactionData();
+    customerData();
     setState(() {
       _customerData = widget.customerData;
       mobileNumber = _customerData["mobileNumber"];
@@ -43,6 +45,33 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     print(_customerData["pendingAmount"]);
 
     super.initState();
+  }
+
+  Future<void> customerData() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var token = sharedPreferences.getString('token');
+    final url = Uri.parse(
+        'https://hta.hatimtechnologies.in/api/customer/getOneCustomersForOrgainsationAdmin');
+    final body = {
+      'customerId': _customerData["_id"],
+      'userType': 'costomer',
+      'organisation': _customerData["organisation"],
+    };
+    final header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    final response = await http.post(
+      url,
+      headers: header,
+      body: jsonEncode(body),
+    );
+    final responseData = jsonDecode(response.body.toString());
+    setState(() {
+      pendingAmount = responseData['customer']['pendingAmount'];
+    });
+    print(pendingAmount);
   }
 
   Future<void> transactionData() async {
@@ -88,6 +117,32 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     // }
   }
 
+  Future<bool> _onBackButtonPressed(BuildContext context) async {
+    bool exitApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Confirm Exit"),
+            content: Text("Are you sure you want to exit?"),
+            actions: <Widget>[
+              TextButton(
+                child: Text("YES"),
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+              ),
+              TextButton(
+                child: Text("NO"),
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+              )
+            ],
+          );
+        }) as bool;
+    return exitApp;
+  }
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -121,355 +176,357 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
           )
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(left: 10, right: 10, top: 10),
-                height: 80,
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Card(
-                    elevation: 0,
-                    color: const Color.fromARGB(228, 244, 242, 242),
-                    child: Container(
-                      margin: EdgeInsets.only(right: 10, top: 6),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                child: Row(
+      body: WillPopScope(
+        onWillPop: () => _onBackButtonPressed(context),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(left: 10, right: 10, top: 10),
+                  height: 80,
+                  child: isLoading
+                      ? Center(child: null)
+                      : RefreshWidget(
+                          color: Color.fromRGBO(62, 13, 59, 1),
+                          onRefresh: customerData,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Card(
+                              elevation: 0,
+                              color: const Color.fromARGB(228, 244, 242, 242),
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10, top: 6),
+                                child: Column(
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.only(left: 7),
-                                      child: const Icon(
-                                        Icons.map_outlined,
-                                        size: 17,
-                                        color: Color.fromRGBO(62, 13, 59, 1),
-                                      ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 7),
+                                                child: const Icon(
+                                                  Icons.map_outlined,
+                                                  size: 17,
+                                                  color: Color.fromRGBO(
+                                                      62, 13, 59, 1),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(left: 10),
+                                                child: Text(
+                                                  '${_customerData["location"]}',
+                                                  style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          62, 13, 59, 1),
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  '${_customerData["name"]}',
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                                Text(
+                                                  '${_customerData["lastName"]}',
+                                                  textAlign: TextAlign.right,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.only(top: 3),
+                                              child: Text(
+                                                'Due amount',
+                                                textAlign: TextAlign.right,
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.black38),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
                                     Container(
-                                      margin: EdgeInsets.only(left: 10),
-                                      child: Text(
-                                        '${_customerData["location"]}',
-                                        style: TextStyle(
-                                            color:
-                                                Color.fromRGBO(62, 13, 59, 1),
-                                            fontWeight: FontWeight.w500),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                left: 6, top: 6),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(right: 0),
+                                                  child: Icon(
+                                                    Icons.call,
+                                                    size: 17,
+                                                    color: Color.fromRGBO(
+                                                        62, 13, 59, 1),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                    left: 10,
+                                                  ),
+                                                  child: Text(
+                                                    '${_customerData["mobileNumber"]}',
+                                                    style: TextStyle(
+                                                        color: Color.fromRGBO(
+                                                            62, 13, 59, 1),
+                                                        fontWeight:
+                                                            FontWeight.w500),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 3),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.currency_rupee,
+                                                  size: 20,
+                                                  color: Color.fromRGBO(
+                                                      62, 13, 59, 1),
+                                                ),
+                                                Text(
+                                                  pendingAmount?.toString() ??
+                                                      '',
+                                                  style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          62, 13, 59, 1),
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '${_customerData["name"]}',
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                      Text(
-                                        '${_customerData["lastName"]}',
-                                        textAlign: TextAlign.right,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(top: 3),
-                                    child: Text(
-                                      'Due amount',
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.black38),
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                          Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  margin: EdgeInsets.only(left: 6, top: 6),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        margin: EdgeInsets.only(right: 0),
-                                        child: Icon(
-                                          Icons.call,
-                                          size: 17,
-                                          color: Color.fromRGBO(62, 13, 59, 1),
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.only(
-                                          left: 10,
-                                        ),
-                                        child: Text(
-                                          '${_customerData["mobileNumber"]}',
-                                          style: TextStyle(
-                                              color:
-                                                  Color.fromRGBO(62, 13, 59, 1),
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(top: 3),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.currency_rupee,
-                                        size: 20,
-                                        color: Color.fromRGBO(62, 13, 59, 1),
-                                      ),
-                                      Text(
-                                        '${_customerData["pendingAmount"]}',
-                                        style: TextStyle(
-                                            color:
-                                                Color.fromRGBO(62, 13, 59, 1),
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.7,
-                margin: EdgeInsets.only(left: 100, right: 20),
-                child: isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Color.fromRGBO(62, 13, 59, 1),
                         ),
-                      )
-                    : RefreshWidget(
-                        color: Color.fromRGBO(62, 13, 59, 1),
-                        onRefresh: transactionData,
-                        child: ListView.builder(
-                          itemCount: transactionData1.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: (() {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => DetailedInfoPage(
-                                              customerOrganization:
-                                                  transactionData1[index],
-                                              customerData: _customerData,
-                                            )));
-                              }),
-                              child: Container(
-                                margin: EdgeInsets.only(top: 10),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  color: transactionData1[index]
-                                              ["orderStatus"] ==
-                                          'PAYMENT-COLLECTED'
-                                      ? Color.fromRGBO(52, 135, 89, 1)
-                                      : Color.fromRGBO(186, 0, 0, 1),
-                                  child: Container(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              top: 10, left: 10, bottom: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              transactionData1[index]
-                                                          ["orderStatus"] ==
-                                                      'PAYMENT-COLLECTED'
-                                                  ? Text(
-                                                      'Paid Amount',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    )
-                                                  : Text(
-                                                      'Bill Amount',
-                                                      style: TextStyle(
-                                                          color: Colors.white),
-                                                    ),
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 10),
-                                                child: Row(
-                                                  children: [
-                                                    const Icon(
-                                                      Icons
-                                                          .currency_rupee_sharp,
-                                                      size: 18,
-                                                      color: Colors.white,
-                                                    ),
-                                                    Container(
-                                                      child: Text(
-                                                        '${transactionData1[index]["amount"]}',
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  margin: EdgeInsets.only(left: 100, right: 20),
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                          ),
+                        )
+                      : RefreshWidget(
+                          color: Color.fromRGBO(62, 13, 59, 1),
+                          onRefresh: transactionData,
+                          child: ListView.builder(
+                            itemCount: transactionData1.length,
+                            itemBuilder: (context, index) {
+                              return GestureDetector(
+                                onTap: (() {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              DetailedInfoPage(
+                                                customerOrganization:
+                                                    transactionData1[index],
+                                                customerData: _customerData,
+                                              )));
+                                }),
+                                child: Container(
+                                  margin: EdgeInsets.only(top: 10),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    color: transactionData1[index]
+                                                ["orderStatus"] ==
+                                            'PAYMENT-COLLECTED'
+                                        ? Color.fromRGBO(52, 135, 89, 1)
+                                        : Color.fromRGBO(186, 0, 0, 1),
+                                    child: Container(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                top: 10, left: 10, bottom: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                transactionData1[index]
+                                                            ["orderStatus"] ==
+                                                        'PAYMENT-COLLECTED'
+                                                    ? Text(
+                                                        'Paid Amount',
                                                         style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 14),
+                                                            color:
+                                                                Colors.white),
+                                                      )
+                                                    : Text(
+                                                        'Bill Amount',
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.white),
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: EdgeInsets.only(
-                                              bottom: 10, right: 10, top: 10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              transactionData1[index]
-                                                          ["orderStatus"] ==
-                                                      'PAYMENT-COLLECTED'
-                                                  ? Text(
-                                                      'Paid on',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    )
-                                                  : Text(
-                                                      'Raised on',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(top: 10),
-                                                child: Row(
-                                                  children: [
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          right: 20),
-                                                      child: Icon(
-                                                        Icons.calendar_today,
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      const Icon(
+                                                        Icons
+                                                            .currency_rupee_sharp,
                                                         size: 18,
                                                         color: Colors.white,
                                                       ),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 0),
-                                                      child: Text(
-                                                        DateFormat('dd-MM-yyyy')
-                                                            .format(DateTime.parse(
-                                                                transactionData1[
-                                                                        index][
-                                                                    "createdAt"])),
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 14,
+                                                      Container(
+                                                        child: Text(
+                                                          '${transactionData1[index]["amount"]}',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 14),
                                                         ),
                                                       ),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ),
-                                        )
-                                      ],
+                                          Container(
+                                            margin: EdgeInsets.only(
+                                                bottom: 10, right: 10, top: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                transactionData1[index]
+                                                            ["orderStatus"] ==
+                                                        'PAYMENT-COLLECTED'
+                                                    ? Text(
+                                                        'Paid on',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      )
+                                                    : Text(
+                                                        'Raised on',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                Container(
+                                                  margin:
+                                                      EdgeInsets.only(top: 10),
+                                                  child: Row(
+                                                    children: [
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            right: 20),
+                                                        child: Icon(
+                                                          Icons.calendar_today,
+                                                          size: 18,
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 0),
+                                                        child: Text(
+                                                          DateFormat(
+                                                                  'dd-MM-yyyy')
+                                                              .format(DateTime.parse(
+                                                                  transactionData1[
+                                                                          index]
+                                                                      [
+                                                                      "createdAt"])),
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 14,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(52, 135, 89, 1),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                          )),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PayBillPage(
-                                      customerData: _customerData,
-                                    )));
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            child: Icon(Icons.add_to_photos),
+                              );
+                            },
                           ),
-                          Text('PAY BILL'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
+                        ),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
                       height: MediaQuery.of(context).size.height * 0.08,
                       width: MediaQuery.of(context).size.width * 0.5,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(186, 0, 0, 1),
-                            shape: RoundedRectangleBorder(
+                            backgroundColor: Color.fromRGBO(52, 135, 89, 1),
+                            shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.zero,
                             )),
                         onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => RaiseBillPage(
+                                  builder: (context) => PayBillPage(
                                         customerData: _customerData,
                                       )));
                         },
@@ -478,17 +535,47 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Icon(Icons.menu_book_sharp),
+                              child: Icon(Icons.add_to_photos),
                             ),
-                            Text('RAISE BILL'),
+                            Text('PAY BILL'),
                           ],
                         ),
-                      ))
-                ],
-              ),
-            ],
-          ),
-        ],
+                      ),
+                    ),
+                    Container(
+                        height: MediaQuery.of(context).size.height * 0.08,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Color.fromRGBO(186, 0, 0, 1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
+                              )),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RaiseBillPage(
+                                          customerData: _customerData,
+                                        )));
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                child: Icon(Icons.menu_book_sharp),
+                              ),
+                              Text('RAISE BILL'),
+                            ],
+                          ),
+                        ))
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
