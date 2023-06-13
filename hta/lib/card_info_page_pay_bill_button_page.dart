@@ -28,7 +28,7 @@ class _RaiseBillPageState extends State<PayBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat('dd-MM-yyyy').add_jm().format(DateTime.now()),
+    text: DateFormat().add_yMd().add_jm().format(DateTime.now()),
   );
   final amount = TextEditingController();
   final description = TextEditingController();
@@ -221,7 +221,7 @@ class _RaiseBillPageState extends State<PayBillPage> {
   void initState() {
     setState(() {
       customerData = widget.customerData;
-      finalPendingAmount = customerData["pendingdAmount"];
+      finalPendingAmount = customerData["pendingAmount"];
     });
 
     _focusNodes.forEach((node) {
@@ -265,50 +265,25 @@ class _RaiseBillPageState extends State<PayBillPage> {
 
       final response = await http.post(url, body: body, headers: header);
 
-      var responseData = jsonDecode(response.body);
-      var pendingAmount = responseData['dueAmount'];
+      var responseData = jsonDecode(response.body.toString());
+
       setState(() {
-        finalPendingAmount = pendingAmount;
+        print(finalPendingAmount);
       });
 
-      print(pendingAmount);
+      // print(pendingAmount);
 
       print(response.body);
 
       if (responseData['code'] == 1) {
         _showSuccesDialog();
       } else {
-        _showPopupDialog();
+        _showErrorDialog();
       }
     }
   }
 
   void _showSuccesDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Something went wrong'),
-        actions: <Widget>[
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromRGBO(62, 13, 59, 1),
-              ),
-              child: Text(
-                'Okay',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  void _showPopupDialog() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -330,6 +305,31 @@ class _RaiseBillPageState extends State<PayBillPage> {
                         builder: (context) => DetailedCardPage(
                               customerData: customerData,
                             )));
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Something went wrong'),
+        actions: <Widget>[
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+              ),
+              child: Text(
+                'Okay',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           )
