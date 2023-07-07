@@ -16,8 +16,10 @@ import 'home_page_card_info_page.dart';
 
 class RaiseBillPage extends StatefulWidget {
   final customerData;
+  final pendingAmount;
 
-  const RaiseBillPage({required this.customerData});
+  const RaiseBillPage(
+      {required this.customerData, required this.pendingAmount});
 
   @override
   State<RaiseBillPage> createState() => _RaiseBillPageState();
@@ -27,7 +29,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat().add_yMd().add_jm().format(DateTime.now()),
+    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
   );
   final amount = TextEditingController();
   final description = TextEditingController();
@@ -220,7 +222,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   void initState() {
     setState(() {
       customerData = widget.customerData;
-      finalPendingAmount = customerData["pendingAmount"];
+      finalPendingAmount = widget.pendingAmount;
     });
 
     _focusNodes.forEach((node) {
@@ -252,8 +254,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         "picture": finalImage == null ? "" : finalImage,
         "orderStatus": "BILL-RAISED",
         "pendingAmount":
-            ((customerData["pendingAmount"]) + int.parse(amount.text))
-                .toString(),
+            ((finalPendingAmount) + int.parse(amount.text)).toString(),
       };
       final header = {
         'Authorization': 'Bearer $token',

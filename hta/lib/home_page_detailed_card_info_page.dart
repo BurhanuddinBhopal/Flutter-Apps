@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/home_page_card_info_page.dart';
 import 'package:intl/intl.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -241,18 +242,21 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                   )),
             ),
             Container(
-                height: MediaQuery.of(context).size.height * 0.63,
-                width: MediaQuery.of(context).size.width * 1,
-                child: image.isEmpty
-                    ? Container(
-                        margin: EdgeInsets.only(top: 90),
-                        child: Text(
-                          'No Image Found',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 30),
-                        ),
-                      )
-                    : CachedNetworkImage(
+              height: MediaQuery.of(context).size.height * 0.63,
+              width: MediaQuery.of(context).size.width * 1,
+              child: image.isEmpty
+                  ? Container(
+                      margin: EdgeInsets.only(top: 90),
+                      child: Text(
+                        'No Image Found',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    )
+                  : PinchZoom(
+                      resetDuration: Duration(milliseconds: 100),
+                      maxScale: 2.5,
+                      child: CachedNetworkImage(
                         imageUrl: _customerOrganization["picture"],
                         errorWidget: (context, url, error) => Center(
                             child: Text('Unable to load image!!',
@@ -267,7 +271,9 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                             ),
                           ),
                         ),
-                      )),
+                      ),
+                    ),
+            ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [

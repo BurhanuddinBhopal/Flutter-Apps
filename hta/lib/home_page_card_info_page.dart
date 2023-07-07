@@ -528,6 +528,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               MaterialPageRoute(
                                   builder: (context) => PayBillPage(
                                         customerData: _customerData,
+                                        pendingAmount: pendingAmount,
                                       )));
                         },
                         child: Row(
@@ -557,6 +558,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                 MaterialPageRoute(
                                     builder: (context) => RaiseBillPage(
                                           customerData: _customerData,
+                                          pendingAmount: pendingAmount,
                                         )));
                           },
                           child: Row(

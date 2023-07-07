@@ -1,4 +1,5 @@
 // @dart=2.9
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Account%20Pages/forgot_password_page.dart';
@@ -72,3 +73,28 @@ class _MyAppState extends State<MyApp> {
         });
   }
 }
+
+// class BottomNavigationBar extends StatefulWidget {
+//   @override
+//   State<BottomNavigationBar> createState() => _BottomNavigationBarState();
+// }
+
+// class _BottomNavigationBarState extends State<BottomNavigationBar> {
+//   int _selectedIndex = 0;
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _selectedIndex = index;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: HomePage(),
+//       bottomNavigationBar: BottomNavigationBar(
+//         items: const <BottomNavigationBarItem>[]
+//       ),
+//     );
+//   }
+// }
