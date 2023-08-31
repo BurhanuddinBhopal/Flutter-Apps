@@ -1,15 +1,16 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:hta/Drawer%20Pages/aboutUs_page.dart';
-import 'package:hta/Drawer%20Pages/accountSetting_page.dart';
-import 'package:hta/Drawer%20Pages/contactUs_page.dart';
-import 'package:hta/Drawer%20Pages/privacyPolicy_page.dart';
-import 'package:hta/Drawer%20Pages/report_page.dart';
+
+import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../login_page.dart';
+import '../Pages/App Pages/login_page.dart';
+import '../Pages/Drawer Pages/aboutUs_page.dart';
+import '../Pages/Drawer Pages/accountSetting_page.dart';
+import '../Pages/Drawer Pages/contactUs_page.dart';
+import '../Pages/Drawer Pages/privacyPolicy_page.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -84,13 +85,13 @@ class _AppDrawerState extends State<AppDrawer> {
                             Text(
                               'Welcome to HTA',
                               style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
+                                  fontSize: 18, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
                             Text(
                               finalNumber,
                               style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black45),
                             )
@@ -108,6 +109,69 @@ class _AppDrawerState extends State<AppDrawer> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.01,
                   ),
+                  // Container(
+                  //   child: TextButton(
+                  //       style: ButtonStyle(
+                  //         overlayColor:
+                  //             MaterialStateProperty.all(Colors.transparent),
+                  //       ),
+                  //       onPressed: (() {
+                  //         Navigator.push(
+                  //             context,
+                  //             MaterialPageRoute(
+                  //                 builder: (context) => ReportPage()));
+                  //       }),
+                  //       child: Container(
+                  //         margin: EdgeInsets.only(left: 5),
+                  //         child: Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             Row(
+                  //               // mainAxisAlignment: MainAxisAlignment.start,
+                  //               children: [
+                  //                 Icon(
+                  //                   Icons.report,
+                  //                   size: 28,
+                  //                   color: Colors.black45,
+                  //                 ),
+                  //                 Container(
+                  //                   margin: EdgeInsets.only(left: 18),
+                  //                   child: Text(
+                  //                     'Report',
+                  //                     style: TextStyle(
+                  //                         fontSize: 20,
+                  //                         fontWeight: FontWeight.w400,
+                  //                         color: Colors.black54),
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //             Row(
+                  //               children: [
+                  //                 Container(
+                  //                   margin: EdgeInsets.only(right: 5),
+                  //                   child: Icon(
+                  //                     Icons.arrow_forward_ios,
+                  //                     size: 25,
+                  //                     color: Colors.black45,
+                  //                   ),
+                  //                 ),
+                  //               ],
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       )),
+                  // ),
+                  // SizedBox(
+                  //   height: MediaQuery.of(context).size.height * 0.02,
+                  // ),
+                  // Divider(
+                  //   thickness: 1,
+                  //   indent: 60,
+                  // ),
+                  // SizedBox(
+                  //   height: MediaQuery.of(context).size.height * 0.01,
+                  // ),
                   Container(
                     child: TextButton(
                         style: ButtonStyle(
@@ -116,72 +180,11 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         onPressed: (() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ReportPage()));
-                        }),
-                        child: Container(
-                          margin: EdgeInsets.only(left: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.report,
-                                    size: 28,
-                                    color: Colors.black45,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 18),
-                                    child: Text(
-                                      'Report',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black54),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 5),
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 25,
-                                      color: Colors.black45,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
-                  ),
-                  Divider(
-                    thickness: 1,
-                    indent: 60,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01,
-                  ),
-                  Container(
-                    child: TextButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                        ),
-                        onPressed: (() {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AccountSettings()));
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: AccountSettings()),
+                          );
                         }),
                         child: Container(
                           margin: EdgeInsets.only(left: 5),
@@ -193,7 +196,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Icon(
                                     Icons.settings,
-                                    size: 28,
+                                    size: 25,
                                     color: Colors.black45,
                                   ),
                                   Container(
@@ -201,8 +204,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                     child: Text(
                                       'Account Settings',
                                       style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.black54),
                                     ),
                                   ),
@@ -214,7 +217,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                     margin: EdgeInsets.only(right: 5),
                                     child: Icon(
                                       Icons.arrow_forward_ios,
-                                      size: 25,
+                                      size: 23,
                                       color: Colors.black45,
                                     ),
                                   ),
@@ -225,7 +228,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         )),
                   ),
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.02,
+                    height: MediaQuery.of(context).size.height * 0.01,
                   ),
                   Divider(
                     thickness: 1,
@@ -242,9 +245,11 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         onPressed: (() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ContactUs()));
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: ContactUs()),
+                          );
                         }),
                         child: Container(
                           margin: EdgeInsets.only(left: 5),
@@ -256,7 +261,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Icon(
                                     Icons.message_outlined,
-                                    size: 28,
+                                    size: 25,
                                     color: Colors.black45,
                                   ),
                                   Container(
@@ -264,8 +269,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                     child: Text(
                                       'Contact Us',
                                       style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.black54),
                                     ),
                                   ),
@@ -277,7 +282,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                     margin: EdgeInsets.only(right: 5),
                                     child: Icon(
                                       Icons.arrow_forward_ios,
-                                      size: 25,
+                                      size: 23,
                                       color: Colors.black45,
                                     ),
                                   ),
@@ -305,9 +310,11 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         onPressed: (() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AboutUs()));
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: AboutUs()),
+                          );
                         }),
                         child: Container(
                           margin: EdgeInsets.only(left: 5),
@@ -319,7 +326,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Icon(
                                     Icons.info,
-                                    size: 28,
+                                    size: 25,
                                     color: Colors.black45,
                                   ),
                                   Container(
@@ -327,8 +334,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                     child: Text(
                                       'About Us',
                                       style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.black54),
                                     ),
                                   ),
@@ -340,7 +347,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                     margin: EdgeInsets.only(right: 5),
                                     child: Icon(
                                       Icons.arrow_forward_ios,
-                                      size: 25,
+                                      size: 23,
                                       color: Colors.black45,
                                     ),
                                   ),
@@ -368,9 +375,11 @@ class _AppDrawerState extends State<AppDrawer> {
                         ),
                         onPressed: (() {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PrivacyPolicy()));
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: PrivacyPolicy()),
+                          );
                         }),
                         child: Container(
                           margin: EdgeInsets.only(left: 5),
@@ -382,7 +391,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                 children: [
                                   Icon(
                                     Icons.lock,
-                                    size: 28,
+                                    size: 26,
                                     color: Colors.black45,
                                   ),
                                   Container(
@@ -390,8 +399,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                     child: Text(
                                       'Privacy Policy',
                                       style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w400,
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.black54),
                                     ),
                                   ),
@@ -403,7 +412,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                     margin: EdgeInsets.only(right: 5),
                                     child: Icon(
                                       Icons.arrow_forward_ios,
-                                      size: 25,
+                                      size: 23,
                                       color: Colors.black45,
                                     ),
                                   ),
@@ -425,7 +434,7 @@ class _AppDrawerState extends State<AppDrawer> {
               Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.symmetric(horizontal: 35, vertical: 60),
+                    margin: EdgeInsets.symmetric(horizontal: 45, vertical: 60),
                     height: MediaQuery.of(context).size.height * 0.055,
                     width: MediaQuery.of(context).size.width * 0.55,
                     child: ElevatedButton(
@@ -435,9 +444,11 @@ class _AppDrawerState extends State<AppDrawer> {
                         sharedPreferences.remove('mobileNumber');
 
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.fade,
+                              child: LoginPage()),
+                        );
                       },
                       child: Text('LOG OUT'),
                       style: ElevatedButton.styleFrom(

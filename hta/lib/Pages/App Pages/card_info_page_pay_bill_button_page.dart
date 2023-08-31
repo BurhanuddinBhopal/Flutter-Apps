@@ -370,244 +370,239 @@ class _RaiseBillPageState extends State<PayBillPage> {
       DeviceOrientation.portraitDown,
     ]);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: WillPopScope(
-            onWillPop: () => _onBackButtonPressed(context),
-            child: Material(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: Color.fromRGBO(52, 135, 89, 1),
-                          height: 100,
+          child: Material(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        color: Color.fromRGBO(52, 135, 89, 1),
+                        height: 100,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 35),
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 35),
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 40),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Pay BILL',
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w900,
-                                        color: Colors.white),
+                            padding: EdgeInsets.only(top: 40),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Pay BILL',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white),
+                                ),
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.close,
+                                    size: 24,
+                                    color: Colors.white,
                                   ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.close,
-                                      size: 24,
-                                      color: Colors.white,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          child: Text(
-                            'Amount',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        child: Text(
+                          'Amount',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: TextFormField(
-                            focusNode: _focusNodes[0],
-                            controller: amount,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Amount cannot be empty';
-                              }
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: TextFormField(
+                          focusNode: _focusNodes[0],
+                          controller: amount,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Amount cannot be empty';
+                            }
 
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                                hintText: "Type your amount here",
-                                hintStyle: TextStyle(
-                                  color: _focusNodes[0].hasFocus
-                                      ? Color.fromRGBO(62, 13, 59, 1)
-                                      : Colors.grey,
-                                  fontSize: 14.0,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.currency_rupee,
-                                  size: 19.0,
-                                  color: _focusNodes[0].hasFocus
-                                      ? Color.fromRGBO(62, 13, 59, 1)
-                                      : Colors.grey,
-                                ),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 2,
-                                        color: Color.fromRGBO(62, 13, 59, 1)))),
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              hintText: "Type your amount here",
+                              hintStyle: TextStyle(
+                                color: _focusNodes[0].hasFocus
+                                    ? Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.currency_rupee,
+                                size: 19.0,
+                                color: _focusNodes[0].hasFocus
+                                    ? Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                              ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Description',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 16),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Description',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: TextFormField(
+                          focusNode: _focusNodes[1],
+                          controller: description,
+                          decoration: InputDecoration(
+                              hintText: "Type your comment here",
+                              hintStyle: TextStyle(
+                                color: _focusNodes[1].hasFocus
+                                    ? Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.message,
+                                size: 19.0,
+                                color: _focusNodes[1].hasFocus
+                                    ? Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                              ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Date',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: TextFormField(
-                            focusNode: _focusNodes[1],
-                            controller: description,
-                            decoration: InputDecoration(
-                                hintText: "Type your comment here",
-                                hintStyle: TextStyle(
-                                  color: _focusNodes[1].hasFocus
-                                      ? Color.fromRGBO(62, 13, 59, 1)
-                                      : Colors.grey,
-                                  fontSize: 14.0,
-                                ),
-                                prefixIcon: Icon(
-                                  Icons.message,
-                                  size: 19.0,
-                                  color: _focusNodes[1].hasFocus
-                                      ? Color.fromRGBO(62, 13, 59, 1)
-                                      : Colors.grey,
-                                ),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 2,
-                                        color: Color.fromRGBO(62, 13, 59, 1)))),
-                          ),
+                      ),
+                      SizedBox(height: 8),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: TextFormField(
+                          focusNode: _focusNodes[2],
+                          controller: dateController,
+                          decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.calendar_month_rounded,
+                                size: 19.0,
+                                color: Color.fromRGBO(62, 13, 59, 1),
+                              ),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
                         ),
-                        SizedBox(height: 16),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                            'Date',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: TextFormField(
-                            focusNode: _focusNodes[2],
-                            controller: dateController,
-                            decoration: InputDecoration(
-                                prefixIcon: Icon(
-                                  Icons.calendar_month_rounded,
-                                  size: 19.0,
-                                  color: Color.fromRGBO(62, 13, 59, 1),
-                                ),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(5.0)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        width: 2,
-                                        color: Color.fromRGBO(62, 13, 59, 1)))),
-                          ),
-                        ),
-                      ],
-                    ),
-                    isLoading
-                        ? Container(
-                            margin: EdgeInsets.symmetric(vertical: 16),
-                            child: Text('Image uploading'))
-                        : Container(
-                            child: finalImage == null
-                                ? Image.asset(
-                                    'assets/images/white.jpg',
+                      ),
+                    ],
+                  ),
+                  isLoading
+                      ? Container(
+                          margin: EdgeInsets.symmetric(vertical: 16),
+                          child: Text('Image uploading'))
+                      : Container(
+                          child: finalImage == null
+                              ? Image.asset(
+                                  'assets/images/white.jpg',
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  height: 0,
+                                )
+                              : Container(
+                                  margin: EdgeInsets.symmetric(vertical: 16),
+                                  child: Image.network(
+                                    finalImage,
                                     width:
-                                        MediaQuery.of(context).size.width * 1,
-                                    height: 0,
-                                  )
-                                : Container(
-                                    margin: EdgeInsets.symmetric(vertical: 16),
-                                    child: Image.network(
-                                      finalImage,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.2,
-                                    ),
-                                  )),
-                    finalImage == null
-                        ? isLoading
-                            ? Container()
-                            : Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 100),
-                                child: FloatingActionButton.small(
-                                  //if isLoading false && final image empty
-                                  //if isLoading is true "Image uploading"
-                                  //if isLoading is false && final image in not empty ==> show image
-                                  onPressed: () {
-                                    selectImage();
-                                    setState(() {});
-                                  },
-                                  child: Icon(
-                                    Icons.add,
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.2,
                                   ),
+                                )),
+                  finalImage == null
+                      ? isLoading
+                          ? Container()
+                          : Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 100),
+                              child: FloatingActionButton.small(
+                                //if isLoading false && final image empty
+                                //if isLoading is true "Image uploading"
+                                //if isLoading is false && final image in not empty ==> show image
+                                onPressed: () {
+                                  selectImage();
+                                  setState(() {});
+                                },
+                                child: Icon(
+                                  Icons.add,
                                 ),
-                              )
-                        : Container(),
-                    Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 30),
-                          child: isLoading
-                              ? null
-                              : ElevatedButton(
-                                  style: TextButton.styleFrom(
-                                    backgroundColor:
-                                        Color.fromRGBO(52, 135, 89, 1),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.zero),
-                                    minimumSize: Size(350, 50),
-                                  ),
-                                  onPressed: () {
-                                    if (!isLoading) {
-                                      payBill();
-                                    }
-                                  },
-                                  child: Text("PAY BILL"),
+                              ),
+                            )
+                      : Container(),
+                  Column(
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 16, horizontal: 30),
+                        child: isLoading
+                            ? null
+                            : ElevatedButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor:
+                                      Color.fromRGBO(52, 135, 89, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero),
+                                  minimumSize: Size(350, 50),
                                 ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                                onPressed: () {
+                                  if (!isLoading) {
+                                    payBill();
+                                  }
+                                },
+                                child: Text("PAY BILL"),
+                              ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

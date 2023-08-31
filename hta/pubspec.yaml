@@ -29,15 +29,19 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  http: ^1.1.0 
+  http: ^0.13.4 
   shared_preferences: ^2.0.15
   intl: ^0.18.0  
   fluttercontactpicker: ^4.7.0
-  image_picker: ^0.8.7
+  image_picker: ^1.0.0
   cached_network_image: ^3.2.3
   url_launcher: ^6.1.10
   pinch_zoom: ^1.0.0
-  custom_navigator: ^0.3.0
+  page_transition: ^2.0.9
+  searchfield: ^0.8.3
+  provider: ^6.0.5
+  
+  
  
   flutter:
     sdk: flutter

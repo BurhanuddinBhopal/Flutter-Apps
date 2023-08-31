@@ -1,23 +1,35 @@
-// @dart=2.9
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hta/Account%20Pages/forgot_password_page.dart';
-import 'package:hta/Drawer%20Pages/aboutUs_page.dart';
-import 'package:hta/Drawer%20Pages/accountSetting_page.dart';
-import 'package:hta/Drawer%20Pages/contactUs_page.dart';
-import 'package:hta/Drawer%20Pages/privacyPolicy_page.dart';
-import 'package:hta/card_info_page_raise_bill_button_page.dart';
-import 'package:hta/Drawer%20Pages/report_page.dart';
 
-import 'package:hta/home_page.dart';
+import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
+import 'package:hta/Pages/App%20Pages/home_page.dart';
+import 'package:hta/Pages/App%20Pages/report_page.dart';
+import 'package:hta/Pages/App%20Pages/today_transaction_page.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/routes.dart';
+import '../../models/Transaction_model.dart';
+import '../../utils/routes.dart';
+import '../../widgets/provider.dart';
+import '../Account Pages/forgot_password_page.dart';
+import '../Drawer Pages/aboutUs_page.dart';
+import '../Drawer Pages/accountSetting_page.dart';
+import '../Drawer Pages/contactUs_page.dart';
+import '../Drawer Pages/privacyPolicy_page.dart';
 import 'card_info_page_pay_bill_button_page.dart';
 import 'home_page_detailed_card_info_page.dart';
 import 'login_page.dart';
+import 'bottom_navigation_page.dart';
+import 'package:provider/provider.dart';
+
+class Person implements Comparable<Person> {
+  final String name, surname, organisationName;
+
+  const Person(this.name, this.surname, this.organisationName);
+
+  @override
+  int compareTo(Person other) => name.compareTo(other.name);
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,16 +39,25 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  runApp(MaterialApp(home: mobileNumber == null ? LoginPage() : HomePage()));
+  runApp(ChangeNotifierProvider(
+    create: (context) => CustomerDataProvider(),
+    child: MaterialApp(
+        home: mobileNumber == null ? LoginPage() : BottomNavigationPage()),
+  ));
 }
 
 class MyApp extends StatefulWidget {
+  final String? mobileNumber;
+  final List<Customer> customerData;
+
+  const MyApp({this.mobileNumber, required this.customerData});
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   var _customerData;
+  var _pendingAmount;
 
   var transactionData1;
 
@@ -60,41 +81,22 @@ class _MyAppState extends State<MyApp> {
               ),
           MyRoutes.raisebillRoute: (context) => RaiseBillPage(
                 customerData: _customerData,
+                pendingAmount: _pendingAmount,
               ),
           MyRoutes.paybillRoute: (context) => PayBillPage(
                 customerData: _customerData,
+                pendingAmount: _pendingAmount,
               ),
           MyRoutes.accountSettingsRoute: (context) => AccountSettings(),
           MyRoutes.contactUsRoute: (context) => ContactUs(),
           MyRoutes.aboutUsRoute: (context) => AboutUs(),
           MyRoutes.privacyPolicyRoute: (context) => PrivacyPolicy(),
           MyRoutes.forgotPasswordRoute: (context) => ForgotPassword(),
-          MyRoutes.reportPageRoute: (context) => ReportPage()
+          MyRoutes.reportPageRoute: (context) => ReportPage(),
+          MyRoutes.todayPageRoute: (context) => TodayPage(
+                customerData: _customerData,
+                // fullCustomerData: _customerData,
+              ),
         });
   }
 }
-
-// class BottomNavigationBar extends StatefulWidget {
-//   @override
-//   State<BottomNavigationBar> createState() => _BottomNavigationBarState();
-// }
-
-// class _BottomNavigationBarState extends State<BottomNavigationBar> {
-//   int _selectedIndex = 0;
-
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _selectedIndex = index;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: HomePage(),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const <BottomNavigationBarItem>[]
-//       ),
-//     );
-//   }
-// }

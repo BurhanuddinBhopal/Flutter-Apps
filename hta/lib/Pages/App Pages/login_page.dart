@@ -4,13 +4,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hta/Account%20Pages/forgot_password_page.dart';
-import 'package:hta/home_page.dart';
+import 'package:hta/Pages/App%20Pages/bottom_navigation_page.dart';
 
 import 'package:http/http.dart' as http;
-import '../models/http_exception.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Account Pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -96,7 +97,12 @@ class _LoginPageState extends State<LoginPage> {
           sharedPreferences.setString('lastName', lastName);
 
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
+            context,
+            PageTransition(
+              type: PageTransitionType.fade,
+              child: BottomNavigationPage(),
+            ),
+          );
           print(response.body);
         }
       } catch (error) {
@@ -112,20 +118,19 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
+            title: Text('Confirm Exit?',
+                style: new TextStyle(color: Colors.black, fontSize: 20.0)),
+            content: Text('Are you sure you want to exit the app?'),
             actions: <Widget>[
               TextButton(
-                child: Text("YES"),
+                child: Text('Yes', style: new TextStyle(fontSize: 18.0)),
                 onPressed: () {
-                  SystemNavigator.pop();
+                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                 },
               ),
               TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
+                child: Text('No', style: new TextStyle(fontSize: 18.0)),
+                onPressed: () => Navigator.pop(context),
               )
             ],
           );

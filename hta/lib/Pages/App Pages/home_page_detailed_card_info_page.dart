@@ -4,8 +4,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hta/home_page_card_info_page.dart';
+import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
+
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -47,8 +49,6 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       pendingAmount = _customerData["pendingAmount"];
     });
 
-    print(image);
-
     print(_customerOrganization);
     // TODO: implement initState
     super.initState();
@@ -68,6 +68,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
+    // ignore: unused_local_variable
     final response = await http.post(
       url,
       headers: header,
@@ -105,32 +106,6 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     }
   }
 
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("YES"),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-              ),
-              TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -138,15 +113,17 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       DeviceOrientation.portraitDown,
     ]);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
           backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
           leading: IconButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            (DetailedCardPage(customerData: _customerData))));
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: (DetailedCardPage(customerData: _customerData))),
+                );
               },
               icon: Icon(Icons.arrow_back)),
           title: Text('${_customerData["organisationName"]}'),
@@ -156,12 +133,20 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
               icon: const Icon(Icons.notifications_none),
             ),
           ]),
-      body: WillPopScope(
-        onWillPop: () => _onBackButtonPressed(context),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          WillPopScope(
+            onWillPop: () async {
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.fade,
+                    child: (DetailedCardPage(customerData: _customerData))),
+              );
+              return false;
+            },
+            child: Container(
               margin: EdgeInsets.only(left: 10, right: 10, top: 10),
               height: MediaQuery.of(context).size.height * 0.133,
               child: Card(
@@ -241,93 +226,93 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                     ),
                   )),
             ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.63,
-              width: MediaQuery.of(context).size.width * 1,
-              child: image.isEmpty
-                  ? Container(
-                      margin: EdgeInsets.only(top: 90),
-                      child: Text(
-                        'No Image Found',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 30),
-                      ),
-                    )
-                  : PinchZoom(
-                      resetDuration: Duration(milliseconds: 100),
-                      maxScale: 2.5,
-                      child: CachedNetworkImage(
-                        imageUrl: _customerOrganization["picture"],
-                        errorWidget: (context, url, error) => Center(
-                            child: Text('Unable to load image!!',
-                                style: TextStyle(fontSize: 24))),
-                        placeholder: (context, url) => Container(
-                          child: Container(
-                            margin: EdgeInsets.only(top: 90),
-                            child: Text(
-                              'Please wait for a while',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontSize: 30),
-                            ),
+          ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.63,
+            width: MediaQuery.of(context).size.width * 1,
+            child: image.isEmpty
+                ? Container(
+                    margin: EdgeInsets.only(top: 90),
+                    child: Text(
+                      'No Image Found',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 30),
+                    ),
+                  )
+                : PinchZoom(
+                    resetDuration: Duration(milliseconds: 100),
+                    maxScale: 2.5,
+                    child: CachedNetworkImage(
+                      imageUrl: _customerOrganization["picture"],
+                      errorWidget: (context, url, error) => Center(
+                          child: Text('Unable to load image!!',
+                              style: TextStyle(fontSize: 24))),
+                      placeholder: (context, url) => Container(
+                        child: Container(
+                          margin: EdgeInsets.only(top: 90),
+                          child: Text(
+                            'Please wait for a while',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 30),
                           ),
                         ),
                       ),
                     ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Container(
+                  ),
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.08,
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      )),
+                  onPressed: () {
+                    _launchSms();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5),
+                        child: Icon(Icons.message),
+                      ),
+                      Text('Send Message'),
+                    ],
+                  ),
+                ),
+              ),
+              Container(
                   height: MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width * 0.5,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+                        backgroundColor: Color.fromRGBO(37, 211, 102, 1),
                         shape: const RoundedRectangleBorder(
                           borderRadius: BorderRadius.zero,
                         )),
                     onPressed: () {
-                      _launchSms();
+                      launchWhatsapp();
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Icon(Icons.message),
+                          child: Icon(Icons.wechat),
                         ),
-                        Text('Send Message'),
+                        Text('Whatsapp'),
                       ],
                     ),
-                  ),
-                ),
-                Container(
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(37, 211, 102, 1),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.zero,
-                          )),
-                      onPressed: () {
-                        launchWhatsapp();
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5),
-                            child: Icon(Icons.whatsapp),
-                          ),
-                          Text('Whatsapp'),
-                        ],
-                      ),
-                    ))
-              ],
-            ),
-          ],
-        ),
+                  ))
+            ],
+          ),
+        ],
       ),
     );
   }

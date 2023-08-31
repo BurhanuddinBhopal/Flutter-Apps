@@ -92,7 +92,7 @@ class ContactUs extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Icon(Icons.whatsapp),
+                            Icon(Icons.wechat),
                             Text('Whatsapp Us'),
                           ],
                         ),

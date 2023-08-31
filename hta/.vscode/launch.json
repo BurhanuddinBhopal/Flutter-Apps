@@ -8,7 +8,9 @@
         {
             "name": "hta",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "program": "lib/Pages/App Pages/main.dart"
+            
         },
         {
             "name": "hta (profile mode)",
