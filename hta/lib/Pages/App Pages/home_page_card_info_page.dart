@@ -44,6 +44,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     customerData();
     setState(() {
       _customerData = widget.customerData;
+      print('data after recieved: $widget.$_customerData');
 
       mobileNumber = _customerData["mobileNumber"];
     });
@@ -113,7 +114,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
 
       // print(response.body);
 
-      print(transactionData1);
+      print('transactions after api: $transactionData1');
     }
     setState(() {
       isLoading = false;

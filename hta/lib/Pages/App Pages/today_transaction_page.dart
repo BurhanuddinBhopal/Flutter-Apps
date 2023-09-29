@@ -22,14 +22,20 @@ class TodayPage extends StatefulWidget {
 
 class _TodayPageState extends State<TodayPage> {
   // var _fullCustomerData;
+  // var _customerData = {};
+  // Map<String, Customer> _customerData = {};
+  // var _id;
 
   // @override
   // void initState() {
   //   // TODO: implement initState
   //   super.initState();
-  //   setState(() {
-  //     // _fullCustomerData = widget.fullCustomerData ?? [];
 
+  //   setState(() {
+  //     _customerData = Map.fromIterable(widget.customerData);
+
+  //     _id = _customerData['_id'];
+  //     print(_id);
   //   });
   // }
 
@@ -37,6 +43,7 @@ class _TodayPageState extends State<TodayPage> {
   Widget build(BuildContext context) {
     print('Customer Data Length: ${widget.customerData.length}');
     final today = DateTime.now();
+    print('error: $today');
 
     // Filter customers with transactions on the current day
     List<Customer> customersWithTodayTransactions =
@@ -51,6 +58,10 @@ class _TodayPageState extends State<TodayPage> {
             transaction.date.day == today.day;
       });
     }).toList();
+    // for (var index in customersWithTodayTransactions) {
+    //   print(
+    //       'printing customers using index: $customersWithTodayTransactions[$index]');
+    // }
     for (var customer in customersWithTodayTransactions) {
       print('Customer: ${customer.name}');
       print('Transactions: ${customer.transactions}');
@@ -79,8 +90,11 @@ class _TodayPageState extends State<TodayPage> {
             itemCount: customersWithTodayTransactions.length,
             itemBuilder: (context, index) {
               final customer = customersWithTodayTransactions[index];
-              print('Customer: ${customer.name}');
-              print('Transactions: ${customer.transactions}');
+
+              print('Customer123: ${customer}');
+              print('Transactions123: ${customer.transactions}');
+              print(
+                  'customer with todays transactions: $customersWithTodayTransactions');
               return GestureDetector(
                   onTap: (() {
                     Navigator.push(
@@ -89,6 +103,7 @@ class _TodayPageState extends State<TodayPage> {
                           type: PageTransitionType.fade,
                           child: CustomerDataWrapper(
                             customerData: customer.toMap(),
+                            todayTransactions: customer.transactions,
                           ),
                         ));
                   }),

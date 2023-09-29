@@ -11,15 +11,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/Transaction_model.dart';
 import '../../utils/routes.dart';
 import '../../widgets/provider.dart';
-import '../Account Pages/forgot_password_page.dart';
-import '../Drawer Pages/aboutUs_page.dart';
-import '../Drawer Pages/accountSetting_page.dart';
-import '../Drawer Pages/contactUs_page.dart';
-import '../Drawer Pages/privacyPolicy_page.dart';
-import 'card_info_page_pay_bill_button_page.dart';
-import 'home_page_detailed_card_info_page.dart';
-import 'login_page.dart';
-import 'bottom_navigation_page.dart';
+
+import 'Pages/Account Pages/forgot_password_page.dart';
+import 'Pages/App Pages/bottom_navigation_page.dart';
+import 'Pages/App Pages/card_info_page_pay_bill_button_page.dart';
+import 'Pages/App Pages/home_page_detailed_card_info_page.dart';
+import 'Pages/App Pages/login_page.dart';
+import 'Pages/Drawer Pages/aboutUs_page.dart';
+import 'Pages/Drawer Pages/accountSetting_page.dart';
+import 'Pages/Drawer Pages/contactUs_page.dart';
+import 'Pages/Drawer Pages/privacyPolicy_page.dart';
+
 import 'package:provider/provider.dart';
 
 class Person implements Comparable<Person> {

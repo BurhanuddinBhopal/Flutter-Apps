@@ -69,7 +69,6 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
 
         for (customerData in allCustomers) {
           _customerId = customerData["_id"];
-          print('Fetching data for customer with ID: $_customerId');
 
           final String _organisationName = customerData["organisationName"];
           final String _name = customerData["name"];
