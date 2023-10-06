@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/App%20Pages/report_page.dart';
+import 'package:hta/models/Transaction_model.dart';
 import 'package:hta/models/Usermodel.dart';
 
 import 'package:hta/widgets/refresh.dart';
@@ -42,17 +43,18 @@ class _HomePageState extends State<HomePage> {
   var customerData;
   var person;
   var organizationName;
-  var serverData = [];
 
-  var data1 = [];
   var pendingAmount;
 
   var date;
 
-  List<Item> itemList = [];
+  // List<Item> itemList = [];
 
   List<Item> filteredList = [];
+  List<Item> allCutomerList = [];
 
+  var filteredCustomerData = [];
+  var allCutomerData = [];
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -88,7 +90,6 @@ class _HomePageState extends State<HomePage> {
       headers: header,
       body: jsonEncode(body),
     );
-    print(response.body);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
@@ -96,15 +97,11 @@ class _HomePageState extends State<HomePage> {
       final List<dynamic> itemListJson = responseData['allCustomer'];
 
       setState(() {
-        itemList =
+        allCutomerList =
             itemListJson.map((itemJson) => Item.fromJson(itemJson)).toList();
-
-        filteredList = itemList;
-
-        pendingAmount = responseData['dueAmount'];
-        serverData = responseData['allCustomer'];
-
-        data1 = responseData['allCustomer'];
+        filteredList = allCutomerList;
+        filteredCustomerData = responseData['allCustomer'];
+        allCutomerData = responseData['allCustomer'];
       });
     }
 
@@ -115,11 +112,24 @@ class _HomePageState extends State<HomePage> {
 
   void filterItems(String query) {
     setState(() {
-      filteredList = itemList
+      filteredList = allCutomerList
           .where((item) =>
               item.name.toLowerCase().contains(query.toLowerCase()) ||
               item.lastName.toLowerCase().contains(query.toLowerCase()) ||
-              item.organisationName.toLowerCase().contains(query.toLowerCase()))
+              item.organisationName
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              item.mobileNumber.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+
+      filteredCustomerData = allCutomerData
+          .where((item) =>
+              item['name'].toLowerCase().contains(query.toLowerCase()) ||
+              item['lastName'].toLowerCase().contains(query.toLowerCase()) ||
+              item['organisationName']
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              item['mobileNumber'].toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
@@ -149,7 +159,7 @@ class _HomePageState extends State<HomePage> {
     return exitApp;
   }
 
-  final List<Widget> widgetList = <Widget>[HomePage(), ReportPage()];
+  // final List<Widget> widgetList = <Widget>[HomePage(), ReportPage()];
 
   int suggestionsCount = 12;
   final focus = FocusNode();
@@ -175,7 +185,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(color: Colors.white54),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.only(left: 30),
-                  hintText: '${data1.length} Customers',
+                  hintText: '${filteredList.length} Customers',
                   hintStyle: TextStyle(
                     fontSize: 18,
                     color: Colors.white54,
@@ -194,9 +204,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     PageTransition(
                       type: PageTransitionType.fade,
-                      child: AddCustomerPage(
-                        organization: data1,
-                      ),
+                      child: AddCustomerPage(),
                     ));
               }),
               icon: Icon(Icons.add))
@@ -347,7 +355,8 @@ class _HomePageState extends State<HomePage> {
                                           PageTransition(
                                             type: PageTransitionType.fade,
                                             child: DetailedCardPage(
-                                              customerData: data1[index],
+                                              customerData:
+                                                  filteredCustomerData[index],
                                             ),
                                           ));
                                     }),
@@ -398,7 +407,6 @@ class _HomePageState extends State<HomePage> {
                                                       Text(
                                                         currentItem
                                                             .organisationName,
-                                                        // '${data1[index]["organisationName"]}',
                                                         style: TextStyle(
                                                             fontSize: 16,
                                                             fontWeight:
@@ -414,7 +422,6 @@ class _HomePageState extends State<HomePage> {
                                                               Text(
                                                                 currentItem
                                                                     .name,
-                                                                // '${data1[index]["name"]}',
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         14),
@@ -427,7 +434,6 @@ class _HomePageState extends State<HomePage> {
                                                                 child: Text(
                                                                   currentItem
                                                                       .lastName,
-                                                                  // '${data1[index]["lastName"]}',
                                                                   style: TextStyle(
                                                                       fontSize:
                                                                           14),
@@ -468,7 +474,6 @@ class _HomePageState extends State<HomePage> {
                                                                       Text(
                                                                         currentItem
                                                                             .location,
-                                                                        // '${data1[index]["location"]}',
                                                                         style: TextStyle(
                                                                             fontSize:
                                                                                 12,
@@ -500,7 +505,6 @@ class _HomePageState extends State<HomePage> {
                                                                           currentItem
                                                                               .pendingAmount
                                                                               .toString(),
-                                                                          // '${data1[index]["pendingAmount"]}',
                                                                           style:
                                                                               TextStyle(
                                                                             fontSize:
@@ -544,7 +548,6 @@ class _HomePageState extends State<HomePage> {
                                                                         Text(
                                                                           currentItem
                                                                               .mobileNumber,
-                                                                          // '${data1[index]["mobileNumber"]}',
                                                                           style: TextStyle(
                                                                               color: Colors.black26,
                                                                               fontSize: 12,

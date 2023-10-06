@@ -95,10 +95,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           MyRoutes.privacyPolicyRoute: (context) => PrivacyPolicy(),
           MyRoutes.forgotPasswordRoute: (context) => ForgotPassword(),
           MyRoutes.reportPageRoute: (context) => ReportPage(),
-          MyRoutes.todayPageRoute: (context) => TodayPage(
-                customerData: _customerData,
-                // fullCustomerData: _customerData,
-              ),
+          // MyRoutes.todayPageRoute: (context) => TodayPage(
+          //       customerData: _customerData,
+          //       // fullCustomerData: _customerData,
+          //     ),
         });
   }
 }

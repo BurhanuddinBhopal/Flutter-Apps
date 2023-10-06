@@ -47,7 +47,7 @@ class Customer {
 
   @override
   String toString() {
-    return 'Customer: {lastName: $lastName, name: $name, organisationName: $organisationName}';
+    return 'Customer: {lastName: $lastName, name: $name, organisationName: $organisationName, pendingAmount: $pendingAmount, mobileNumber: $mobileNumber, date: $date, transactions: $transactions}';
   }
 }
 

@@ -13,9 +13,6 @@ import 'package:http/http.dart' as http;
 import 'bottom_navigation_page.dart';
 
 class AddCustomerPage extends StatefulWidget {
-  final organization;
-
-  const AddCustomerPage({super.key, required this.organization});
   State<AddCustomerPage> createState() => _AddCustomerPageState();
 }
 
@@ -23,7 +20,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   // ignore: unused_field
   var _organization;
   PhoneContact? _phoneContact;
-  var _customerData;
 
   final organisationName = TextEditingController();
   final name = TextEditingController();
@@ -168,10 +164,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     });
 
     super.initState();
-    setState(() {
-      _customerData = widget.organization;
-      print(_customerData);
-    });
   }
 
   @override
