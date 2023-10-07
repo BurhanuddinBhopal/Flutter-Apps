@@ -43,9 +43,6 @@ class _AppDrawerState extends State<AppDrawer> {
       finalName = name!;
       finalLastname = lastName!;
     });
-    print(finalName);
-    print(lastName);
-    print(finalNumber);
   }
 
   @override

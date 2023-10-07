@@ -4,7 +4,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
+import 'package:hta/Pages/App%20Pages/customerReport_page.dart';
+import 'package:hta/Pages/App%20Pages/editCustomer_page.dart';
 
 import 'package:hta/widgets/refresh.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +19,7 @@ import 'bottom_navigation_page.dart';
 import 'card_info_page_pay_bill_button_page.dart';
 import 'home_page_detailed_card_info_page.dart';
 import 'package:url_launcher/url_launcher.dart' as UrlLauncher;
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class DetailedCardPage extends StatefulWidget {
   final dynamic customerData;
@@ -44,15 +48,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     customerData();
     setState(() {
       _customerData = widget.customerData;
-      print('customerData12333333: $_customerData');
-      // print('data after recieved: $widget.$_customerData');
 
       mobileNumber = _customerData["mobileNumber"];
     });
-
-    print("asdfdsafadsfadsfadsfdsafdsaadsfdad");
-
-    print(_customerData["pendingAmount"]);
 
     super.initState();
   }
@@ -80,9 +78,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     final responseData = jsonDecode(response.body.toString());
     setState(() {
       pendingAmount = responseData['customer']['pendingAmount'];
+      print('pendingAmount233: $pendingAmount');
     });
-    print(responseData);
-    print(pendingAmount);
   }
 
   Future<void> transactionData() async {
@@ -112,10 +109,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         transactionData1 = responseData['allTransaction'];
         _customerData = widget.customerData;
       });
-
-      // print(response.body);
-
-      print('transactions after api: $transactionData1');
     }
     setState(() {
       isLoading = false;
@@ -126,6 +119,102 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     //       'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction/${user['_id']}');
     //   http.delete(url);
     // }
+  }
+
+  Future<void> deleteTransaction(String transactionId) async {
+    print("transactionId: $transactionId");
+    print("customerId34553: $_customerData['_id']");
+
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var token = sharedPreferences.getString('token');
+    final url = Uri.parse(
+        'https://hta.hatimtechnologies.in/api/transactions/deleteTransaction');
+    final body = {
+      "customerId": _customerData["_id"],
+      "transactionId": transactionId
+    };
+
+    final header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.post(
+      url,
+      headers: header,
+      body: jsonEncode(body),
+    );
+    var responseData = jsonDecode(response.body.toString());
+
+    if (responseData['code'] == 1) {
+      transactionData();
+      customerData();
+    } else {
+      _showErrorDialog(responseData);
+    }
+  }
+
+  void _popupDialogBox(String transactionId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Are you sure you want to delete it?'),
+        actions: <Widget>[
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+            ),
+            child: Text(
+              'Yes',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              print('gtrwweeew');
+              deleteTransaction(transactionId);
+              Navigator.pop(context);
+            },
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+            ),
+            child: Text(
+              'No',
+              style: TextStyle(color: Colors.white),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(responseData) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(responseData['message']),
+        actions: <Widget>[
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+              ),
+              child: Text(
+                'Okay',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<bool> _onBackButtonPressed(BuildContext context) async {
@@ -167,19 +256,14 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         leading: IconButton(
             onPressed: () {
               Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: BottomNavigationPage()),
-              );
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: (BottomNavigationPage())));
             },
             icon: Icon(Icons.arrow_back)),
         title: Text('${_customerData["organisationName"]}'),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
-          ),
           IconButton(
             onPressed: () {
               UrlLauncher.launch("tel://$mobileNumber");
@@ -187,9 +271,32 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
             icon: const Icon(Icons.call),
           ),
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.delete),
-          )
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: (CustomerReportPage(
+                        customerData: _customerData,
+                      ))));
+            },
+            icon: FaIcon(
+              FontAwesomeIcons.rectangleList,
+              size: 20,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade,
+                      child: (EditCustomerPage(
+                        customerData: _customerData,
+                      ))));
+            },
+            icon: const Icon(Icons.edit),
+          ),
         ],
       ),
       body: Column(
@@ -373,6 +480,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                         child: ListView.builder(
                           itemCount: transactionData1.length,
                           itemBuilder: (context, index) {
+                            // transactionId = transactionData1[index]['_id'];
+
                             return WillPopScope(
                               onWillPop: () async {
                                 Navigator.push(
@@ -398,128 +507,152 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                 }),
                                 child: Container(
                                   margin: EdgeInsets.only(top: 10),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    color: transactionData1[index]
-                                                ["orderStatus"] ==
-                                            'PAYMENT-COLLECTED'
-                                        ? Color.fromRGBO(52, 135, 89, 1)
-                                        : Color.fromRGBO(186, 0, 0, 1),
-                                    child: Container(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                top: 10, left: 10, bottom: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                transactionData1[index]
-                                                            ["orderStatus"] ==
-                                                        'PAYMENT-COLLECTED'
-                                                    ? Text(
-                                                        'Paid Amount',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      )
-                                                    : Text(
-                                                        'Bill Amount',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white),
-                                                      ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 10),
-                                                  child: Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons
-                                                            .currency_rupee_sharp,
-                                                        size: 18,
-                                                        color: Colors.white,
-                                                      ),
-                                                      Container(
-                                                        child: Text(
-                                                          '${transactionData1[index]["amount"]}',
+                                  child: Slidable(
+                                    endActionPane: ActionPane(
+                                      motion: BehindMotion(),
+                                      children: [
+                                        SlidableAction(
+                                            icon: Icons.delete,
+                                            label: 'Delete',
+                                            backgroundColor: Colors.red,
+                                            onPressed: (context) {
+                                              _popupDialogBox(
+                                                  transactionData1[index]
+                                                      ['_id']);
+                                            })
+                                      ],
+                                    ),
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      color: transactionData1[index]
+                                                  ["orderStatus"] ==
+                                              'PAYMENT-COLLECTED'
+                                          ? Color.fromRGBO(52, 135, 89, 1)
+                                          : Color.fromRGBO(186, 0, 0, 1),
+                                      child: Container(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  top: 10,
+                                                  left: 10,
+                                                  bottom: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  transactionData1[index]
+                                                              ["orderStatus"] ==
+                                                          'PAYMENT-COLLECTED'
+                                                      ? Text(
+                                                          'Paid Amount',
                                                           style: TextStyle(
                                                               color:
-                                                                  Colors.white,
-                                                              fontSize: 14),
+                                                                  Colors.white),
+                                                        )
+                                                      : Text(
+                                                          'Bill Amount',
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.white),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                          Container(
-                                            margin: EdgeInsets.only(
-                                                bottom: 10, right: 10, top: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                transactionData1[index]
-                                                            ["orderStatus"] ==
-                                                        'PAYMENT-COLLECTED'
-                                                    ? Text(
-                                                        'Paid on',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                      )
-                                                    : Text(
-                                                        'Raised on',
-                                                        style: TextStyle(
-                                                          color: Colors.white,
-                                                        ),
-                                                      ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 10),
-                                                  child: Row(
-                                                    children: [
-                                                      Container(
-                                                        margin: EdgeInsets.only(
-                                                            right: 20),
-                                                        child: Icon(
-                                                          Icons.calendar_today,
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 10),
+                                                    child: Row(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons
+                                                              .currency_rupee_sharp,
                                                           size: 18,
                                                           color: Colors.white,
                                                         ),
-                                                      ),
-                                                      Container(
-                                                        margin: EdgeInsets.only(
-                                                            left: 0),
-                                                        child: Text(
-                                                          DateFormat(
-                                                                  'dd-MM-yyyy')
-                                                              .format(DateTime.parse(
-                                                                  transactionData1[
-                                                                          index]
-                                                                      [
-                                                                      "createdAt"])),
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 14,
+                                                        Container(
+                                                          child: Text(
+                                                            '${transactionData1[index]["amount"]}',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 14),
                                                           ),
                                                         ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
-                                          )
-                                        ],
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  bottom: 10,
+                                                  right: 10,
+                                                  top: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  transactionData1[index]
+                                                              ["orderStatus"] ==
+                                                          'PAYMENT-COLLECTED'
+                                                      ? Text(
+                                                          'Paid on',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        )
+                                                      : Text(
+                                                          'Raised on',
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: 10),
+                                                    child: Row(
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  right: 20),
+                                                          child: Icon(
+                                                            Icons
+                                                                .calendar_today,
+                                                            size: 18,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  left: 0),
+                                                          child: Text(
+                                                            DateFormat(
+                                                                    'dd-MM-yyyy')
+                                                                .format(DateTime.parse(
+                                                                    transactionData1[
+                                                                            index]
+                                                                        [
+                                                                        "createdAt"])),
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 14,
+                                                            ),
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),

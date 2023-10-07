@@ -16,8 +16,6 @@ class CustomerDataWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     final customer = Customer.fromMap(customerData);
 
-    print('Today Transactions Count: ${todayTransactions.length}');
-
     return DetailedCardPage(customerData: customer);
   }
 }

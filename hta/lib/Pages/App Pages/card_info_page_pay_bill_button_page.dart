@@ -22,15 +22,17 @@ class PayBillPage extends StatefulWidget {
   const PayBillPage({required this.customerData, required this.pendingAmount});
 
   @override
-  State<PayBillPage> createState() => _RaiseBillPageState();
+  State<PayBillPage> createState() => _PayBillPageState();
 }
 
-class _RaiseBillPageState extends State<PayBillPage> {
+class _PayBillPageState extends State<PayBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
+    text: DateFormat("yyyy-MM-dd").format(DateTime.now()),
   );
+
+  DateTime currentDatetime = DateTime.now();
   final amount = TextEditingController();
   final description = TextEditingController();
 
@@ -194,8 +196,6 @@ class _RaiseBillPageState extends State<PayBillPage> {
     var uri = Uri.parse(uploadUrl);
     var length = await file.length();
 
-    print(length);
-
     http.MultipartRequest request = http.MultipartRequest('POST', uri)
       ..headers.addAll(headers)
       ..files.add(
@@ -210,8 +210,6 @@ class _RaiseBillPageState extends State<PayBillPage> {
       finalImage = imageUrl;
     });
 
-    print(finalImage);
-    print(response.body);
     setState(() {
       isLoading = false;
     });
@@ -229,7 +227,6 @@ class _RaiseBillPageState extends State<PayBillPage> {
         setState(() {});
       });
     });
-    // print(customerId1);
 
     super.initState();
   }
@@ -242,42 +239,42 @@ class _RaiseBillPageState extends State<PayBillPage> {
 
       final url = Uri.parse(
           'https://hta.hatimtechnologies.in/api/transactions/addTransaction');
+      print('pendingAmount: $finalPendingAmount');
 
-      final body = {
-        "orderId": "",
-        "customer": customerData['_id'],
-        "amount": amount.text,
-        "createdAt": dateController.text,
-        "paymentStatus": {"paid": "successfully"}.toString(),
-        "message": description.text,
-        "picture": finalImage == null ? "" : finalImage,
-        "orderStatus": "PAYMENT-COLLECTED",
-        "pendingAmount":
-            ((finalPendingAmount) - int.parse(amount.text)).toString(),
-        //old pening amount - amount.text //opposite in raise bill
-      };
-      final header = {
-        'Authorization': 'Bearer $token',
-      };
+      String amountText = amount.text;
+      int pendingAmount = finalPendingAmount;
 
-      print(body);
-
-      final response = await http.post(url, body: body, headers: header);
-
-      var responseData = jsonDecode(response.body.toString());
-
-      setState(() {
-        print(finalPendingAmount);
-      });
-
-      // print(pendingAmount);
-
-      print(response.body);
-
-      if (responseData['code'] == 1) {
-        _showSuccesDialog();
+      if (double.tryParse(amountText)! > pendingAmount) {
+        Map<String, dynamic> errorMessage = {
+          "message": "Amount being paid should be less than pending amount"
+        };
+        _showErrorDialog(errorMessage);
       } else {
-        _showErrorDialog();
+        final body = {
+          "orderId": "",
+          "customer": customerData['_id'],
+          "amount": amount.text,
+          "createdAt": dateController.text,
+          "paymentStatus": {"paid": "successfully"}.toString(),
+          "message": description.text,
+          "picture": finalImage == null ? "" : finalImage,
+          "orderStatus": "PAYMENT-COLLECTED",
+          "pendingAmount":
+              ((finalPendingAmount) - int.parse(amount.text)).toString(),
+        };
+        final header = {
+          'Authorization': 'Bearer $token',
+        };
+
+        final response = await http.post(url, body: body, headers: header);
+
+        var responseData = jsonDecode(response.body.toString());
+
+        if (responseData['code'] == 1) {
+          _showSuccesDialog();
+        } else {
+          _showErrorDialog(responseData);
+        }
       }
     }
   }
@@ -312,11 +309,11 @@ class _RaiseBillPageState extends State<PayBillPage> {
     );
   }
 
-  void _showErrorDialog() {
+  void _showErrorDialog(responseData) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Something went wrong'),
+        title: Text(responseData['message']),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -439,6 +436,10 @@ class _RaiseBillPageState extends State<PayBillPage> {
                             if (value!.isEmpty) {
                               return 'Amount cannot be empty';
                             }
+                            double numericValue = double.parse(value);
+                            if (numericValue <= 0) {
+                              return 'Amount should be greater than zero';
+                            }
 
                             return null;
                           },
@@ -520,6 +521,16 @@ class _RaiseBillPageState extends State<PayBillPage> {
                         child: TextFormField(
                           focusNode: _focusNodes[2],
                           controller: dateController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Date cannot be empty';
+                            }
+                            DateTime enteredDate = DateTime.parse(value);
+
+                            if (enteredDate.isAfter(currentDatetime)) {
+                              return 'Date cannot be greater than today';
+                            }
+                          },
                           decoration: InputDecoration(
                               prefixIcon: Icon(
                                 Icons.calendar_month_rounded,

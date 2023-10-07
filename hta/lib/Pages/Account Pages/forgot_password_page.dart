@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,12 +28,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   //   setState(() {});
   // }
 
-  void _showErrorDialog(String message) {
+  void _showErrorDialog(responseData) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('An Error Occurred!'),
-        content: Text(message),
+        title: Text(responseData['message']),
         actions: <Widget>[
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -62,7 +63,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ),
         actions: <Widget>[
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 120),
+            // margin: EdgeInsets.symmetric(horizontal: 120),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
@@ -96,27 +97,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         'oldPassword': oldPassword.text,
         'newPassword': newPassword.text
       };
-      print(body);
+
       final header = {
         'Authorization': 'Bearer $token',
       };
 
-      try {
-        final response = await http.post(
-          url,
-          body: body,
-          headers: header,
-        );
+      final response = await http.post(
+        url,
+        body: body,
+        headers: header,
+      );
+      final responseData = jsonDecode(response.body.toString());
 
-        if (response.statusCode == 200) {
-          _showPopupDialog();
-
-          print(response.body);
-        }
-      } catch (error) {
-        print(error);
-        const errorMessage = 'Incorrect old password';
-        _showErrorDialog(errorMessage);
+      if (responseData['code'] == 1) {
+        _showPopupDialog();
+      } else {
+        print('responseData for error measage: $responseData');
+        _showErrorDialog(responseData);
       }
     }
   }
@@ -325,6 +322,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 return 'Password cannot be empty';
                               } else if (value.length < 6) {
                                 return 'Password length should be atleast 6';
+                              } else if (value != newPassword.text) {
+                                return 'Passwords do not match';
                               }
 
                               return null;

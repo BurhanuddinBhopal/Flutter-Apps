@@ -94,7 +94,6 @@ class _TodayPageState extends State<TodayPage> {
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
       //filter the data as today's date
-      print("customer Data: $responseData['allCustomer'][0]");
 
       final List<dynamic> itemListJson = responseData['allCustomer'];
 

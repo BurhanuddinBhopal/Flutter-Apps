@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
 
 import 'package:intl/intl.dart';
@@ -49,7 +50,6 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       pendingAmount = _customerData["pendingAmount"];
     });
 
-    print(_customerOrganization);
     // TODO: implement initState
     super.initState();
   }
@@ -304,7 +304,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 5),
-                          child: Icon(Icons.wechat),
+                          child: FaIcon(FontAwesomeIcons.whatsapp),
                         ),
                         Text('Whatsapp'),
                       ],

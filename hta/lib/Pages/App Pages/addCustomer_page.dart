@@ -61,18 +61,16 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       final header = {
         'Authorization': 'Bearer $token',
       };
-
-      print(body);
+      print('print body: $body');
 
       final response = await http.post(url, body: body, headers: header);
       final responseData = jsonDecode(response.body.toString());
+      print("print responseData: $responseData");
       if (responseData['code'] == 1) {
         _showSuccesDialog();
       } else {
-        _showErrorDialog();
+        _showErrorDialog(responseData);
       }
-
-      print(response.body);
     }
   }
 
@@ -104,11 +102,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     );
   }
 
-  void _showErrorDialog() {
+  void _showErrorDialog(responseData) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Unable to add customer'),
+        title: Text(responseData['message']),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -176,12 +174,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       appBar: AppBar(
         leading: IconButton(
             onPressed: (() {
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: BottomNavigationPage()),
-              );
+              Navigator.pop(context);
             }),
             icon: Icon(
               Icons.arrow_back_ios,
@@ -296,37 +289,37 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                                       color: Color.fromRGBO(62, 13, 59, 1)))),
                         ),
                       ),
-                      // Padding(
-                      //   padding:
-                      //       EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                      //   child: TextFormField(
-                      //     controller: lastName,
-                      //     focusNode: _focusNodes[2],
-                      //     validator: (value) {
-                      //       if (value!.isEmpty) {
-                      //         return 'Last Name cannot be empty';
-                      //       }
+                      Padding(
+                        padding:
+                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          controller: lastName,
+                          focusNode: _focusNodes[2],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Last Name cannot be empty';
+                            }
 
-                      //       return null;
-                      //     },
-                      //     decoration: InputDecoration(
-                      //         hintText: "Last Name",
-                      //         contentPadding: EdgeInsets.only(left: 10.0),
-                      //         hintStyle: TextStyle(
-                      //           color: _focusNodes[2].hasFocus
-                      //               ? Color.fromRGBO(62, 13, 59, 1)
-                      //               : Colors.grey,
-                      //           fontSize: 14.0,
-                      //         ),
-                      //         border: OutlineInputBorder(
-                      //           borderRadius: BorderRadius.circular(5.0),
-                      //         ),
-                      //         focusedBorder: OutlineInputBorder(
-                      //             borderSide: BorderSide(
-                      //                 width: 2,
-                      //                 color: Color.fromRGBO(62, 13, 59, 1)))),
-                      //   ),
-                      // ),
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              hintText: "Last Name",
+                              contentPadding: EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[2].hasFocus
+                                    ? Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
                       Padding(
                         padding:
                             EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),

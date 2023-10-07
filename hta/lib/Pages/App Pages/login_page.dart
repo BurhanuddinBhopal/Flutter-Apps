@@ -103,10 +103,8 @@ class _LoginPageState extends State<LoginPage> {
               child: BottomNavigationPage(),
             ),
           );
-          print(response.body);
         }
       } catch (error) {
-        print(error);
         const errorMessage = 'Please enter valid Mobile Number and Password';
         _showErrorDialog(errorMessage);
       }

@@ -29,8 +29,9 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
+    text: DateFormat("yyyy-MM-dd").format(DateTime.now()),
   );
+  DateTime currentDatetime = DateTime.now();
   final amount = TextEditingController();
   final description = TextEditingController();
 
@@ -194,8 +195,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     var uri = Uri.parse(uploadUrl);
     var length = await file.length();
 
-    print(length);
-
     http.MultipartRequest request = http.MultipartRequest('POST', uri)
       ..headers.addAll(headers)
       ..files.add(
@@ -210,9 +209,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       finalImage = imageUrl;
     });
 
-    print('hello');
-    print(finalImage);
-    print(response.body);
     setState(() {
       isLoading = false;
     });
@@ -230,7 +226,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         setState(() {});
       });
     });
-    // print(customerId1);
 
     super.initState();
   }
@@ -266,13 +261,11 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       setState(() {
         finalPendingAmount = pendingAmount;
       });
-      print(finalPendingAmount);
-      print(response.body);
 
       if (responseData['code'] == 1) {
         _showSuccesDialog();
       } else {
-        _showErrorDialog();
+        _showErrorDialog(responseData);
       }
     }
   }
@@ -307,11 +300,11 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     );
   }
 
-  void _showErrorDialog() {
+  void _showErrorDialog(responseData) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Something went wrong'),
+        title: Text(responseData['message']),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -437,6 +430,11 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                   return 'Amount cannot be empty';
                                 }
 
+                                double numericValue = double.parse(value);
+                                if (numericValue <= 0) {
+                                  return 'Amount should be greater than zero';
+                                }
+
                                 return null;
                               },
                               decoration: InputDecoration(
@@ -519,6 +517,16 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                             child: TextFormField(
                               focusNode: _focusNodes[2],
                               controller: dateController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Date cannot be empty';
+                                }
+                                DateTime enteredDate = DateTime.parse(value);
+
+                                if (enteredDate.isAfter(currentDatetime)) {
+                                  return 'Date cannot be greater than today';
+                                }
+                              },
                               decoration: InputDecoration(
                                   prefixIcon: Icon(
                                     Icons.calendar_month_rounded,
