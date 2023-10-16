@@ -110,6 +110,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         _customerData = widget.customerData;
       });
     }
+
     setState(() {
       isLoading = false;
     });

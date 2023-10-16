@@ -29,8 +29,10 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat("yyyy-MM-dd").format(DateTime.now()),
+    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
   );
+
+  final dateControllerForDisplay = TextEditingController();
   DateTime currentDatetime = DateTime.now();
   final amount = TextEditingController();
   final description = TextEditingController();
@@ -43,6 +45,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   File? pickedImageGallery;
   String selectedImagePath = '';
   bool isLoading = false;
+  bool isButtonDisabled = false;
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -227,10 +230,19 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       });
     });
 
+    dateControllerForDisplay.text =
+        DateFormat("yyyy-MM-dd").format(DateTime.now());
+
     super.initState();
   }
 
   Future<void> raiseBill() async {
+    if (isButtonDisabled) {
+      return;
+    }
+    setState(() {
+      isButtonDisabled = true;
+    });
     if (_formKey.currentState!.validate()) {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -267,6 +279,9 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       } else {
         _showErrorDialog(responseData);
       }
+      setState(() {
+        isButtonDisabled = false;
+      });
     }
   }
 
@@ -516,7 +531,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: TextFormField(
                               focusNode: _focusNodes[2],
-                              controller: dateController,
+                              controller: dateControllerForDisplay,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Date cannot be empty';
@@ -604,11 +619,15 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                           borderRadius: BorderRadius.zero),
                                       minimumSize: Size(350, 50),
                                     ),
-                                    onPressed: () {
-                                      if (!isLoading) {
-                                        raiseBill();
-                                      }
-                                    },
+                                    onPressed: isButtonDisabled
+                                        ? null
+                                        : () {
+                                            if (!isButtonDisabled) {
+                                              raiseBill();
+                                              print(
+                                                  'Backend Date: ${dateController.text}');
+                                            }
+                                          },
                                     child: Text("RAISE BILL"),
                                   ),
                           ),

@@ -29,8 +29,9 @@ class _PayBillPageState extends State<PayBillPage> {
   var customerData;
   DateTime datetime = DateTime.now();
   final dateController = TextEditingController(
-    text: DateFormat("yyyy-MM-dd").format(DateTime.now()),
+    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
   );
+  final dateControllerForDisplay = TextEditingController();
 
   DateTime currentDatetime = DateTime.now();
   final amount = TextEditingController();
@@ -44,6 +45,7 @@ class _PayBillPageState extends State<PayBillPage> {
   File? pickedImageGallery;
   String selectedImagePath = '';
   bool isLoading = false;
+  bool isButtonDisabled = false;
   List<FocusNode> _focusNodes = [
     FocusNode(),
     FocusNode(),
@@ -77,105 +79,108 @@ class _PayBillPageState extends State<PayBillPage> {
   }
 
   selectImage() async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)), //this right here
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Select Image From !',
-                      style: TextStyle(
-                          fontSize: 18.0, fontWeight: FontWeight.bold),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Select Image From !',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              selectedImagePath = await pickImageGallery();
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            selectedImagePath = await pickImageGallery();
 
-                              if (selectedImagePath != '') {
-                                Navigator.pop(context);
-                                setState(() {});
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                            if (selectedImagePath != '') {
+                              Navigator.pop(context); // Close the dialog
+                              setState(() {});
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
                                   content: Text("No Image Selected !"),
-                                ));
-                              }
-                            },
-                            child: Card(
-                                elevation: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/gallery.png',
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.06,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.15,
-                                      ),
-                                      Text('Gallery'),
-                                    ],
+                                ),
+                              );
+                            }
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/gallery.png',
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
                                   ),
-                                )),
+                                  Text('Gallery'),
+                                ],
+                              ),
+                            ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              selectedImagePath = await pickImageCamera();
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            selectedImagePath = await pickImageCamera();
 
-                              if (selectedImagePath != '') {
-                                Navigator.pop(context);
-                                setState(() {});
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
+                            if (selectedImagePath != '') {
+                              Navigator.pop(context); // Close the dialog
+                              setState(() {});
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
                                   content: Text("No Image Captured !"),
-                                ));
-                              }
-                            },
-                            child: Card(
-                                elevation: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/camera.png',
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.06,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.15,
-                                      ),
-                                      Text('Camera'),
-                                    ],
+                                ),
+                              );
+                            }
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/camera.png',
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
                                   ),
-                                )),
+                                  Text('Camera'),
+                                ],
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   upload(File file) async {
@@ -228,10 +233,20 @@ class _PayBillPageState extends State<PayBillPage> {
       });
     });
 
+    dateControllerForDisplay.text =
+        DateFormat("yyyy-MM-dd").format(DateTime.now());
+
     super.initState();
   }
 
   Future<void> payBill() async {
+    if (isButtonDisabled) {
+      return;
+    }
+
+    setState(() {
+      isButtonDisabled = true;
+    });
     if (_formKey.currentState!.validate()) {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -241,41 +256,34 @@ class _PayBillPageState extends State<PayBillPage> {
           'https://hta.hatimtechnologies.in/api/transactions/addTransaction');
       print('pendingAmount: $finalPendingAmount');
 
-      String amountText = amount.text;
-      int pendingAmount = finalPendingAmount;
+      final body = {
+        "orderId": "",
+        "customer": customerData['_id'],
+        "amount": amount.text,
+        "createdAt": dateController.text,
+        "paymentStatus": {"paid": "successfully"}.toString(),
+        "message": description.text,
+        "picture": finalImage == null ? "" : finalImage,
+        "orderStatus": "PAYMENT-COLLECTED",
+        "pendingAmount":
+            ((finalPendingAmount) - int.parse(amount.text)).toString(),
+      };
+      final header = {
+        'Authorization': 'Bearer $token',
+      };
 
-      if (double.tryParse(amountText)! > pendingAmount) {
-        Map<String, dynamic> errorMessage = {
-          "message": "Amount being paid should be less than pending amount"
-        };
-        _showErrorDialog(errorMessage);
+      final response = await http.post(url, body: body, headers: header);
+
+      var responseData = jsonDecode(response.body.toString());
+
+      if (responseData['code'] == 1) {
+        _showSuccesDialog();
       } else {
-        final body = {
-          "orderId": "",
-          "customer": customerData['_id'],
-          "amount": amount.text,
-          "createdAt": dateController.text,
-          "paymentStatus": {"paid": "successfully"}.toString(),
-          "message": description.text,
-          "picture": finalImage == null ? "" : finalImage,
-          "orderStatus": "PAYMENT-COLLECTED",
-          "pendingAmount":
-              ((finalPendingAmount) - int.parse(amount.text)).toString(),
-        };
-        final header = {
-          'Authorization': 'Bearer $token',
-        };
-
-        final response = await http.post(url, body: body, headers: header);
-
-        var responseData = jsonDecode(response.body.toString());
-
-        if (responseData['code'] == 1) {
-          _showSuccesDialog();
-        } else {
-          _showErrorDialog(responseData);
-        }
+        _showErrorDialog(responseData);
       }
+      setState(() {
+        isButtonDisabled = false;
+      });
     }
   }
 
@@ -520,7 +528,7 @@ class _PayBillPageState extends State<PayBillPage> {
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: TextFormField(
                           focusNode: _focusNodes[2],
-                          controller: dateController,
+                          controller: dateControllerForDisplay,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Date cannot be empty';
@@ -575,9 +583,6 @@ class _PayBillPageState extends State<PayBillPage> {
                               margin: EdgeInsets.symmetric(
                                   horizontal: 30, vertical: 100),
                               child: FloatingActionButton.small(
-                                //if isLoading false && final image empty
-                                //if isLoading is true "Image uploading"
-                                //if isLoading is false && final image in not empty ==> show image
                                 onPressed: () {
                                   selectImage();
                                   setState(() {});
@@ -603,11 +608,15 @@ class _PayBillPageState extends State<PayBillPage> {
                                       borderRadius: BorderRadius.zero),
                                   minimumSize: Size(350, 50),
                                 ),
-                                onPressed: () {
-                                  if (!isLoading) {
-                                    payBill();
-                                  }
-                                },
+                                onPressed: isButtonDisabled
+                                    ? null
+                                    : () {
+                                        if (!isButtonDisabled) {
+                                          payBill();
+                                          print(
+                                              'Backend Date: ${dateController.text}');
+                                        }
+                                      },
                                 child: Text("PAY BILL"),
                               ),
                       ),
