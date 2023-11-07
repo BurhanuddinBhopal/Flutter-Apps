@@ -43,7 +43,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
 
   File? pickedImageCamera;
   File? pickedImageGallery;
-  String selectedImagePath = '';
+  String? selectedImagePath;
   bool isLoading = false;
   bool isButtonDisabled = false;
   List<FocusNode> _focusNodes = [
@@ -56,128 +56,111 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     XFile? cameraImage = await ImagePicker()
         .pickImage(source: ImageSource.camera, imageQuality: 50);
 
-    setState(() {
-      pickedImageCamera = File(cameraImage!.path);
-    });
-    if (pickedImageCamera != null) {
-      upload(pickedImageCamera!);
+    if (cameraImage != null) {
+      setState(() {
+        selectedImagePath = cameraImage.path;
+      });
+      upload(File(cameraImage.path));
     }
-    return null;
   }
 
   pickImageGallery() async {
     XFile? galleryImage = await ImagePicker()
         .pickImage(source: ImageSource.gallery, imageQuality: 50);
 
-    setState(() {
-      pickedImageGallery = File(galleryImage!.path);
-    });
-    if (pickedImageGallery != null) {
-      upload(pickedImageGallery!);
+    if (galleryImage != null) {
+      setState(() {
+        selectedImagePath = galleryImage.path;
+      });
+      upload(File(galleryImage.path));
     }
-    return null;
   }
 
   selectImage() async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0)), //this right here
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Select Image From !',
-                      style: TextStyle(
-                          fontSize: 18.0, fontWeight: FontWeight.bold),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.2,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                children: [
+                  Text(
+                    'Select Image From !',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () async {
-                              selectedImagePath = await pickImageGallery();
-
-                              if (selectedImagePath != '') {
-                                Navigator.pop(context);
-                                setState(() {});
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text("No Image Selected !"),
-                                ));
-                              }
-                            },
-                            child: Card(
-                                elevation: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/gallery.png',
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.06,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.15,
-                                      ),
-                                      Text('Gallery'),
-                                    ],
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            pickImageGallery();
+                            Navigator.pop(context); // Close the dialog
+                            setState(() {});
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/gallery.png',
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
                                   ),
-                                )),
+                                  Text('Gallery'),
+                                ],
+                              ),
+                            ),
                           ),
-                          GestureDetector(
-                            onTap: () async {
-                              selectedImagePath = await pickImageCamera();
-
-                              if (selectedImagePath != '') {
-                                Navigator.pop(context);
-                                setState(() {});
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text("No Image Captured !"),
-                                ));
-                              }
-                            },
-                            child: Card(
-                                elevation: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/camera.png',
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.06,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.15,
-                                      ),
-                                      Text('Camera'),
-                                    ],
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            pickImageCamera();
+                            Navigator.pop(context); // Close the dialog
+                            setState(() {});
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/camera.png',
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.15,
                                   ),
-                                )),
+                                  Text('Camera'),
+                                ],
+                              ),
+                            ),
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   upload(File file) async {
@@ -237,13 +220,13 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   }
 
   Future<void> raiseBill() async {
-    if (isButtonDisabled) {
-      return;
-    }
-    setState(() {
-      isButtonDisabled = true;
-    });
     if (_formKey.currentState!.validate()) {
+      if (isButtonDisabled) {
+        return;
+      }
+      setState(() {
+        isButtonDisabled = true;
+      });
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       var token = sharedPreferences.getString('token');

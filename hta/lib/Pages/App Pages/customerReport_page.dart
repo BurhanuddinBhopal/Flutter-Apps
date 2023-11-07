@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -23,6 +24,10 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   var monthlyCollected;
   var yearlyRaised;
   var yearlyCollected;
+  var monthlyRaisedForChart;
+  var monthlyCollectedForChart;
+  var yearlyRaisedForChart;
+  var yearlyCollectedForChart;
   bool isLoading = false;
 
   var _customerData = {};
@@ -56,7 +61,18 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
       todayCollected = responseData['report']['today']['amountCollected'];
       yearlyRaised = responseData['report']['thisYear']['billRaised'];
       yearlyCollected = responseData['report']['thisYear']['amountCollected'];
+      monthlyCollectedForChart = (responseData['report']['thisMonth']
+              ['amountCollected']
+          .replaceAll(',', ''));
+      monthlyRaisedForChart = (responseData['report']['thisMonth']['billRaised']
+          .replaceAll(',', ''));
+      yearlyCollectedForChart = (responseData['report']['thisYear']
+              ['amountCollected']
+          .replaceAll(',', ''));
+      yearlyRaisedForChart = (responseData['report']['thisYear']['billRaised']
+          .replaceAll(',', ''));
     });
+
     setState(() {
       isLoading = false;
     });
@@ -67,30 +83,30 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     // You can do part here what you want to refresh
   }
 
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Confirm Exit?',
-                style: new TextStyle(color: Colors.black, fontSize: 20.0)),
-            content: Text('Are you sure you want to exit the app?'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('Yes', style: new TextStyle(fontSize: 18.0)),
-                onPressed: () {
-                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                },
-              ),
-              TextButton(
-                child: Text('No', style: new TextStyle(fontSize: 18.0)),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
-  }
+  // Future<bool> _onBackButtonPressed(BuildContext context) async {
+  //   bool exitApp = await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: Text('Confirm Exit?',
+  //               style: new TextStyle(color: Colors.black, fontSize: 20.0)),
+  //           content: Text('Are you sure you want to exit the app?'),
+  //           actions: <Widget>[
+  //             TextButton(
+  //               child: Text('Yes', style: new TextStyle(fontSize: 18.0)),
+  //               onPressed: () {
+  //                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+  //               },
+  //             ),
+  //             TextButton(
+  //               child: Text('No', style: new TextStyle(fontSize: 18.0)),
+  //               onPressed: () => Navigator.pop(context),
+  //             )
+  //           ],
+  //         );
+  //       }) as bool;
+  //   return exitApp;
+  // }
 
   @override
   void initState() {
@@ -136,91 +152,192 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
               color: Color.fromRGBO(62, 13, 59, 1),
               onRefresh: _refresh,
               child: SingleChildScrollView(
-                child: WillPopScope(
-                  onWillPop: () => _onBackButtonPressed(context),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(6),
-                            height: MediaQuery.of(context).size.height * 0.138,
-                            child: Card(
-                              color: Color.fromRGBO(62, 13, 59, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 3),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 5),
-                                            child: Text(
-                                              'Overview',
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.all(6),
+                          height: MediaQuery.of(context).size.height * 0.138,
+                          child: Card(
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 3),
+                              child: Column(
+                                children: [
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          child: Text(
+                                            'Overview',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16),
+                                          ),
+                                        )
+                                      ]),
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        // Column(
+                                        //   children: [
+                                        //     Text(
+                                        //       'Due to supplier',
+                                        //       style: TextStyle(
+                                        //         color: Colors.white,
+                                        //       ),
+                                        //     ),
+                                        //     Padding(
+                                        //       padding: EdgeInsets.symmetric(vertical: 10),
+                                        //       child: Text(
+                                        //         '0.0',
+                                        //         style: TextStyle(
+                                        //           color: Color.fromRGBO(243, 31, 31, 1),
+                                        //           fontWeight: FontWeight.bold,
+                                        //           fontSize: 20,
+                                        //         ),
+                                        //       ),
+                                        //     ),
+                                        //   ],
+                                        // ),
+                                        Column(
+                                          children: [
+                                            Text(
+                                              'Remaining from customers',
                                               style: TextStyle(
                                                   color: Colors.white,
-                                                  fontSize: 16),
+                                                  fontSize: 12),
                                             ),
-                                          )
-                                        ]),
-                                    Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 10),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          // Column(
-                                          //   children: [
-                                          //     Text(
-                                          //       'Due to supplier',
-                                          //       style: TextStyle(
-                                          //         color: Colors.white,
-                                          //       ),
-                                          //     ),
-                                          //     Padding(
-                                          //       padding: EdgeInsets.symmetric(vertical: 10),
-                                          //       child: Text(
-                                          //         '0.0',
-                                          //         style: TextStyle(
-                                          //           color: Color.fromRGBO(243, 31, 31, 1),
-                                          //           fontWeight: FontWeight.bold,
-                                          //           fontSize: 20,
-                                          //         ),
-                                          //       ),
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                'Remaining from customers',
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 10),
+                                              child: Text(
+                                                transactionDetails[
+                                                            'remainingFromCustomer'] !=
+                                                        null
+                                                    ? transactionDetails[
+                                                        'remainingFromCustomer']
+                                                    : '',
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12),
+                                                  color: Color.fromRGBO(
+                                                      243, 31, 31, 1),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 1,
+                                child: Card(
+                                  color: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        child: Text(
+                                          "Today's",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+                          height: MediaQuery.of(context).size.height * 0.138,
+                          child: Card(
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: Text(
+                                          'Customer Summary',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                      )
+                                    ]),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Bill Raised',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                size: 16,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
                                               ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
                                                 child: Text(
-                                                  transactionDetails[
-                                                              'remainingFromCustomer'] !=
-                                                          null
-                                                      ? transactionDetails[
-                                                          'remainingFromCustomer']
+                                                  todayRaised != null
+                                                      ? todayRaised.toString()
                                                       : '',
                                                   style: TextStyle(
                                                     color: Color.fromRGBO(
                                                         243, 31, 31, 1),
                                                     fontWeight: FontWeight.bold,
-                                                    fontSize: 16,
+                                                    fontSize: 14,
                                                   ),
                                                 ),
                                               ),
@@ -228,600 +345,555 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 1,
-                                  child: Card(
-                                    color: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(0)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            "Today's",
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Payment Collected',
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w700),
+                                                fontSize: 13),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
+                                                size: 16,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Text(
+                                                  todayCollected != null
+                                                      ? todayCollected
+                                                          .toString()
+                                                      : '',
+                                                  style: TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        243, 31, 31, 1),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 6),
-                            height: MediaQuery.of(context).size.height * 0.138,
-                            child: Card(
-                              color: Color.fromRGBO(62, 13, 59, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: Text(
-                                            'Customer Summary',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16),
-                                          ),
-                                        )
-                                      ]),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Bill Raised',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  size: 16,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    todayRaised != null
-                                                        ? todayRaised
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                        ),
+                        // Container(
+                        //   margin: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                        //   height: MediaQuery.of(context).size.height * 0.17,
+                        //   child: Card(
+                        //     color: Color.fromRGBO(62, 13, 59, 1),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(0),
+                        //     ),
+                        //     child: Column(
+                        //       children: [
+                        //         Row(
+                        //             mainAxisAlignment: MainAxisAlignment.center,
+                        //             children: [
+                        //               Padding(
+                        //                 padding: EdgeInsets.symmetric(vertical: 15),
+                        //                 child: Text(
+                        //                   'Supplier Summary',
+                        //                   style: TextStyle(
+                        //                       color: Colors.white, fontSize: 20),
+                        //                 ),
+                        //               )
+                        //             ]),
+                        //         Padding(
+                        //           padding: EdgeInsets.symmetric(vertical: 10),
+                        //           child: Row(
+                        //             mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //             children: [
+                        //               Column(
+                        //                 children: [
+                        //                   Text(
+                        //                     'Bill Recieved',
+                        //                     style: TextStyle(
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                   ),
+                        //                   Padding(
+                        //                     padding: EdgeInsets.symmetric(vertical: 10),
+                        //                     child: Text(
+                        //                       '0.0',
+                        //                       style: TextStyle(
+                        //                         color: Color.fromRGBO(243, 31, 31, 1),
+                        //                         fontWeight: FontWeight.bold,
+                        //                         fontSize: 20,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //               Column(
+                        //                 children: [
+                        //                   Text(
+                        //                     'Payment Given',
+                        //                     style: TextStyle(
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                   ),
+                        //                   Padding(
+                        //                     padding: EdgeInsets.symmetric(vertical: 10),
+                        //                     child: Text(
+                        //                       '0.0',
+                        //                       style: TextStyle(
+                        //                         color: Color.fromRGBO(243, 31, 31, 1),
+                        //                         fontWeight: FontWeight.bold,
+                        //                         fontSize: 20,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 1,
+                                child: Card(
+                                  color: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        child: Text(
+                                          "This Month",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700),
                                         ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Payment Collected',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  size: 16,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    todayCollected != null
-                                                        ? todayCollected
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          // Container(
-                          //   margin: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                          //   height: MediaQuery.of(context).size.height * 0.17,
-                          //   child: Card(
-                          //     color: Color.fromRGBO(62, 13, 59, 1),
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(0),
-                          //     ),
-                          //     child: Column(
-                          //       children: [
-                          //         Row(
-                          //             mainAxisAlignment: MainAxisAlignment.center,
-                          //             children: [
-                          //               Padding(
-                          //                 padding: EdgeInsets.symmetric(vertical: 15),
-                          //                 child: Text(
-                          //                   'Supplier Summary',
-                          //                   style: TextStyle(
-                          //                       color: Colors.white, fontSize: 20),
-                          //                 ),
-                          //               )
-                          //             ]),
-                          //         Padding(
-                          //           padding: EdgeInsets.symmetric(vertical: 10),
-                          //           child: Row(
-                          //             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //             children: [
-                          //               Column(
-                          //                 children: [
-                          //                   Text(
-                          //                     'Bill Recieved',
-                          //                     style: TextStyle(
-                          //                       color: Colors.white,
-                          //                     ),
-                          //                   ),
-                          //                   Padding(
-                          //                     padding: EdgeInsets.symmetric(vertical: 10),
-                          //                     child: Text(
-                          //                       '0.0',
-                          //                       style: TextStyle(
-                          //                         color: Color.fromRGBO(243, 31, 31, 1),
-                          //                         fontWeight: FontWeight.bold,
-                          //                         fontSize: 20,
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //               Column(
-                          //                 children: [
-                          //                   Text(
-                          //                     'Payment Given',
-                          //                     style: TextStyle(
-                          //                       color: Colors.white,
-                          //                     ),
-                          //                   ),
-                          //                   Padding(
-                          //                     padding: EdgeInsets.symmetric(vertical: 10),
-                          //                     child: Text(
-                          //                       '0.0',
-                          //                       style: TextStyle(
-                          //                         color: Color.fromRGBO(243, 31, 31, 1),
-                          //                         fontWeight: FontWeight.bold,
-                          //                         fontSize: 20,
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                          Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                        Container(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+                          height: MediaQuery.of(context).size.height * 0.138,
+                          child: Card(
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Column(
                               children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 1,
-                                  child: Card(
-                                    color: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(0)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            "This Month",
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: Text(
+                                          'Customer Summary',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                      )
+                                    ]),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Bill Raised',
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w700),
+                                                fontSize: 13),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
+                                                size: 16,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Text(
+                                                  monthlyRaised != null
+                                                      ? monthlyRaised.toString()
+                                                      : '',
+                                                  style: TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        243, 31, 31, 1),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Payment Collected',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
+                                                size: 16,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Text(
+                                                  monthlyCollected != null
+                                                      ? monthlyCollected
+                                                          .toString()
+                                                      : '',
+                                                  style: TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        243, 31, 31, 1),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 6),
-                            height: MediaQuery.of(context).size.height * 0.138,
-                            child: Card(
-                              color: Color.fromRGBO(62, 13, 59, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: Text(
-                                            'Customer Summary',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16),
-                                          ),
-                                        )
-                                      ]),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Bill Raised',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  size: 16,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    monthlyRaised != null
-                                                        ? monthlyRaised
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 1,
+                                child: Card(
+                                  color: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(0)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        child: Text(
+                                          'This Year',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700),
                                         ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Payment Collected',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  size: 16,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    monthlyCollected != null
-                                                        ? monthlyCollected
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          Container(
-                            margin: EdgeInsets.only(top: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                        ),
+                        Container(
+                          margin:
+                              EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+                          height: MediaQuery.of(context).size.height * 0.138,
+                          child: Card(
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0),
+                            ),
+                            child: Column(
                               children: [
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 1,
-                                  child: Card(
-                                    color: Colors.black,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(0)),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          child: Text(
-                                            'This Year',
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child: Text(
+                                          'Customer Summary',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                      )
+                                    ]),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Bill Raised',
                                             style: TextStyle(
                                                 color: Colors.white,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w700),
+                                                fontSize: 13),
                                           ),
-                                        ),
-                                      ],
-                                    ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
+                                                size: 16,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Text(
+                                                  yearlyRaised != null
+                                                      ? yearlyRaised.toString()
+                                                      : '',
+                                                  style: TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        243, 31, 31, 1),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Payment Collected',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 13),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.currency_rupee_sharp,
+                                                color: Color.fromRGBO(
+                                                    243, 31, 31, 1),
+                                                size: 16,
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                child: Text(
+                                                  yearlyCollected != null
+                                                      ? yearlyCollected
+                                                          .toString()
+                                                      : '',
+                                                  style: TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        243, 31, 31, 1),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 6),
-                            height: MediaQuery.of(context).size.height * 0.138,
-                            child: Card(
-                              color: Color.fromRGBO(62, 13, 59, 1),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(0),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          child: Text(
-                                            'Customer Summary',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16),
-                                          ),
-                                        )
-                                      ]),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Bill Raised',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  size: 16,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    yearlyRaised != null
-                                                        ? yearlyRaised
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              'Payment Collected',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 13),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.currency_rupee_sharp,
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  size: 16,
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 10),
-                                                  child: Text(
-                                                    yearlyCollected != null
-                                                        ? yearlyCollected
-                                                        : '',
-                                                    style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          243, 31, 31, 1),
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          // Container(
-                          //   margin: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
-                          //   height: MediaQuery.of(context).size.height * 0.17,
-                          //   child: Card(
-                          //     color: Color.fromRGBO(62, 13, 59, 1),
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(0),
-                          //     ),
-                          //     child: Column(
-                          //       children: [
-                          //         Row(
-                          //             mainAxisAlignment: MainAxisAlignment.center,
-                          //             children: [
-                          //               Padding(
-                          //                 padding: EdgeInsets.symmetric(vertical: 15),
-                          //                 child: Text(
-                          //                   'Supplier Summary',
-                          //                   style: TextStyle(
-                          //                       color: Colors.white, fontSize: 20),
-                          //                 ),
-                          //               )
-                          //             ]),
-                          //         Padding(
-                          //           padding: EdgeInsets.symmetric(vertical: 10),
-                          //           child: Row(
-                          //             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          //             children: [
-                          //               Column(
-                          //                 children: [
-                          //                   Text(
-                          //                     'Bill Recieved',
-                          //                     style: TextStyle(
-                          //                       color: Colors.white,
-                          //                     ),
-                          //                   ),
-                          //                   Padding(
-                          //                     padding: EdgeInsets.symmetric(vertical: 10),
-                          //                     child: Text(
-                          //                       '0.0',
-                          //                       style: TextStyle(
-                          //                         color: Color.fromRGBO(243, 31, 31, 1),
-                          //                         fontWeight: FontWeight.bold,
-                          //                         fontSize: 20,
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //               Column(
-                          //                 children: [
-                          //                   Text(
-                          //                     'Payment Given',
-                          //                     style: TextStyle(
-                          //                       color: Colors.white,
-                          //                     ),
-                          //                   ),
-                          //                   Padding(
-                          //                     padding: EdgeInsets.symmetric(vertical: 10),
-                          //                     child: Text(
-                          //                       '0.0',
-                          //                       style: TextStyle(
-                          //                         color: Color.fromRGBO(243, 31, 31, 1),
-                          //                         fontWeight: FontWeight.bold,
-                          //                         fontSize: 20,
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                        // Container(
+                        //   margin: EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+                        //   height: MediaQuery.of(context).size.height * 0.17,
+                        //   child: Card(
+                        //     color: Color.fromRGBO(62, 13, 59, 1),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(0),
+                        //     ),
+                        //     child: Column(
+                        //       children: [
+                        //         Row(
+                        //             mainAxisAlignment: MainAxisAlignment.center,
+                        //             children: [
+                        //               Padding(
+                        //                 padding: EdgeInsets.symmetric(vertical: 15),
+                        //                 child: Text(
+                        //                   'Supplier Summary',
+                        //                   style: TextStyle(
+                        //                       color: Colors.white, fontSize: 20),
+                        //                 ),
+                        //               )
+                        //             ]),
+                        //         Padding(
+                        //           padding: EdgeInsets.symmetric(vertical: 10),
+                        //           child: Row(
+                        //             mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        //             children: [
+                        //               Column(
+                        //                 children: [
+                        //                   Text(
+                        //                     'Bill Recieved',
+                        //                     style: TextStyle(
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                   ),
+                        //                   Padding(
+                        //                     padding: EdgeInsets.symmetric(vertical: 10),
+                        //                     child: Text(
+                        //                       '0.0',
+                        //                       style: TextStyle(
+                        //                         color: Color.fromRGBO(243, 31, 31, 1),
+                        //                         fontWeight: FontWeight.bold,
+                        //                         fontSize: 20,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //               Column(
+                        //                 children: [
+                        //                   Text(
+                        //                     'Payment Given',
+                        //                     style: TextStyle(
+                        //                       color: Colors.white,
+                        //                     ),
+                        //                   ),
+                        //                   Padding(
+                        //                     padding: EdgeInsets.symmetric(vertical: 10),
+                        //                     child: Text(
+                        //                       '0.0',
+                        //                       style: TextStyle(
+                        //                         color: Color.fromRGBO(243, 31, 31, 1),
+                        //                         fontWeight: FontWeight.bold,
+                        //                         fontSize: 20,
+                        //                       ),
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+
+                        // Container(
+                        //   height: 300,
+                        //   child: BarChart(
+                        //     BarChartData(
+                        //       titlesData: FlTitlesData(
+                        //         leftTitles: SideTitles(
+                        //           showTitles: true,
+
+                        //           interval: 5, // Customize based on your data
+                        //         ),
+                        //         bottomTitles: SideTitles(
+                        //           showTitles: true,
+                        //           getTitles: (double value) {
+                        //             // Customize your bottom titles based on the data
+                        //             switch (value.toInt()) {
+                        //               case 0:
+                        //                 return 'Monthly';
+                        //               case 1:
+                        //                 return 'Yearly';
+                        //               default:
+                        //                 return '';
+                        //             }
+                        //           },
+                        //         ),
+                        //       ),
+                        //       gridData: FlGridData(show: false),
+                        //       borderData: FlBorderData(show: true),
+                        //       barGroups: [
+                        //         BarChartGroupData(
+                        //           x: 0,
+                        //           barsSpace: 4,
+                        //           barRods: [
+                        //             BarChartRodData(
+                        //               y: double.tryParse(
+                        //                       monthlyRaisedForChart) ??
+                        //                   0.0,
+                        //               colors: [Color.fromRGBO(186, 0, 0, 1)],
+                        //             ),
+                        //             BarChartRodData(
+                        //               y: double.tryParse(
+                        //                       monthlyCollectedForChart) ??
+                        //                   0.0,
+                        //               colors: [Color.fromRGBO(52, 135, 89, 1)],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //         BarChartGroupData(
+                        //           x: 1,
+                        //           barsSpace: 4,
+                        //           barRods: [
+                        //             BarChartRodData(
+                        //               y: double.tryParse(
+                        //                       yearlyRaisedForChart) ??
+                        //                   0.0,
+                        //               colors: [Color.fromRGBO(186, 0, 0, 1)],
+                        //             ),
+                        //             BarChartRodData(
+                        //               y: double.tryParse(
+                        //                       yearlyCollectedForChart) ??
+                        //                   0.0,
+                        //               colors: [Color.fromRGBO(52, 135, 89, 1)],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),

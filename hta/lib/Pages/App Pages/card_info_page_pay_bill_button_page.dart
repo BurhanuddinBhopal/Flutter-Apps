@@ -43,7 +43,7 @@ class _PayBillPageState extends State<PayBillPage> {
 
   File? pickedImageCamera;
   File? pickedImageGallery;
-  String selectedImagePath = '';
+  String? selectedImagePath;
   bool isLoading = false;
   bool isButtonDisabled = false;
   List<FocusNode> _focusNodes = [
@@ -56,26 +56,24 @@ class _PayBillPageState extends State<PayBillPage> {
     XFile? cameraImage = await ImagePicker()
         .pickImage(source: ImageSource.camera, imageQuality: 50);
 
-    setState(() {
-      pickedImageCamera = File(cameraImage!.path);
-    });
-    if (pickedImageCamera != null) {
-      upload(pickedImageCamera!);
+    if (cameraImage != null) {
+      setState(() {
+        selectedImagePath = cameraImage.path;
+      });
+      upload(File(cameraImage.path));
     }
-    return null;
   }
 
   pickImageGallery() async {
     XFile? galleryImage = await ImagePicker()
         .pickImage(source: ImageSource.gallery, imageQuality: 50);
 
-    setState(() {
-      pickedImageGallery = File(galleryImage!.path);
-    });
-    if (pickedImageGallery != null) {
-      upload(pickedImageGallery!);
+    if (galleryImage != null) {
+      setState(() {
+        selectedImagePath = galleryImage.path;
+      });
+      upload(File(galleryImage.path));
     }
-    return null;
   }
 
   selectImage() async {
@@ -105,18 +103,9 @@ class _PayBillPageState extends State<PayBillPage> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            selectedImagePath = await pickImageGallery();
-
-                            if (selectedImagePath != '') {
-                              Navigator.pop(context); // Close the dialog
-                              setState(() {});
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("No Image Selected !"),
-                                ),
-                              );
-                            }
+                            pickImageGallery();
+                            Navigator.pop(context); // Close the dialog
+                            setState(() {});
                           },
                           child: Card(
                             elevation: 5,
@@ -139,18 +128,9 @@ class _PayBillPageState extends State<PayBillPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            selectedImagePath = await pickImageCamera();
-
-                            if (selectedImagePath != '') {
-                              Navigator.pop(context); // Close the dialog
-                              setState(() {});
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text("No Image Captured !"),
-                                ),
-                              );
-                            }
+                            pickImageCamera();
+                            Navigator.pop(context); // Close the dialog
+                            setState(() {});
                           },
                           child: Card(
                             elevation: 5,
@@ -240,14 +220,14 @@ class _PayBillPageState extends State<PayBillPage> {
   }
 
   Future<void> payBill() async {
-    if (isButtonDisabled) {
-      return;
-    }
-
-    setState(() {
-      isButtonDisabled = true;
-    });
     if (_formKey.currentState!.validate()) {
+      if (isButtonDisabled) {
+        return;
+      }
+
+      setState(() {
+        isButtonDisabled = true;
+      });
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       var token = sharedPreferences.getString('token');
@@ -340,32 +320,6 @@ class _PayBillPageState extends State<PayBillPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("YES"),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-              ),
-              TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
   }
 
   @override

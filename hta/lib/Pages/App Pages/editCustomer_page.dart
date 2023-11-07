@@ -414,10 +414,10 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
   }
 
   Future<void> editCustomer() async {
-    setState(() {
-      isLoading = true;
-    });
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       var token = sharedPreferences.getString('token');
