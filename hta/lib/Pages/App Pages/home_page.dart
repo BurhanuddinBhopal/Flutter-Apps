@@ -4,8 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hta/Pages/App%20Pages/report_page.dart';
-import 'package:hta/models/Transaction_model.dart';
+
 import 'package:hta/models/Usermodel.dart';
 
 import 'package:hta/widgets/refresh.dart';
@@ -19,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'addCustomer_page.dart';
 import 'home_page_card_info_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -163,6 +163,16 @@ class _HomePageState extends State<HomePage> {
 
   int suggestionsCount = 12;
   final focus = FocusNode();
+
+  List<String> imageUrls = [];
+
+  void updateImageUrls(List<String> newImageUrls) {
+    print("Updated image URLs in Home Page: $newImageUrls");
+    // Update the state or perform other actions
+    setState(() {
+      imageUrls = newImageUrls;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -348,6 +358,7 @@ class _HomePageState extends State<HomePage> {
                               itemCount: filteredList.length,
                               itemBuilder: (context, index) {
                                 final currentItem = filteredList[index];
+
                                 return GestureDetector(
                                     onTap: (() {
                                       Navigator.push(
@@ -357,6 +368,8 @@ class _HomePageState extends State<HomePage> {
                                             child: DetailedCardPage(
                                               customerData:
                                                   filteredCustomerData[index],
+                                              onUpdateImageUrls:
+                                                  updateImageUrls,
                                             ),
                                           ));
                                     }),

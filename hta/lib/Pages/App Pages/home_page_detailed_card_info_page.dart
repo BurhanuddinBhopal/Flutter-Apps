@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
+import 'package:hta/language/language_constant.dart';
 
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
@@ -18,9 +19,15 @@ import 'package:url_launcher/url_launcher.dart';
 class DetailedInfoPage extends StatefulWidget {
   final customerOrganization;
   final customerData;
+  final List<String>? imageUrls;
+  final Function(List<String>) onUpdateImageUrls;
 
-  const DetailedInfoPage(
-      {required this.customerOrganization, required this.customerData});
+  const DetailedInfoPage({
+    required this.customerOrganization,
+    required this.customerData,
+    required this.imageUrls,
+    required this.onUpdateImageUrls,
+  });
 
   @override
   State<DetailedInfoPage> createState() => _DetailedInfoPageState();
@@ -29,13 +36,33 @@ class DetailedInfoPage extends StatefulWidget {
 class _DetailedInfoPageState extends State<DetailedInfoPage> {
   var _customerData = {};
   var _customerOrganization = {};
-  var image;
+  List<String>? image;
+
   var name;
   var billAmount;
   var pendingAmount;
   var mobileNumber;
 
   bool isLoading = false;
+  List<String> imageUrls = [];
+  List<String> imageUrls1 = [];
+
+  void updateImageUrls(List<String> newImageUrls) {
+    widget.onUpdateImageUrls(newImageUrls);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Get the arguments from the route
+    final args = ModalRoute.of(context)!.settings.arguments;
+
+    if (args != null) {
+      // Assuming the argument is a List<String>
+      image = args as List<String>;
+    }
+  }
 
   @override
   void initState() {
@@ -43,11 +70,23 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     setState(() {
       _customerOrganization = widget.customerOrganization;
       _customerData = widget.customerData;
-      image = _customerOrganization['picture'];
+      image = [_customerOrganization['picture']];
+      print("image: $image");
       mobileNumber = _customerData['mobileNumber'];
       name = _customerData["organisationName"];
       billAmount = _customerOrganization["amount"];
       pendingAmount = _customerData["pendingAmount"];
+      if (image is List<String>) {
+        imageUrls.addAll(image as List<String>);
+        if (imageUrls.isNotEmpty) {
+          // Split the first element of imageUrls and add to imageUrls1
+          imageUrls1.addAll(imageUrls[0].split(','));
+        }
+        print('imageUrls1: $imageUrls1');
+      } else if (image is String) {
+        // If 'image' is a single string, split it into multiple URLs
+        imageUrls = (image as String).split(',');
+      }
     });
 
     // TODO: implement initState
@@ -81,13 +120,18 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   }
 
   void _launchSms() async {
-    String uri =
-        'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount $image")}';
     try {
+      String imageText = imageUrls1.join(', ');
+      String uri =
+          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount. Images: $imageText ")}';
+
       if (await launchUrl(Uri.parse(uri))) {
-        await launchUrl(Uri.parse(uri));
+        // Handle success
+      } else {
+        throw 'Failed to launch SMS';
       }
     } catch (e) {
+      print('Error launching SMS: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Some error occurred. Please try again!'),
@@ -97,12 +141,23 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   }
 
   void launchWhatsapp() async {
-    String uri =
-        'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount ')}';
-    if (await launch(uri)) {
-      await launch(uri);
-    } else {
-      throw 'Could not launch $uri';
+    try {
+      String imageText = imageUrls1.join(', ');
+      String uri =
+          'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount $billAmount and your pending balance is $pendingAmount.')}';
+
+      if (await launch(uri)) {
+        // Handle success
+      } else {
+        throw 'Failed to launch WhatsApp';
+      }
+    } catch (e) {
+      print('Error launching WhatsApp: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Some error occurred. Please try again!'),
+        ),
+      );
     }
   }
 
@@ -122,7 +177,9 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                   context,
                   PageTransition(
                       type: PageTransitionType.fade,
-                      child: (DetailedCardPage(customerData: _customerData))),
+                      child: (DetailedCardPage(
+                          customerData: _customerData,
+                          onUpdateImageUrls: updateImageUrls))),
                 );
               },
               icon: Icon(Icons.arrow_back)),
@@ -142,7 +199,9 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                 context,
                 PageTransition(
                     type: PageTransitionType.fade,
-                    child: (DetailedCardPage(customerData: _customerData))),
+                    child: (DetailedCardPage(
+                        customerData: _customerData,
+                        onUpdateImageUrls: updateImageUrls))),
               );
               return false;
             },
@@ -159,8 +218,8 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Bill amount'),
-                            Text('Description'),
+                            Text(translation(context).billAmount),
+                            Text(translation(context).description),
                           ],
                         ),
                         Container(
@@ -228,37 +287,65 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
             ),
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.63,
-            width: MediaQuery.of(context).size.width * 1,
-            child: image.isEmpty
-                ? Container(
-                    margin: EdgeInsets.only(top: 90),
+            height: MediaQuery.of(context).size.height * 0.5,
+            width: MediaQuery.of(context).size.width * 0.8,
+            child: imageUrls1.isEmpty
+                ? Center(
                     child: Text(
-                      'No Image Found',
+                      translation(context).noImageFound,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 30),
                     ),
                   )
-                : PinchZoom(
-                    resetDuration: Duration(milliseconds: 100),
-                    maxScale: 2.5,
-                    child: CachedNetworkImage(
-                      imageUrl: _customerOrganization["picture"],
-                      errorWidget: (context, url, error) => Center(
-                          child: Text('Unable to load image!!',
-                              style: TextStyle(fontSize: 24))),
-                      placeholder: (context, url) => Container(
-                        child: Container(
-                          margin: EdgeInsets.only(top: 90),
-                          child: Text(
-                            'Please wait for a while',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 30),
+                : imageUrls1.length == 1
+                    ? Center(
+                        child: PinchZoom(
+                          resetDuration: Duration(milliseconds: 100),
+                          maxScale: 2.5,
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrls1[0],
+                            errorWidget: (context, url, error) {
+                              return Center(
+                                child: Text(
+                                  translation(context).noImageFound,
+                                  style: TextStyle(fontSize: 30),
+                                ),
+                              );
+                            },
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            fit: BoxFit.cover,
                           ),
                         ),
+                      )
+                    : GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 8.0,
+                          mainAxisSpacing: 8.0,
+                        ),
+                        itemCount: imageUrls1.length,
+                        itemBuilder: (context, index) {
+                          return PinchZoom(
+                            resetDuration: Duration(milliseconds: 100),
+                            maxScale: 2.5,
+                            child: CachedNetworkImage(
+                              imageUrl: imageUrls1[index],
+                              errorWidget: (context, url, error) {
+                                return Center(
+                                  child: Text(
+                                    translation(context).unableToLoadImage,
+                                    style: TextStyle(fontSize: 24),
+                                  ),
+                                );
+                              },
+                              placeholder: (context, url) =>
+                                  Center(child: CircularProgressIndicator()),
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        },
                       ),
-                    ),
-                  ),
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -282,7 +369,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Icon(Icons.message),
                       ),
-                      Text('Send Message'),
+                      Text(translation(context).sendMessage),
                     ],
                   ),
                 ),
@@ -306,7 +393,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           child: FaIcon(FontAwesomeIcons.whatsapp),
                         ),
-                        Text('Whatsapp'),
+                        Text(translation(context).whatsapp),
                       ],
                     ),
                   ))

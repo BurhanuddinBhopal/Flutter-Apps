@@ -1,4 +1,5 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables
+// how to add null check on image length while image is null dart?
 
 import 'dart:convert';
 
@@ -7,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/language/language_constant.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -17,9 +19,12 @@ import 'home_page_card_info_page.dart';
 class RaiseBillPage extends StatefulWidget {
   final customerData;
   final pendingAmount;
+  final Function(List<String>) onUpdateImageUrls;
 
   const RaiseBillPage(
-      {required this.customerData, required this.pendingAmount});
+      {required this.customerData,
+      required this.pendingAmount,
+      required this.onUpdateImageUrls});
 
   @override
   State<RaiseBillPage> createState() => _RaiseBillPageState();
@@ -31,8 +36,8 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   final dateController = TextEditingController(
     text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
   );
-
   final dateControllerForDisplay = TextEditingController();
+
   DateTime currentDatetime = DateTime.now();
   final amount = TextEditingController();
   final description = TextEditingController();
@@ -40,10 +45,9 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   final _formKey = GlobalKey<FormState>();
   var finalImage;
   var finalPendingAmount;
+  var imageUrl;
+  List<String> uploadedImageUrls = [];
 
-  File? pickedImageCamera;
-  File? pickedImageGallery;
-  String? selectedImagePath;
   bool isLoading = false;
   bool isButtonDisabled = false;
   List<FocusNode> _focusNodes = [
@@ -51,28 +55,42 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     FocusNode(),
     FocusNode(),
   ];
+  File? pickedImageCamera;
+  File? pickedImageGallery;
+  String? selectedImagePath;
 
-  pickImageCamera() async {
-    XFile? cameraImage = await ImagePicker()
-        .pickImage(source: ImageSource.camera, imageQuality: 50);
+  XFile? cameraImage;
+  List<XFile>? galleryImages;
+  List<String> allSelectedImages = [];
 
-    if (cameraImage != null) {
-      setState(() {
-        selectedImagePath = cameraImage.path;
-      });
-      upload(File(cameraImage.path));
+  pickMultipleImagesCamera() async {
+    XFile? pickedImage = await ImagePicker()
+        .pickImage(imageQuality: 50, source: ImageSource.camera);
+
+    if (pickedImage != null) {
+      imageUrl = await upload(File(pickedImage.path));
+      if (!allSelectedImages.contains(imageUrl)) {
+        setState(() {
+          allSelectedImages.add(imageUrl);
+        });
+      }
     }
   }
 
-  pickImageGallery() async {
-    XFile? galleryImage = await ImagePicker()
-        .pickImage(source: ImageSource.gallery, imageQuality: 50);
+  pickMultipleImagesGallery() async {
+    List<XFile>? pickedImages = await ImagePicker().pickMultiImage(
+      imageQuality: 50,
+    );
 
-    if (galleryImage != null) {
-      setState(() {
-        selectedImagePath = galleryImage.path;
-      });
-      upload(File(galleryImage.path));
+    if (pickedImages != null && pickedImages.isNotEmpty) {
+      for (XFile image in pickedImages) {
+        imageUrl = await upload(File(image.path));
+        if (!allSelectedImages.contains(imageUrl)) {
+          setState(() {
+            allSelectedImages.add(imageUrl);
+          });
+        }
+      }
     }
   }
 
@@ -90,7 +108,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
               child: Column(
                 children: [
                   Text(
-                    'Select Image From !',
+                    translation(context).selectImageFrom,
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -103,7 +121,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            pickImageGallery();
+                            pickMultipleImagesGallery();
                             Navigator.pop(context); // Close the dialog
                             setState(() {});
                           },
@@ -120,7 +138,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                     width: MediaQuery.of(context).size.width *
                                         0.15,
                                   ),
-                                  Text('Gallery'),
+                                  Text(translation(context).gallery),
                                 ],
                               ),
                             ),
@@ -128,7 +146,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            pickImageCamera();
+                            pickMultipleImagesCamera();
                             Navigator.pop(context); // Close the dialog
                             setState(() {});
                           },
@@ -145,7 +163,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                     width: MediaQuery.of(context).size.width *
                                         0.15,
                                   ),
-                                  Text('Camera'),
+                                  Text(translation(context).camera),
                                 ],
                               ),
                             ),
@@ -191,13 +209,12 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
 
     var responseData = jsonDecode(response.body.toString());
     var imageUrl = responseData['fileLink'];
-    setState(() {
-      finalImage = imageUrl;
-    });
 
     setState(() {
+      finalImage = [imageUrl];
       isLoading = false;
     });
+    return imageUrl;
   }
 
   @override
@@ -224,6 +241,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       if (isButtonDisabled) {
         return;
       }
+
       setState(() {
         isButtonDisabled = true;
       });
@@ -239,23 +257,20 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         "customer": customerData['_id'],
         "amount": amount.text,
         "createdAt": dateController.text,
-        "paymentStatus": "",
+        "paymentStatus": {"paid": "successfully"}.toString(),
         "message": description.text,
-        "picture": finalImage == null ? "" : finalImage,
+        "picture": allSelectedImages == null ? "" : allSelectedImages.join(","),
         "orderStatus": "BILL-RAISED",
         "pendingAmount":
-            ((finalPendingAmount) + int.parse(amount.text)).toString(),
+            ((finalPendingAmount) - int.parse(amount.text)).toString(),
       };
       final header = {
         'Authorization': 'Bearer $token',
       };
 
       final response = await http.post(url, body: body, headers: header);
-      var responseData = jsonDecode(response.body);
-      var pendingAmount = responseData['dueAmount'];
-      setState(() {
-        finalPendingAmount = pendingAmount;
-      });
+
+      var responseData = jsonDecode(response.body.toString());
 
       if (responseData['code'] == 1) {
         _showSuccesDialog();
@@ -272,7 +287,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Transaction completed succesfully'),
+        title: Text(translation(context).successMessageforTransaction),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -280,7 +295,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -288,8 +303,9 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => DetailedCardPage(
-                              customerData: customerData,
-                            )));
+                            customerData: customerData,
+                            imageUrls: uploadedImageUrls,
+                            onUpdateImageUrls: widget.onUpdateImageUrls)));
               },
             ),
           )
@@ -310,7 +326,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -321,32 +337,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("YES"),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-              ),
-              TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
   }
 
   @override
@@ -362,263 +352,286 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: Material(
-            child: Form(
-                key: _formKey,
-                child: Container(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            color: Color.fromRGBO(186, 0, 0, 1),
-                            height: 100,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 35),
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 40),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Raise BILL',
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.close,
-                                        size: 24,
-                                        color: Colors.white,
-                                      ),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 8),
-                            child: Text(
-                              'Amount',
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      color: Color.fromRGBO(186, 0, 0, 1),
+                      height: 100,
+                      padding: EdgeInsets.symmetric(horizontal: 35),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              translation(context).raiseBill,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white),
                             ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              focusNode: _focusNodes[0],
-                              controller: amount,
-                              keyboardType: TextInputType.number,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Amount cannot be empty';
-                                }
-
-                                double numericValue = double.parse(value);
-                                if (numericValue <= 0) {
-                                  return 'Amount should be greater than zero';
-                                }
-
-                                return null;
+                            IconButton(
+                              icon: Icon(
+                                Icons.close,
+                                size: 24,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
                               },
-                              decoration: InputDecoration(
-                                  hintText: "Type your amount here",
-                                  hintStyle: TextStyle(
-                                    color: _focusNodes[0].hasFocus
-                                        ? Color.fromRGBO(62, 13, 59, 1)
-                                        : Colors.grey,
-                                    fontSize: 14.0,
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.currency_rupee,
-                                    size: 19.0,
-                                    color: _focusNodes[0].hasFocus
-                                        ? Color.fromRGBO(62, 13, 59, 1)
-                                        : Colors.grey,
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 2,
-                                          color:
-                                              Color.fromRGBO(62, 13, 59, 1)))),
                             ),
-                          ),
-                          SizedBox(height: 16),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Description',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              focusNode: _focusNodes[1],
-                              controller: description,
-                              decoration: InputDecoration(
-                                  hintText: "Type your comment here",
-                                  hintStyle: TextStyle(
-                                    color: _focusNodes[1].hasFocus
-                                        ? Color.fromRGBO(62, 13, 59, 1)
-                                        : Colors.grey,
-                                    fontSize: 14.0,
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.message,
-                                    size: 19.0,
-                                    color: _focusNodes[1].hasFocus
-                                        ? Color.fromRGBO(62, 13, 59, 1)
-                                        : Colors.grey,
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 2,
-                                          color:
-                                              Color.fromRGBO(62, 13, 59, 1)))),
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              'Date',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: TextFormField(
-                              focusNode: _focusNodes[2],
-                              controller: dateControllerForDisplay,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Date cannot be empty';
-                                }
-                                DateTime enteredDate = DateTime.parse(value);
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      child: Text(
+                        translation(context).amount,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        focusNode: _focusNodes[0],
+                        controller: amount,
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return translation(context)
+                                .validateMessageAmountNotEmpty;
+                          }
+                          double numericValue = double.parse(value);
+                          if (numericValue <= 0) {
+                            return translation(context)
+                                .validateMessageAmountLength;
+                          }
 
-                                if (enteredDate.isAfter(currentDatetime)) {
-                                  return 'Date cannot be greater than today';
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            hintText: translation(context).hintTextAmount,
+                            hintStyle: TextStyle(
+                              color: _focusNodes[0].hasFocus
+                                  ? Color.fromRGBO(62, 13, 59, 1)
+                                  : Colors.grey,
+                              fontSize: 14.0,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.currency_rupee,
+                              size: 19.0,
+                              color: _focusNodes[0].hasFocus
+                                  ? Color.fromRGBO(62, 13, 59, 1)
+                                  : Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Color.fromRGBO(62, 13, 59, 1)))),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        translation(context).description,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        focusNode: _focusNodes[1],
+                        controller: description,
+                        decoration: InputDecoration(
+                            hintText: translation(context).hintTextDescription,
+                            hintStyle: TextStyle(
+                              color: _focusNodes[1].hasFocus
+                                  ? Color.fromRGBO(62, 13, 59, 1)
+                                  : Colors.grey,
+                              fontSize: 14.0,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.message,
+                              size: 19.0,
+                              color: _focusNodes[1].hasFocus
+                                  ? Color.fromRGBO(62, 13, 59, 1)
+                                  : Colors.grey,
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Color.fromRGBO(62, 13, 59, 1)))),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        translation(context).date,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: TextFormField(
+                        focusNode: _focusNodes[2],
+                        controller: dateControllerForDisplay,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return translation(context)
+                                .validateMessageDateNotEmpty;
+                          }
+                          DateTime enteredDate = DateTime.parse(value);
+
+                          if (enteredDate.isAfter(currentDatetime)) {
+                            return translation(context)
+                                .validateMessageDateLength;
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.calendar_month_rounded,
+                              size: 19.0,
+                              color: Color.fromRGBO(62, 13, 59, 1),
+                            ),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Color.fromRGBO(62, 13, 59, 1)))),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  height: (allSelectedImages.isEmpty && cameraImage == null)
+                      ? MediaQuery.of(context).size.height * 0.05
+                      : MediaQuery.of(context).size.height * 0.25,
+                  child: isLoading
+                      ? Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          child: Center(
+                            child: Text(translation(context).imageUploading),
+                          ),
+                        )
+                      : (allSelectedImages.isEmpty && cameraImage == null)
+                          ? Image.asset(
+                              'assets/images/white.jpg',
+                              width: MediaQuery.of(context).size.width * 1,
+                              height: 0,
+                              fit: BoxFit.cover,
+                            )
+                          : GridView.builder(
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                    (allSelectedImages.length == 1) ? 1 : 2,
+                                crossAxisSpacing: 8.0,
+                                mainAxisSpacing: 8.0,
+                              ),
+                              itemCount: allSelectedImages.length +
+                                  (cameraImage != null ? 1 : 0),
+                              itemBuilder: (BuildContext context, int index) {
+                                if (index < allSelectedImages.length) {
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    child: Image.network(
+                                        allSelectedImages[index],
+                                        fit: BoxFit.cover
+                                        // height: (allSelectedImages.length == 1)
+                                        //     ? MediaQuery.of(context).size.height *
+                                        //         0.05
+                                        //     : null,
+                                        ),
+                                  );
+                                } else {
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    child: Image.file(
+                                      File(cameraImage!.path),
+                                      fit: BoxFit.cover,
+                                      // height:
+                                      //     MediaQuery.of(context).size.height *
+                                      //         0.05,
+                                    ),
+                                  );
                                 }
                               },
-                              decoration: InputDecoration(
-                                  prefixIcon: Icon(
-                                    Icons.calendar_month_rounded,
-                                    size: 19.0,
-                                    color: Color.fromRGBO(62, 13, 59, 1),
-                                  ),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(5.0)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          width: 2,
-                                          color:
-                                              Color.fromRGBO(62, 13, 59, 1)))),
                             ),
-                          ),
-                        ],
-                      ),
-                      isLoading
-                          ? Container(
-                              margin: EdgeInsets.symmetric(vertical: 16),
-                              child: Text('Image uploading'))
-                          : Container(
-                              child: finalImage == null
-                                  ? Image.asset(
-                                      'assets/images/white.jpg',
-                                      width:
-                                          MediaQuery.of(context).size.width * 1,
-                                      height: 0,
-                                    )
-                                  : Container(
-                                      margin:
-                                          EdgeInsets.symmetric(vertical: 16),
-                                      child: Image.network(
-                                        finalImage,
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.5,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.2,
-                                      ),
-                                    )),
-                      finalImage == null
-                          ? isLoading
-                              ? Container()
-                              : Container(
-                                  margin: EdgeInsets.symmetric(
-                                      horizontal: 30, vertical: 100),
-                                  child: FloatingActionButton.small(
-                                    //if isLoading false && final image empty
-                                    //if isLoading is true "Image uploading"
-                                    //if isLoading is false && final image in not empty ==> show image
-                                    onPressed: () {
-                                      selectImage();
-                                      setState(() {});
-                                    },
-                                    child: Icon(
-                                      Icons.add,
-                                    ),
-                                  ),
-                                )
-                          : Container(),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 30),
-                            child: isLoading
-                                ? null
-                                : ElevatedButton(
-                                    style: TextButton.styleFrom(
-                                      backgroundColor:
-                                          Color.fromRGBO(186, 0, 0, 1),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.zero),
-                                      minimumSize: Size(350, 50),
-                                    ),
-                                    onPressed: isButtonDisabled
-                                        ? null
-                                        : () {
-                                            if (!isButtonDisabled) {
-                                              raiseBill();
-                                              print(
-                                                  'Backend Date: ${dateController.text}');
-                                            }
-                                          },
-                                    child: Text("RAISE BILL"),
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ],
+                ),
+                // finalImage == null && cameraImage == null
+                //     ? isLoading
+                //         ? Container()
+                //         :
+                Container(
+                  margin: (allSelectedImages.isEmpty && cameraImage == null)
+                      ? EdgeInsets.symmetric(horizontal: 30, vertical: 60)
+                      : EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  child: FloatingActionButton.small(
+                    onPressed: () {
+                      selectImage();
+                    },
+                    child: Icon(
+                      Icons.add,
+                    ),
                   ),
-                )),
+                ),
+                // : Container(),
+                Padding(
+                  padding: (allSelectedImages.isEmpty && cameraImage == null)
+                      ? EdgeInsets.symmetric(vertical: 16, horizontal: 30)
+                      : EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+                  child: isLoading
+                      ? null
+                      : ElevatedButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(186, 0, 0, 1),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero),
+                            minimumSize: Size(350, 50),
+                          ),
+                          onPressed: isButtonDisabled
+                              ? null
+                              : () {
+                                  if (!isButtonDisabled) {
+                                    raiseBill();
+                                  }
+                                },
+                          child: Text(translation(context).raiseBillCapital),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

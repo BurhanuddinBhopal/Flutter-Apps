@@ -4,8 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:hta/Pages/App%20Pages/report_page.dart';
-// import 'package:hta/models/Transaction_model.dart';
+
 import 'package:hta/models/Usermodel.dart';
 
 import 'package:hta/widgets/refresh.dart';
@@ -19,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'addCustomer_page.dart';
 import 'home_page_card_info_page.dart';
+import 'package:in_app_update/in_app_update.dart';
 
 class TodayPage extends StatefulWidget {
   @override
@@ -38,6 +38,7 @@ class _TodayPageState extends State<TodayPage> {
 
     super.initState();
     fetchData();
+    checkForUpdate();
   }
 
   var customerData;
@@ -60,6 +61,21 @@ class _TodayPageState extends State<TodayPage> {
     FocusNode(),
     FocusNode(),
   ];
+
+  Future<void> checkForUpdate() async {
+    try {
+      // Returns an UpdateStatus object
+      final AppUpdateInfo updateStatus = await InAppUpdate.checkForUpdate();
+
+      if (updateStatus.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
+        // An update is available, prompt the user to install
+        await InAppUpdate.performImmediateUpdate();
+      }
+    } catch (e) {
+      print('Error checking for updates: $e');
+    }
+  }
 
   Future<void> fetchData() async {
     setState(() {
@@ -164,10 +180,18 @@ class _TodayPageState extends State<TodayPage> {
     return exitApp;
   }
 
-  // final List<Widget> widgetList = <Widget>[HomePage(), ReportPage()];
-
   int suggestionsCount = 12;
   final focus = FocusNode();
+
+  List<String> imageUrls = [];
+
+  void updateImageUrls(List<String> newImageUrls) {
+    print("Updated image URLs in Home Page: $newImageUrls");
+    // Update the state or perform other actions
+    setState(() {
+      imageUrls = newImageUrls;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,6 +386,8 @@ class _TodayPageState extends State<TodayPage> {
                                             child: DetailedCardPage(
                                               customerData:
                                                   filteredCustomerData[index],
+                                              onUpdateImageUrls:
+                                                  updateImageUrls,
                                             ),
                                           ));
                                     }),

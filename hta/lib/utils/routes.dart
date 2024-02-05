@@ -18,6 +18,7 @@ class MyRoutes {
   static String forgotPasswordRoute = "/forgotPassword";
   static String reportPageRoute = "/reportPage";
   static String todayPageRoute = "/todayPage";
+  static String changeLanguageRoute = "/changeLanguagePage";
 }
 
 // void navigateToDetailedCardPage(BuildContext context, {Customer? customer, dynamic customerData}) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../language/language_constant.dart';
+
 class AboutUs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class AboutUs extends StatelessWidget {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          'About Us',
+          translation(context).aboutUs,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -38,7 +40,7 @@ class AboutUs extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: 40, bottom: 20),
                 child: Text(
-                  'HTA is an online ledger accounting app/ Udhar khata app which simplifies credit account management for shop owners and their customers.',
+                  translation(context).aboutUsPara1,
                   style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
@@ -46,7 +48,7 @@ class AboutUs extends StatelessWidget {
                 ),
               ),
               Text(
-                'Merchants can use HTA application to record credits and payments with their customers. Also, there is no fear of losing records as all data is crypted and backed up online against your phone number based account and can be recoverd by a simple OTP authentication on a new device later on.',
+                translation(context).aboutUsPara2,
                 style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
@@ -55,7 +57,7 @@ class AboutUs extends StatelessWidget {
               Container(
                   margin: EdgeInsets.only(top: 20),
                   child: Text(
-                    'Customers get transaction updates via SMS. They can view their balance and transaction history at a unique link in the SMS. The lender can also send pending dues reminders to the other party.',
+                    translation(context).aboutUsPara3,
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w500,

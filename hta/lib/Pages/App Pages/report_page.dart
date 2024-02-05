@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../language/language_constant.dart';
+
 class ReportPage extends StatefulWidget {
   @override
   State<ReportPage> createState() => _ReportPageState();
@@ -65,18 +67,20 @@ class _ReportPageState extends State<ReportPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Confirm Exit?',
+            title: Text(translation(context).confirmExit,
                 style: new TextStyle(color: Colors.black, fontSize: 20.0)),
-            content: Text('Are you sure you want to exit the app?'),
+            content: Text(translation(context).sureExit),
             actions: <Widget>[
               TextButton(
-                child: Text('Yes', style: new TextStyle(fontSize: 18.0)),
+                child: Text(translation(context).yes,
+                    style: new TextStyle(fontSize: 18.0)),
                 onPressed: () {
                   SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                 },
               ),
               TextButton(
-                child: Text('No', style: new TextStyle(fontSize: 18.0)),
+                child: Text(translation(context).no,
+                    style: new TextStyle(fontSize: 18.0)),
                 onPressed: () => Navigator.pop(context),
               )
             ],
@@ -99,7 +103,7 @@ class _ReportPageState extends State<ReportPage> {
         backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
         centerTitle: true,
         title: Text(
-          'Welcome to HTA',
+          translation(context).welcometoHTA,
         ),
         automaticallyImplyLeading: false,
         actions: [
@@ -146,7 +150,7 @@ class _ReportPageState extends State<ReportPage> {
                                             padding: EdgeInsets.symmetric(
                                                 vertical: 5),
                                             child: Text(
-                                              'Overview',
+                                              translation(context).overview,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 16),
@@ -184,7 +188,8 @@ class _ReportPageState extends State<ReportPage> {
                                           Column(
                                             children: [
                                               Text(
-                                                'Remaining from customers',
+                                                translation(context)
+                                                    .remainingAmountFromCustomers,
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 12),
@@ -236,7 +241,7 @@ class _ReportPageState extends State<ReportPage> {
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
                                           child: Text(
-                                            "Today's",
+                                            translation(context).todays,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
@@ -269,7 +274,8 @@ class _ReportPageState extends State<ReportPage> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Text(
-                                            'Customer Summary',
+                                            translation(context)
+                                                .customerSummary,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16),
@@ -285,7 +291,7 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Bill Raised',
+                                              translation(context).billRaised,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -321,7 +327,8 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Payment Collected',
+                                              translation(context)
+                                                  .paymentCollected,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -456,7 +463,7 @@ class _ReportPageState extends State<ReportPage> {
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
                                           child: Text(
-                                            "This Month",
+                                            translation(context).thisMonth,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
@@ -489,7 +496,8 @@ class _ReportPageState extends State<ReportPage> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Text(
-                                            'Customer Summary',
+                                            translation(context)
+                                                .customerSummary,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16),
@@ -505,7 +513,7 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Bill Raised',
+                                              translation(context).billRaised,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -541,7 +549,8 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Payment Collected',
+                                              translation(context)
+                                                  .paymentCollected,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -600,7 +609,7 @@ class _ReportPageState extends State<ReportPage> {
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
                                           child: Text(
-                                            'This Year',
+                                            translation(context).thisYear,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 12,
@@ -633,7 +642,8 @@ class _ReportPageState extends State<ReportPage> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 10),
                                           child: Text(
-                                            'Customer Summary',
+                                            translation(context)
+                                                .customerSummary,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16),
@@ -649,7 +659,7 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Bill Raised',
+                                              translation(context).billRaised,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -685,7 +695,8 @@ class _ReportPageState extends State<ReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Payment Collected',
+                                              translation(context)
+                                                  .paymentCollected,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 13),
@@ -818,7 +829,7 @@ class _ReportPageState extends State<ReportPage> {
                               onPressed: () {
                                 _refresh();
                               },
-                              child: Text("Refresh"),
+                              child: Text(translation(context).refresh),
                             ),
                           ),
                         ],

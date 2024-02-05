@@ -5,8 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
-
-import 'package:page_transition/page_transition.dart';
+import 'package:hta/language/language_constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,8 +24,9 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   final name = TextEditingController();
   final lastName = TextEditingController();
   final mobileNumber = TextEditingController();
-  final address = TextEditingController(text: 'India');
+
   final _formKey = GlobalKey<FormState>();
+  late TextEditingController address;
 
   // final addressController = TextEditingController(text: 'India');
 
@@ -37,6 +37,24 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     FocusNode(),
     FocusNode(),
   ];
+  @override
+  void initState() {
+    _focusNodes.forEach((node) {
+      node.addListener(() {
+        setState(() {});
+      });
+    });
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Initialize the address controller here
+    address = TextEditingController(text: 'India');
+  }
 
   Future<void> addCustomer() async {
     if (_formKey.currentState!.validate()) {
@@ -78,7 +96,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Customer Added Successfully'),
+        title: Text(translation(context).customersAddedSuccessfully),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -86,7 +104,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -114,7 +132,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -125,43 +143,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("YES"),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-              ),
-              TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
-  }
-
-  @override
-  void initState() {
-    _focusNodes.forEach((node) {
-      node.addListener(() {
-        setState(() {});
-      });
-    });
-
-    super.initState();
   }
 
   @override
@@ -183,7 +164,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         backgroundColor: Color.fromRGBO(62, 13, 59, 1),
         centerTitle: true,
         title: Text(
-          'Add Customer',
+          translation(context).addCustomer,
           style: TextStyle(
             fontSize: 16.0,
           ),
@@ -222,7 +203,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                             minimumSize: Size(250, 40),
                           ),
                           child: Text(
-                            "Select from PhoneBook",
+                            translation(context).selectFromPhonebook,
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -235,13 +216,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[0],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Organization Name cannot be empty';
+                              return translation(context)
+                                  .validateMessageOrganisationNotEmpty;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: "Organization Name",
+                              hintText:
+                                  translation(context).hintTextOrganisation,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[0].hasFocus
@@ -266,13 +249,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[1],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Name cannot be empty';
+                              return translation(context)
+                                  .validateMessageNameNotEmpty;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: "Name",
+                              hintText: translation(context).hintTextName,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[1].hasFocus
@@ -303,7 +287,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: "Last Name",
+                              hintText: translation(context).hintTextLastName,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[2].hasFocus
@@ -329,13 +313,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           keyboardType: TextInputType.phone,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Phone Number cannot be empty';
+                              return translation(context)
+                                  .validateMessageMobileNumber;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: "Phone Number",
+                              hintText:
+                                  translation(context).hintTextMobileNumber,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[3].hasFocus
@@ -360,13 +346,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[4],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'Address cannot be empty';
+                              return translation(context)
+                                  .validateMessageAddressNotEmpty;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: "Address",
+                              hintText: translation(context).hintTextAddress,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[4].hasFocus
@@ -395,7 +382,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           onPressed: () {
                             addCustomer();
                           },
-                          child: Text("Save"),
+                          child: Text(translation(context).save),
                           style: TextButton.styleFrom(
                             backgroundColor: Color.fromRGBO(62, 13, 59, 1),
                           ),

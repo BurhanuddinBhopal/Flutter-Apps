@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:page_transition/page_transition.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerReportPage extends StatefulWidget {
@@ -177,7 +177,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
                                           child: Text(
-                                            'Overview',
+                                            translation(context).overview,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16),
@@ -214,7 +214,8 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              'Remaining from customers',
+                                              translation(context)
+                                                  .remainingAmountFromCustomers,
                                               style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 12),
@@ -265,7 +266,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          "Today's",
+                                          translation(context).todays,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -297,7 +298,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          'Customer Summary',
+                                          translation(context).customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -313,7 +314,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Bill Raised',
+                                            translation(context).billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
@@ -348,7 +349,8 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Payment Collected',
+                                            translation(context)
+                                                .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
@@ -482,7 +484,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          "This Month",
+                                          translation(context).thisMonth,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -514,7 +516,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          'Customer Summary',
+                                          translation(context).customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -530,7 +532,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Bill Raised',
+                                            translation(context).billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
@@ -565,7 +567,8 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Payment Collected',
+                                            translation(context)
+                                                .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
@@ -623,7 +626,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          'This Year',
+                                          translation(context).thisYear,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -655,7 +658,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          'Customer Summary',
+                                          translation(context).customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -671,7 +674,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Bill Raised',
+                                            translation(context).billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
@@ -706,7 +709,8 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            'Payment Collected',
+                                            translation(context)
+                                                .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),

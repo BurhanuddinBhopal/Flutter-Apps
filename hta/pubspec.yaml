@@ -31,16 +31,20 @@ environment:
 dependencies:
   http: ^0.13.4 
   shared_preferences: ^2.0.15
-  intl: ^0.17.0  
+  intl: ^0.18.0  
   fluttercontactpicker: ^4.7.0
-  image_picker: ^1.0.0
-  cached_network_image: ^3.2.3
+  image_picker: ^1.0.4
+  camera: ^0.10.5+7
+  cached_network_image: ^3.3.0
   url_launcher: ^6.1.10
   pinch_zoom: ^1.0.0
   page_transition: ^2.0.9
   searchfield: ^0.8.3
   provider: ^6.0.5
   flutter_slidable: ^3.0.0
+  in_app_update: ^4.2.2
+  dropdown_below: ^1.0.3
+
  
   
   
@@ -55,6 +59,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   font_awesome_flutter: ^10.5.0
   fl_chart: ^0.40.0
+  flutter_localizations:
+    sdk: flutter
   
 
 dev_dependencies:
@@ -78,6 +84,7 @@ flutter_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

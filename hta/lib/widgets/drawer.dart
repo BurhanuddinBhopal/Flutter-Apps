@@ -2,11 +2,12 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:page_transition/page_transition.dart';
+import 'package:hta/language/language_constant.dart';
 
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Pages/App Pages/login_page.dart';
+import '../Pages/Account Pages/login_page.dart';
 import '../Pages/Drawer Pages/aboutUs_page.dart';
 import '../Pages/Drawer Pages/accountSetting_page.dart';
 import '../Pages/Drawer Pages/contactUs_page.dart';
@@ -80,7 +81,8 @@ class _AppDrawerState extends State<AppDrawer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Welcome to HTA',
+                              translation(context).welcometoHTA,
+                              // 'Welcome to HTA',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
@@ -199,7 +201,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      'Account Settings',
+                                      translation(context).accountSettings,
+                                      // 'Account Settings',
                                       style: TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.w600,
@@ -264,7 +267,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      'Contact Us',
+                                      translation(context).contactUs,
+                                      // 'Contact Us',
                                       style: TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.w600,
@@ -329,7 +333,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      'About Us',
+                                      translation(context).aboutUs,
+                                      // 'About Us',
                                       style: TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.w600,
@@ -394,7 +399,8 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      'Privacy Policy',
+                                      translation(context).privacyPolicy,
+                                      // 'Privacy Policy',
                                       style: TextStyle(
                                           fontSize: 17,
                                           fontWeight: FontWeight.w600,
@@ -447,7 +453,10 @@ class _AppDrawerState extends State<AppDrawer> {
                               child: LoginPage()),
                         );
                       },
-                      child: Text('LOG OUT'),
+                      child: Text(
+                        translation(context).logOut,
+                        // 'LOG OUT'
+                      ),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.black26),
                     ),

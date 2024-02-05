@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:page_transition/page_transition.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../App Pages/login_page.dart';
+import 'login_page.dart';
 
 class ForgotPassword extends StatefulWidget {
   @override
@@ -38,7 +41,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
             child: Text(
-              'Okay',
+              translation(context).okay,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -58,7 +61,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
-          'Password Changed Successfuly',
+          translation(context).successMessageforPassword,
           textAlign: TextAlign.center,
         ),
         actions: <Widget>[
@@ -68,15 +71,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                     color: Colors.white),
               ),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoginPage()));
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade, child: LoginPage()));
               },
             ),
           )
@@ -112,7 +117,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       if (responseData['code'] == 1) {
         _showPopupDialog();
       } else {
-        print('responseData for error measage: $responseData');
         _showErrorDialog(responseData);
       }
     }
@@ -169,7 +173,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Change Password',
+                                    translation(context).changePassword,
                                     style: TextStyle(
                                         fontSize: 24.0,
                                         fontWeight: FontWeight.w400,
@@ -194,7 +198,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            'Old Password',
+                            translation(context).oldPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -208,9 +212,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             controller: oldPassword,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Password cannot be empty';
+                                return translation(context)
+                                    .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return 'Password length should be atleast 6';
+                                return translation(context)
+                                    .validateMessagePasswordLength;
                               }
 
                               return null;
@@ -250,7 +256,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            'New Password',
+                            translation(context).newPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -264,9 +270,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             controller: newPassword,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Password cannot be empty';
+                                return translation(context)
+                                    .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return 'Password length should be atleast 6';
+                                return translation(context)
+                                    .validateMessagePasswordLength;
                               }
 
                               return null;
@@ -306,7 +314,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            'Confirm New Password',
+                            translation(context).confirmPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -319,11 +327,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             obscureText: isHiddenPassword[2],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Password cannot be empty';
+                                return translation(context)
+                                    .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return 'Password length should be atleast 6';
+                                return translation(context)
+                                    .validateMessagePasswordLength;
                               } else if (value != newPassword.text) {
-                                return 'Passwords do not match';
+                                return translation(context).passwordDoNotMatch;
                               }
 
                               return null;
@@ -377,7 +387,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             onPressed: () {
                               forgetPassword();
                             },
-                            child: Text("CHANGE PASSWORD"),
+                            child: Text(
+                                translation(context).changePasswordCapital),
                           ),
                         ),
                       ],

@@ -11,12 +11,19 @@ class CustomerDataWrapper extends StatelessWidget {
     required this.customerData,
     required this.todayTransactions,
   });
+  void updateImageUrls(List<String> newImageUrls) {
+    print("Updated image URLs in Home Page: $newImageUrls");
+    // Update the state or perform other actions
+  }
 
   @override
   Widget build(BuildContext context) {
     final customer = Customer.fromMap(customerData);
 
-    return DetailedCardPage(customerData: customer);
+    return DetailedCardPage(
+      customerData: customer,
+      onUpdateImageUrls: updateImageUrls,
+    );
   }
 }
 // class CustomerDataWrapper extends StatelessWidget {

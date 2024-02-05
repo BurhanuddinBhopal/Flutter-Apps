@@ -8,6 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/Pages/App%20Pages/customerReport_page.dart';
 import 'package:hta/Pages/App%20Pages/editCustomer_page.dart';
+import 'package:hta/Pages/App%20Pages/home_page.dart';
+import 'package:hta/language/language_constant.dart';
 
 import 'package:hta/widgets/refresh.dart';
 import 'package:http/http.dart' as http;
@@ -23,8 +25,14 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class DetailedCardPage extends StatefulWidget {
   final dynamic customerData;
+  final List<String>? imageUrls;
+  final Function(List<String>) onUpdateImageUrls;
 
-  const DetailedCardPage({required this.customerData});
+  const DetailedCardPage({
+    required this.customerData,
+    this.imageUrls,
+    required this.onUpdateImageUrls,
+  });
 
   // factory DetailedCardPage.fromCustomer({required Customer customer, required customerData}) {
   //   return DetailedCardPage(customerData: customer);
@@ -37,6 +45,14 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   var _customerData = {};
   var transactionData1 = [];
   var pendingAmount;
+  bool isPaymentCollected = false;
+  List<String>? imageUrls;
+  void updateImageUrls(List<String> newImageUrls) {
+    setState(() {
+      imageUrls = newImageUrls;
+    });
+    widget.onUpdateImageUrls(imageUrls!);
+  }
 
 //pendingAmount
   bool isLoading = false;
@@ -47,6 +63,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     transactionData();
     customerData();
     setState(() {
+      imageUrls = widget.imageUrls;
       _customerData = widget.customerData;
 
       mobileNumber = _customerData["mobileNumber"];
@@ -107,6 +124,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       final responseData = jsonDecode(response.body.toString());
       setState(() {
         transactionData1 = responseData['allTransaction'];
+
         _customerData = widget.customerData;
       });
     }
@@ -114,12 +132,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     setState(() {
       isLoading = false;
     });
-
-    // void deleteUser(user) async {
-    //   var url = Uri.parse(
-    //       'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction/${user['_id']}');
-    //   http.delete(url);
-    // }
   }
 
   Future<void> deleteTransaction(String transactionId) async {
@@ -160,18 +172,17 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Are you sure you want to delete it?'),
+        title: Text(translation(context).confirmDelete),
         actions: <Widget>[
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromRGBO(62, 13, 59, 1),
             ),
             child: Text(
-              'Yes',
+              translation(context).yes,
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              print('gtrwweeew');
               deleteTransaction(transactionId);
               Navigator.pop(context);
             },
@@ -181,7 +192,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
               backgroundColor: Color.fromRGBO(62, 13, 59, 1),
             ),
             child: Text(
-              'No',
+              translation(context).no,
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
@@ -205,7 +216,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                'Okay',
+                translation(context).okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -216,32 +227,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         ],
       ),
     );
-  }
-
-  Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Confirm Exit"),
-            content: Text("Are you sure you want to exit?"),
-            actions: <Widget>[
-              TextButton(
-                child: Text("YES"),
-                onPressed: () {
-                  SystemNavigator.pop();
-                },
-              ),
-              TextButton(
-                child: Text("NO"),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              )
-            ],
-          );
-        }) as bool;
-    return exitApp;
   }
 
   @override
@@ -259,8 +244,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
               Navigator.push(
                   context,
                   PageTransition(
-                      type: PageTransitionType.fade,
-                      child: (BottomNavigationPage())));
+                      type: PageTransitionType.fade, child: (HomePage())));
             },
             icon: Icon(Icons.arrow_back)),
         title: Text('${_customerData["organisationName"]}'),
@@ -466,203 +450,208 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                         ),
                       ),
               ),
+              // Container(
+              //   height: MediaQuery.of(context).size.height * 0.7,
+              //   margin: EdgeInsets.only(left: 100, right: 20),
+              //   child: isLoading
+              //       ? Center(
+              //           child: CircularProgressIndicator(
+              //             color: Color.fromRGBO(62, 13, 59, 1),
+              //           ),
+              //         )
+              //       : RefreshWidget(
+              //           color: Color.fromRGBO(62, 13, 59, 1),
+              //           onRefresh: transactionData,
+              //           child: ListView.builder(
+              //             itemCount: transactionData1.length,
+              //             itemBuilder: (context, index) {
+              //               // transactionId = transactionData1[index]['_id'];
+
+              //               return WillPopScope(
+              //                 onWillPop: () async {
+              //                   Navigator.push(
+              //                     context,
+              //                     PageTransition(
+              //                         type: PageTransitionType.fade,
+              //                         child: (BottomNavigationPage())),
+              //                   );
+              //                   return false;
+              //                 },
+              //                 child: GestureDetector(
+              //                   onTap: (() {
+              //                     Navigator.push(
+              //                       context,
+              //                       PageTransition(
+              //                           type: PageTransitionType.fade,
+              //                           child: DetailedInfoPage(
+              //                             customerOrganization:
+              //                                 transactionData1[index],
+              //                             customerData: _customerData,
+              //                           )),
+              //                     );
+              //                   }),
+              //                   child: Container(
+              //                     margin: EdgeInsets.only(top: 10),
+              //                     child: Slidable(
+              //                       endActionPane: ActionPane(
+              //                         motion: BehindMotion(),
+              //                         children: [
+              //                           SlidableAction(
+              //                               icon: Icons.delete,
+              //                               label: 'Delete',
+              //                               backgroundColor: Colors.red,
+              //                               onPressed: (context) {
+              //                                 _popupDialogBox(
+              //                                     transactionData1[index]
+              //                                         ['_id']);
+              //                               })
+              //                         ],
+              //                       ),
+              //                       child: Card(
+              //                         shape: RoundedRectangleBorder(
+              //                             borderRadius:
+              //                                 BorderRadius.circular(10)),
+              //                         color: transactionData1[index]
+              //                                     ["orderStatus"] ==
+              //                                 'PAYMENT-COLLECTED'
+              //                             ? Color.fromRGBO(52, 135, 89, 1)
+              //                             : Color.fromRGBO(186, 0, 0, 1),
+              //                         child: Container(
+              //                           child: Row(
+              //                             mainAxisAlignment:
+              //                                 MainAxisAlignment.spaceBetween,
+              //                             children: [
+              //                               Container(
+              //                                 margin: EdgeInsets.only(
+              //                                     top: 10,
+              //                                     left: 10,
+              //                                     bottom: 10),
+              //                                 child: Column(
+              //                                   crossAxisAlignment:
+              //                                       CrossAxisAlignment.start,
+              //                                   children: [
+              //                                     transactionData1[index]
+              //                                                 ["orderStatus"] ==
+              //                                             'PAYMENT-COLLECTED'
+              //                                         ? Text(
+              //                                             'Paid Amount',
+              //                                             style: TextStyle(
+              //                                                 color:
+              //                                                     Colors.white),
+              //                                           )
+              //                                         : Text(
+              //                                             'Bill Amount',
+              //                                             style: TextStyle(
+              //                                                 color:
+              //                                                     Colors.white),
+              //                                           ),
+              //                                     Container(
+              //                                       margin: EdgeInsets.only(
+              //                                           top: 10),
+              //                                       child: Row(
+              //                                         children: [
+              //                                           const Icon(
+              //                                             Icons
+              //                                                 .currency_rupee_sharp,
+              //                                             size: 18,
+              //                                             color: Colors.white,
+              //                                           ),
+              //                                           Container(
+              //                                             child: Text(
+              //                                               '${transactionData1[index]["amount"]}',
+              //                                               style: TextStyle(
+              //                                                   color: Colors
+              //                                                       .white,
+              //                                                   fontSize: 14),
+              //                                             ),
+              //                                           ),
+              //                                         ],
+              //                                       ),
+              //                                     )
+              //                                   ],
+              //                                 ),
+              //                               ),
+              //                               Container(
+              //                                 margin: EdgeInsets.only(
+              //                                     bottom: 10,
+              //                                     right: 10,
+              //                                     top: 10),
+              //                                 child: Column(
+              //                                   crossAxisAlignment:
+              //                                       CrossAxisAlignment.end,
+              //                                   children: [
+              //                                     transactionData1[index]
+              //                                                 ["orderStatus"] ==
+              //                                             'PAYMENT-COLLECTED'
+              //                                         ? Text(
+              //                                             'Paid on',
+              //                                             style: TextStyle(
+              //                                               color: Colors.white,
+              //                                             ),
+              //                                           )
+              //                                         : Text(
+              //                                             'Raised on',
+              //                                             style: TextStyle(
+              //                                               color: Colors.white,
+              //                                             ),
+              //                                           ),
+              //                                     Container(
+              //                                       margin: EdgeInsets.only(
+              //                                           top: 10),
+              //                                       child: Row(
+              //                                         children: [
+              //                                           Container(
+              //                                             margin:
+              //                                                 EdgeInsets.only(
+              //                                                     right: 20),
+              //                                             child: Icon(
+              //                                               Icons
+              //                                                   .calendar_today,
+              //                                               size: 18,
+              //                                               color: Colors.white,
+              //                                             ),
+              //                                           ),
+              //                                           Container(
+              //                                             margin:
+              //                                                 EdgeInsets.only(
+              //                                                     left: 0),
+              //                                             child: Text(
+              //                                               DateFormat(
+              //                                                       'dd-MM-yyyy')
+              //                                                   .format(DateTime.parse(
+              //                                                       transactionData1[
+              //                                                               index]
+              //                                                           [
+              //                                                           "createdAt"])),
+              //                                               style: TextStyle(
+              //                                                 color:
+              //                                                     Colors.white,
+              //                                                 fontSize: 14,
+              //                                               ),
+              //                                             ),
+              //                                           )
+              //                                         ],
+              //                                       ),
+              //                                     )
+              //                                   ],
+              //                                 ),
+              //                               )
+              //                             ],
+              //                           ),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               );
+              //             },
+              //           ),
+              //         ),
+              // ),
+
               Container(
                 height: MediaQuery.of(context).size.height * 0.7,
-                margin: EdgeInsets.only(left: 100, right: 20),
-                child: isLoading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: Color.fromRGBO(62, 13, 59, 1),
-                        ),
-                      )
-                    : RefreshWidget(
-                        color: Color.fromRGBO(62, 13, 59, 1),
-                        onRefresh: transactionData,
-                        child: ListView.builder(
-                          itemCount: transactionData1.length,
-                          itemBuilder: (context, index) {
-                            // transactionId = transactionData1[index]['_id'];
-
-                            return WillPopScope(
-                              onWillPop: () async {
-                                Navigator.push(
-                                  context,
-                                  PageTransition(
-                                      type: PageTransitionType.fade,
-                                      child: (BottomNavigationPage())),
-                                );
-                                return false;
-                              },
-                              child: GestureDetector(
-                                onTap: (() {
-                                  Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: DetailedInfoPage(
-                                          customerOrganization:
-                                              transactionData1[index],
-                                          customerData: _customerData,
-                                        )),
-                                  );
-                                }),
-                                child: Container(
-                                  margin: EdgeInsets.only(top: 10),
-                                  child: Slidable(
-                                    endActionPane: ActionPane(
-                                      motion: BehindMotion(),
-                                      children: [
-                                        SlidableAction(
-                                            icon: Icons.delete,
-                                            label: 'Delete',
-                                            backgroundColor: Colors.red,
-                                            onPressed: (context) {
-                                              _popupDialogBox(
-                                                  transactionData1[index]
-                                                      ['_id']);
-                                            })
-                                      ],
-                                    ),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      color: transactionData1[index]
-                                                  ["orderStatus"] ==
-                                              'PAYMENT-COLLECTED'
-                                          ? Color.fromRGBO(52, 135, 89, 1)
-                                          : Color.fromRGBO(186, 0, 0, 1),
-                                      child: Container(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Container(
-                                              margin: EdgeInsets.only(
-                                                  top: 10,
-                                                  left: 10,
-                                                  bottom: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  transactionData1[index]
-                                                              ["orderStatus"] ==
-                                                          'PAYMENT-COLLECTED'
-                                                      ? Text(
-                                                          'Paid Amount',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        )
-                                                      : Text(
-                                                          'Bill Amount',
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 10),
-                                                    child: Row(
-                                                      children: [
-                                                        const Icon(
-                                                          Icons
-                                                              .currency_rupee_sharp,
-                                                          size: 18,
-                                                          color: Colors.white,
-                                                        ),
-                                                        Container(
-                                                          child: Text(
-                                                            '${transactionData1[index]["amount"]}',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 14),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.only(
-                                                  bottom: 10,
-                                                  right: 10,
-                                                  top: 10),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  transactionData1[index]
-                                                              ["orderStatus"] ==
-                                                          'PAYMENT-COLLECTED'
-                                                      ? Text(
-                                                          'Paid on',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                          ),
-                                                        )
-                                                      : Text(
-                                                          'Raised on',
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: 10),
-                                                    child: Row(
-                                                      children: [
-                                                        Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  right: 20),
-                                                          child: Icon(
-                                                            Icons
-                                                                .calendar_today,
-                                                            size: 18,
-                                                            color: Colors.white,
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          margin:
-                                                              EdgeInsets.only(
-                                                                  left: 0),
-                                                          child: Text(
-                                                            DateFormat(
-                                                                    'dd-MM-yyyy')
-                                                                .format(DateTime.parse(
-                                                                    transactionData1[
-                                                                            index]
-                                                                        [
-                                                                        "createdAt"])),
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 14,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                child: buildTransactionListView(),
               ),
             ],
           ),
@@ -684,9 +673,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => PayBillPage(
-                                      customerData: _customerData,
-                                      pendingAmount: pendingAmount,
-                                    )));
+                                    customerData: _customerData,
+                                    pendingAmount: pendingAmount,
+                                    onUpdateImageUrls: updateImageUrls)));
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -695,7 +684,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: Icon(Icons.add_to_photos),
                           ),
-                          Text('PAY BILL'),
+                          Text(translation(context).paybillCapital),
                         ],
                       ),
                     ),
@@ -716,6 +705,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                   builder: (context) => RaiseBillPage(
                                         customerData: _customerData,
                                         pendingAmount: pendingAmount,
+                                        onUpdateImageUrls: updateImageUrls,
                                       )));
                         },
                         child: Row(
@@ -725,7 +715,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: Icon(Icons.menu_book_sharp),
                             ),
-                            Text('RAISE BILL'),
+                            Text(translation(context).raiseBillCapital),
                           ],
                         ),
                       ))
@@ -734,6 +724,237 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildTransactionListView() {
+    // Sort transactions by date in descending order
+    transactionData1.sort((a, b) {
+      DateTime dateA = DateTime.parse(a['createdAt']);
+      DateTime dateB = DateTime.parse(b['createdAt']);
+      return dateB.compareTo(dateA);
+    });
+
+    // Group transactions by date
+    Map<String, List<dynamic>> groupedTransactions = {};
+    for (var transaction in transactionData1) {
+      DateTime date = DateTime.parse(transaction['createdAt']);
+      String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+
+      if (!groupedTransactions.containsKey(formattedDate)) {
+        groupedTransactions[formattedDate] = [];
+      }
+
+      groupedTransactions[formattedDate]!.add(transaction);
+    }
+
+    // Display grouped transactions in ListView
+    return ListView.builder(
+      itemCount: groupedTransactions.length,
+      itemBuilder: (context, index) {
+        var date = groupedTransactions.keys.elementAt(index);
+        var transactionsForDate = groupedTransactions[date];
+
+        // Display date header (e.g., "Today," "Yesterday," or actual date)
+        String header = getHeaderForDate(date);
+
+        // Build a list of transaction widgets for the current date
+        List<Widget> dateTransactions = transactionsForDate!.map((transaction) {
+          return buildTransactionCard(transaction);
+        }).toList();
+
+        // Include the header and transaction cards in the list
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 15),
+              decoration: BoxDecoration(
+                color: Color.fromRGBO(66, 66, 66, 1),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 6),
+              child: Text(
+                header,
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+            ...dateTransactions,
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to determine the header based on the difference in days
+  String getHeaderForDate(String date) {
+    DateTime currentDate = DateTime.now();
+    DateTime transactionDate = DateTime.parse(date);
+    if (currentDate.difference(transactionDate).inDays == 0) {
+      return 'Today';
+    } else if (currentDate.difference(transactionDate).inDays == 1) {
+      return 'Yesterday';
+    } else {
+      return date; // Return the actual date for older transactions
+    }
+  }
+
+  // Function to build your transaction card widget
+  Widget buildTransactionCard(dynamic transaction) {
+    isPaymentCollected = transaction["orderStatus"] == 'PAYMENT-COLLECTED';
+
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.push(
+          context,
+          PageTransition(
+            type: PageTransitionType.fade,
+            child: (BottomNavigationPage()),
+          ),
+        );
+        return false;
+      },
+      child: GestureDetector(
+        onTap: (() {
+          Navigator.push(
+            context,
+            PageTransition(
+              type: PageTransitionType.fade,
+              child: DetailedInfoPage(
+                customerOrganization: transaction,
+                customerData: _customerData,
+                imageUrls: imageUrls,
+                onUpdateImageUrls: updateImageUrls,
+              ),
+            ),
+          );
+        }),
+        child: Container(
+          margin: isPaymentCollected
+              ? EdgeInsets.only(left: 100, right: 20)
+              : EdgeInsets.only(left: 20, right: 100),
+          child: Slidable(
+            endActionPane: ActionPane(
+              motion: BehindMotion(),
+              children: [
+                SlidableAction(
+                  icon: Icons.delete,
+                  label: translation(context).delete,
+                  backgroundColor: Colors.red,
+                  onPressed: (context) {
+                    _popupDialogBox(transaction['_id']);
+                  },
+                )
+              ],
+            ),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              color:
+                  // transaction["orderStatus"] == 'PAYMENT-COLLECTED'
+                  isPaymentCollected
+                      ? Color.fromRGBO(52, 135, 89, 1)
+                      : Color.fromRGBO(186, 0, 0, 1),
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // transaction["orderStatus"] == 'PAYMENT-COLLECTED'
+                          isPaymentCollected
+                              ? Text(
+                                  translation(context).paidAmount,
+                                  style: TextStyle(color: Colors.white),
+                                )
+                              : Text(
+                                  translation(context).billAmount,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.currency_rupee_sharp,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                                Container(
+                                  child: Text(
+                                    '${transaction["amount"]}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 10, right: 10, top: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          transaction["orderStatus"] == 'PAYMENT-COLLECTED'
+                              ? Text(
+                                  translation(context).paidOn,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : Text(
+                                  translation(context).raiseOn,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          Container(
+                            margin: EdgeInsets.only(top: 10),
+                            child: Row(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 20),
+                                  child: Icon(
+                                    Icons.calendar_today,
+                                    size: 18,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 0),
+                                  child: Text(
+                                    DateFormat('hh:mm a').format(
+                                      DateTime.parse(transaction["createdAt"]),
+                                    ),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-class CustomerDataProvider extends ChangeNotifier {
-  var _customerData;
+// class CustomerDataProvider extends ChangeNotifier {
+//   var _customerData;
 
-  get customerData => _customerData;
+//   get customerData => _customerData;
 
-  void updateCustomerData(newData) {
-    _customerData = newData;
-    notifyListeners();
-  }
-}
+//   void updateCustomerData(newData) {
+//     _customerData = newData;
+//     notifyListeners();
+//   }
+// }

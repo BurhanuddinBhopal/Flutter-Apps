@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/widgets/link_button.dart';
 
+import '../../language/language_constant.dart';
+
 class PrivacyPolicy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class PrivacyPolicy extends StatelessWidget {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          'Privacy Policy',
+          translation(context).privacyPolicy,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -49,7 +51,7 @@ class PrivacyPolicy extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(left: 12),
                         child: Text(
-                          'Is my data stored online?',
+                          translation(context).privacyPolicyHeader1,
                           style: TextStyle(fontSize: 20),
                         ),
                       )
@@ -62,7 +64,7 @@ class PrivacyPolicy extends StatelessWidget {
                       margin: EdgeInsets.only(left: 65, top: 15),
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Text(
-                        'Yes, because incase your phone is lost or damaged, you can recover all your data on the new device instantly. Migration of data is very simple now.',
+                        translation(context).privacyPolicyPara1,
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w500,
@@ -70,16 +72,6 @@ class PrivacyPolicy extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-                Container(
-                  margin: EdgeInsets.only(left: 28, top: 10),
-                  child: Text(
-                    'Migration of data is very simple now.',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black45),
-                  ),
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 40, left: 28),
@@ -95,7 +87,7 @@ class PrivacyPolicy extends StatelessWidget {
                         padding: EdgeInsets.only(left: 12),
                         width: MediaQuery.of(context).size.width * 0.75,
                         child: Text(
-                          'Does HTA share my data with anyone?',
+                          translation(context).privacyPolicyHeader2,
                           style: TextStyle(fontSize: 20),
                         ),
                       )
@@ -108,7 +100,7 @@ class PrivacyPolicy extends StatelessWidget {
                       margin: EdgeInsets.only(left: 65, top: 15),
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Text(
-                        'No, we do not share your data with anyone. We only use it to improve your experience of using HTA app.',
+                        translation(context).privacyPolicyPara2,
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w500,
@@ -124,23 +116,25 @@ class PrivacyPolicy extends StatelessWidget {
               height: MediaQuery.of(context).size.height * 0.25,
               width: MediaQuery.of(context).size.width * 1,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     margin: EdgeInsets.only(top: 40),
                     child: Text(
-                      'HTA is fully committed to the security of your data!',
+                      translation(context).privacyPolicyFooter1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.black45),
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 80),
+                    padding: EdgeInsets.symmetric(horizontal: 0),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         RichText(
                           text: TextSpan(
-                              text: 'Tap to know more about',
+                              text: translation(context).privacyPolicyFooter2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black45),
@@ -149,7 +143,8 @@ class PrivacyPolicy extends StatelessWidget {
                                   child: Container(
                                     margin: EdgeInsets.only(left: 5),
                                     child: LinkButton(
-                                        urlLabel: "Privacy Policy",
+                                        urlLabel:
+                                            translation(context).privacyPolicy,
                                         url:
                                             'https://sites.google.com/view/htafinance/home'),
                                   ),
