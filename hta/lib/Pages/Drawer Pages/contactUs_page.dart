@@ -7,8 +7,7 @@ import '../../language/language_constant.dart';
 
 class ContactUs extends StatelessWidget {
   void launchWhatsapp() async {
-    String uri =
-        'https://wa.me/number:7869820020:/?text=${Uri.parse('Hello there')}';
+    String uri = 'https://wa.me/number:7869820020:/?text=${Uri.parse('Hello')}';
     if (await launch(uri)) {
       await launch(uri);
     } else {

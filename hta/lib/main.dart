@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/Account%20Pages/change_language_page.dart';
+import 'package:hta/Pages/Account%20Pages/success_page.dart';
 
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/Pages/App%20Pages/home_page.dart';
@@ -135,7 +136,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 Locale('hi', 'IN'), // Hindi
               ],
               locale: _locale,
-              theme: ThemeData().copyWith(
+              theme: ThemeData(
+                useMaterial3: false,
+              ).copyWith(
                   colorScheme: ThemeData().colorScheme.copyWith(
                         primary: Color.fromRGBO(62, 13, 59, 1),
                       )),

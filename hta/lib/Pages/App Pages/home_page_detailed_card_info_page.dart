@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
+import 'package:hta/Pages/App%20Pages/image_page.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:intl/intl.dart';
@@ -287,55 +288,28 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
             ),
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.5,
-            width: MediaQuery.of(context).size.width * 0.8,
-            child: imageUrls1.isEmpty
-                ? Center(
-                    child: Text(
-                      translation(context).noImageFound,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 30),
-                    ),
-                  )
-                : imageUrls1.length == 1
-                    ? Center(
-                        child: PinchZoom(
-                          resetDuration: Duration(milliseconds: 100),
-                          maxScale: 2.5,
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrls1[0],
-                            errorWidget: (context, url, error) {
-                              return Center(
-                                child: Text(
-                                  translation(context).noImageFound,
-                                  style: TextStyle(fontSize: 30),
-                                ),
-                              );
-                            },
-                            placeholder: (context, url) =>
-                                Center(child: CircularProgressIndicator()),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 8.0,
-                          mainAxisSpacing: 8.0,
-                        ),
-                        itemCount: imageUrls1.length,
-                        itemBuilder: (context, index) {
-                          return PinchZoom(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: imageUrls1.isEmpty
+                  ? Center(
+                      child: Text(
+                        translation(context).noImageFound,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 30),
+                      ),
+                    )
+                  : imageUrls1.length == 1
+                      ? Center(
+                          child: PinchZoom(
                             resetDuration: Duration(milliseconds: 100),
                             maxScale: 2.5,
                             child: CachedNetworkImage(
-                              imageUrl: imageUrls1[index],
+                              imageUrl: imageUrls1[0],
                               errorWidget: (context, url, error) {
                                 return Center(
                                   child: Text(
-                                    translation(context).unableToLoadImage,
-                                    style: TextStyle(fontSize: 24),
+                                    translation(context).noImageFound,
+                                    style: TextStyle(fontSize: 30),
                                   ),
                                 );
                               },
@@ -343,10 +317,49 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                                   Center(child: CircularProgressIndicator()),
                               fit: BoxFit.cover,
                             ),
-                          );
-                        },
-                      ),
-          ),
+                          ),
+                        )
+                      : GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8.0,
+                            mainAxisSpacing: 8.0,
+                          ),
+                          itemCount: imageUrls1.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                if (imageUrls1[index] != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ImagePage(
+                                          imageUrl: imageUrls1[index]),
+                                    ),
+                                  );
+                                } else {
+                                  print("Image URL at index $index is null!");
+                                }
+                              },
+                              child: CachedNetworkImage(
+                                imageUrl: imageUrls1[index],
+                                errorWidget: (context, url, error) {
+                                  return Center(
+                                    child: Text(
+                                      translation(context).unableToLoadImage,
+                                      style: TextStyle(fontSize: 24),
+                                    ),
+                                  );
+                                },
+                                placeholder: (context, url) => Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                                fit: BoxFit.cover,
+                              ),
+                            );
+                          },
+                        )),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [

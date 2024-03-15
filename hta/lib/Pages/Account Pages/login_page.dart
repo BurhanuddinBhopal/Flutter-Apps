@@ -73,27 +73,29 @@ class _LoginPageState extends State<LoginPage> {
         'password': password.text,
         'userType': 'customer',
       };
+
       try {
         final response = await http.post(
           url,
           body: body,
         );
 
-        if (response.statusCode == 200) {
-          final responseData = jsonDecode(response.body.toString());
+        final responseData = jsonDecode(response.body.toString());
+
+        print(responseData);
+
+        var code = responseData['code'];
+        if (code == 1) {
           var mobileNumber = responseData["user"]['mobileNumber'];
           var token = responseData['token'];
-
           var name = responseData["user"]['name'];
           var lastName = responseData["user"]['lastName'];
-
           var organisation = responseData["user"]['organisation'];
 
           final SharedPreferences sharedPreferences =
               await SharedPreferences.getInstance();
           sharedPreferences.setString('mobileNumber', mobileNumber);
           sharedPreferences.setString('token', token);
-
           sharedPreferences.setString('organisation', organisation);
           sharedPreferences.setString('name', name);
           sharedPreferences.setString('lastName', lastName);
@@ -105,38 +107,73 @@ class _LoginPageState extends State<LoginPage> {
               child: BottomNavigationPage(),
             ),
           );
+        } else if (code == 2) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Account Reviewing"),
+                content: Text("Your account is on review, So please wait"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("OK"),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          // Handle other response codes if needed
         }
       } catch (error) {
-        var errorMessage = translation(context).enterValidMobileNumber;
-        _showErrorDialog(errorMessage);
+        print('Error occurred: $error');
+        var errorMessage = error;
+        _showErrorDialog(errorMessage.toString());
       }
     }
   }
 
   Future<bool> _onBackButtonPressed(BuildContext context) async {
-    bool exitApp = await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(translation(context).confirmExit,
-                style: new TextStyle(color: Colors.black, fontSize: 20.0)),
-            content: Text(translation(context).sureExit),
-            actions: <Widget>[
-              TextButton(
-                child: Text(translation(context).yes,
-                    style: new TextStyle(fontSize: 18.0)),
-                onPressed: () {
-                  SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                },
-              ),
-              TextButton(
-                child: Text(translation(context).no,
-                    style: new TextStyle(fontSize: 18.0)),
-                onPressed: () => Navigator.pop(context),
-              )
-            ],
-          );
-        }) as bool;
+    bool exitApp = false; // Default value
+
+    // Show dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(translation(context).confirmExit,
+              style: TextStyle(color: Colors.black, fontSize: 20.0)),
+          content: Text(translation(context).sureExit),
+          actions: <Widget>[
+            TextButton(
+              child: Text(translation(context).yes,
+                  style: TextStyle(fontSize: 18.0)),
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(true); // Return true when 'Yes' is pressed
+              },
+            ),
+            TextButton(
+              child: Text(translation(context).no,
+                  style: TextStyle(fontSize: 18.0)),
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(false); // Return false when 'No' is pressed
+              },
+            )
+          ],
+        );
+      },
+    ).then((value) {
+      // Handle the value returned from dialog
+      if (value != null) {
+        exitApp = value;
+      }
+    });
+
     return exitApp;
   }
 
@@ -391,7 +428,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                   color: Color.fromRGBO(62, 13, 59, 1),
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
+                                  fontSize: 14.0,
                                 ),
                               ),
                             ),

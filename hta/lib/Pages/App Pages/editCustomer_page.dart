@@ -289,13 +289,6 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                               child: TextFormField(
                                 controller: lastName,
                                 focusNode: _focusNodes[2],
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Last Name cannot be empty';
-                                  }
-
-                                  return null;
-                                },
                                 decoration: InputDecoration(
                                     hintText: "Last Name",
                                     contentPadding: EdgeInsets.only(left: 10.0),

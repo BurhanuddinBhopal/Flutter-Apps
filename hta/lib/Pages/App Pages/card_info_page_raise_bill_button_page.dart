@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/language/language_constant.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -234,6 +235,12 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         DateFormat("yyyy-MM-dd").format(DateTime.now());
 
     super.initState();
+  }
+
+  void removeImage(int index) {
+    setState(() {
+      allSelectedImages.removeAt(index);
+    });
   }
 
   Future<void> raiseBill() async {
@@ -529,66 +536,48 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                   ],
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  height: (allSelectedImages.isEmpty && cameraImage == null)
-                      ? MediaQuery.of(context).size.height * 0.05
-                      : MediaQuery.of(context).size.height * 0.25,
-                  child: isLoading
-                      ? Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          child: Center(
-                            child: Text(translation(context).imageUploading),
-                          ),
-                        )
-                      : (allSelectedImages.isEmpty && cameraImage == null)
-                          ? Image.asset(
-                              'assets/images/white.jpg',
-                              width: MediaQuery.of(context).size.width * 1,
-                              height: 0,
-                              fit: BoxFit.cover,
-                            )
-                          : GridView.builder(
-                              gridDelegate:
-                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount:
-                                    (allSelectedImages.length == 1) ? 1 : 2,
-                                crossAxisSpacing: 8.0,
-                                mainAxisSpacing: 8.0,
-                              ),
-                              itemCount: allSelectedImages.length +
-                                  (cameraImage != null ? 1 : 0),
-                              itemBuilder: (BuildContext context, int index) {
-                                if (index < allSelectedImages.length) {
-                                  return Container(
-                                    margin: EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    child: Image.network(
-                                        allSelectedImages[index],
-                                        fit: BoxFit.cover
-                                        // height: (allSelectedImages.length == 1)
-                                        //     ? MediaQuery.of(context).size.height *
-                                        //         0.05
-                                        //     : null,
-                                        ),
-                                  );
-                                } else {
-                                  return Container(
-                                    margin: EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    child: Image.file(
-                                      File(cameraImage!.path),
-                                      fit: BoxFit.cover,
-                                      // height:
-                                      //     MediaQuery.of(context).size.height *
-                                      //         0.05,
-                                    ),
-                                  );
-                                }
-                              },
+                    margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                    height: (allSelectedImages.isEmpty && cameraImage == null)
+                        ? MediaQuery.of(context).size.height * 0.05
+                        : MediaQuery.of(context).size.height * 0.25,
+                    child: isLoading
+                        ? Container(
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            child: Center(
+                              child: Text(translation(context).imageUploading),
                             ),
-                ),
+                          )
+                        : (allSelectedImages.isEmpty && cameraImage == null)
+                            ? Image.asset(
+                                'assets/images/white.jpg',
+                                width: MediaQuery.of(context).size.width * 1,
+                                height: 0,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                alignment: Alignment.center,
+                                child: GridView.builder(
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        (allSelectedImages.length == 1) ? 1 : 2,
+                                    crossAxisSpacing: 4.0,
+                                    mainAxisSpacing: 4.0,
+                                  ),
+                                  itemCount: allSelectedImages.length +
+                                      (cameraImage != null ? 1 : 0),
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    if (index < allSelectedImages.length) {
+                                      return buildImageWidget(
+                                          allSelectedImages[index], index);
+                                    } else {
+                                      return buildImageWidget(
+                                          cameraImage!.path, index);
+                                    }
+                                  },
+                                ),
+                              )),
                 // finalImage == null && cameraImage == null
                 //     ? isLoading
                 //         ? Container()
@@ -633,6 +622,45 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildImageWidget(String imagePath, int index) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.all(4.0),
+        width:
+            MediaQuery.of(context).size.width * 0.6, // Adjust width as needed
+        height:
+            MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
+        child: Stack(
+          children: [
+            ClipRRect(
+              borderRadius:
+                  BorderRadius.circular(8.0), // Optional: Add rounded corners
+              child: Image.network(
+                imagePath,
+                fit: BoxFit.cover, // Maintain aspect ratio and fill container
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+            Positioned(
+              top: EdgeInsets.symmetric(vertical: 12.0).top,
+              right: EdgeInsets.symmetric(horizontal: 12.0).right,
+              child: GestureDetector(
+                onTap: () {
+                  removeImage(index);
+                },
+                child: FaIcon(
+                  FontAwesomeIcons.times,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

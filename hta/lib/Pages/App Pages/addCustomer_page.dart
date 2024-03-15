@@ -191,6 +191,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
                             setState(() {
                               _phoneContact = contact;
+                              organisationName.text =
+                                  _phoneContact!.fullName.toString();
                               name.text = _phoneContact!.fullName.toString();
                               mobileNumber.text =
                                   _phoneContact!.phoneNumber!.number.toString();
@@ -279,13 +281,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                         child: TextFormField(
                           controller: lastName,
                           focusNode: _focusNodes[2],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Last Name cannot be empty';
-                            }
-
-                            return null;
-                          },
                           decoration: InputDecoration(
                               hintText: translation(context).hintTextLastName,
                               contentPadding: EdgeInsets.only(left: 10.0),

@@ -41,6 +41,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
     setState(() {
       finalNumber = mobileNumber!;
+      print('finalNumber: $finalNumber');
       finalName = name!;
       finalLastname = lastName!;
     });

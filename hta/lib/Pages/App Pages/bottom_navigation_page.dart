@@ -28,7 +28,7 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
   @override
   void initState() {
     super.initState();
-    widgetList = [TodayPage(), HomePage(), ReportPage()];
+    widgetList = [HomePage(), TodayPage(), ReportPage()];
   }
 
   void _onItemTapped(int index) {
@@ -48,20 +48,20 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
         items: [
           BottomNavigationBarItem(
             icon: FaIcon(
-              FontAwesomeIcons.calendar,
+              FontAwesomeIcons.rectangleList,
               size: 20,
             ),
-            label: translation(context).today,
+            label: translation(context).customers,
           ),
           BottomNavigationBarItem(
               icon: FaIcon(
                 FontAwesomeIcons.user,
                 size: 20,
               ),
-              label: translation(context).customers),
+              label: translation(context).today),
           BottomNavigationBarItem(
               icon: FaIcon(
-                FontAwesomeIcons.rectangleList,
+                FontAwesomeIcons.calendar,
                 size: 20,
               ),
               label: translation(context).report),

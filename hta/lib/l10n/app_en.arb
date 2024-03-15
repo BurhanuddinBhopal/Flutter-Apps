@@ -64,10 +64,17 @@
     "customersAddedSuccessfully": "Customer Added Successfully",
     "selectFromPhonebook": "Select from PhoneBook",
     "validateMessageOrganisationNotEmpty": "Organization Name cannot be empty",
+    "validateMessageOrganisationDescriptionNotEmpty": "Organization Description cannot be empty",
     "hintTextOrganisation": "Organization Name",
+    "hintTextOrganisationDescription": "Organization Description",
     "validateMessageNameNotEmpty": "Name cannot be empty",
+    "validateMessageAdminNameNotEmpty": "Admin Name cannot be empty",
     "hintTextName": "Name",
+    "hintTextAdminName": "Admin Name",
     "hintTextLastName": "Last Name",
+    "validateMessageLastNameNotEmpty": "Last Name cannot be empty",
+    "hintTextAdminLastName": "Amin Last Name",
+    "validateMessageAdminLastNameNotEmpty": "Admin Last Name cannot be empty",
     "validateMessageAddressNotEmpty": "Address cannot be empty",
     "hintTextAddress": "Address",
     "save": "Save",
@@ -104,6 +111,5 @@
     "successMessageforLanguage": "Language Changed",
     "changeLanguageCapital": "CHANGE LANGUAGE",
     "signUp": "Sign Up",
-    "signUpCapital": "SIGN UP"
-    
+    "signUpCapital": "SIGN UP"   
 }

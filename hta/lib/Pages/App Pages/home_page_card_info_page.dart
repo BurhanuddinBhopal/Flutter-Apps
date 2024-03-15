@@ -244,7 +244,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
               Navigator.push(
                   context,
                   PageTransition(
-                      type: PageTransitionType.fade, child: (HomePage())));
+                      type: PageTransitionType.fade,
+                      child: (BottomNavigationPage())));
             },
             icon: Icon(Icons.arrow_back)),
         title: Text('${_customerData["organisationName"]}'),
@@ -832,9 +833,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
           );
         }),
         child: Container(
-          margin: isPaymentCollected
-              ? EdgeInsets.only(left: 100, right: 20)
-              : EdgeInsets.only(left: 20, right: 100),
+          margin: EdgeInsets.only(left: 100, right: 20),
           child: Slidable(
             endActionPane: ActionPane(
               motion: BehindMotion(),
