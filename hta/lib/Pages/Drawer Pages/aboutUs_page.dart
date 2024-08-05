@@ -23,7 +23,7 @@ class AboutUs extends StatelessWidget {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          translation(context).aboutUs,
+          translation(context)!.aboutUs,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -40,7 +40,7 @@ class AboutUs extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(top: 40, bottom: 20),
                 child: Text(
-                  translation(context).aboutUsPara1,
+                  translation(context)!.aboutUsPara1,
                   style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w500,
@@ -48,7 +48,7 @@ class AboutUs extends StatelessWidget {
                 ),
               ),
               Text(
-                translation(context).aboutUsPara2,
+                translation(context)!.aboutUsPara2,
                 style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
@@ -57,7 +57,7 @@ class AboutUs extends StatelessWidget {
               Container(
                   margin: EdgeInsets.only(top: 20),
                   child: Text(
-                    translation(context).aboutUsPara3,
+                    translation(context)!.aboutUsPara3,
                     style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w500,

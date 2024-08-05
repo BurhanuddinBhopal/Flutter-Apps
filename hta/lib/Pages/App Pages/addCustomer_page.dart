@@ -9,6 +9,7 @@ import 'package:hta/language/language_constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../../constant.dart';
 import 'bottom_navigation_page.dart';
 
 class AddCustomerPage extends StatefulWidget {
@@ -63,8 +64,8 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
       var token = sharedPreferences.getString('token');
       var organisation = sharedPreferences.getString('organisation');
 
-      final url = Uri.parse(
-          'https://hta.hatimtechnologies.in/api/customer/addCustomer');
+      final url =
+          Uri.parse('${AppConstants.backendUrl}/api/customer/addCustomer');
 
       final body = {
         "organisationName": organisationName.text,
@@ -96,7 +97,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(translation(context).customersAddedSuccessfully),
+        title: Text(translation(context)!.customersAddedSuccessfully),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -104,7 +105,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -132,7 +133,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -164,7 +165,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
         backgroundColor: Color.fromRGBO(62, 13, 59, 1),
         centerTitle: true,
         title: Text(
-          translation(context).addCustomer,
+          translation(context)!.addCustomer,
           style: TextStyle(
             fontSize: 16.0,
           ),
@@ -205,7 +206,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                             minimumSize: Size(250, 40),
                           ),
                           child: Text(
-                            translation(context).selectFromPhonebook,
+                            translation(context)!.selectFromPhonebook,
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -218,7 +219,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[0],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessageOrganisationNotEmpty;
                             }
 
@@ -226,7 +227,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           },
                           decoration: InputDecoration(
                               hintText:
-                                  translation(context).hintTextOrganisation,
+                                  translation(context)!.hintTextOrganisation,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[0].hasFocus
@@ -251,14 +252,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[1],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessageNameNotEmpty;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: translation(context).hintTextName,
+                              hintText: translation(context)!.hintTextName,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[1].hasFocus
@@ -282,7 +283,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           controller: lastName,
                           focusNode: _focusNodes[2],
                           decoration: InputDecoration(
-                              hintText: translation(context).hintTextLastName,
+                              hintText: translation(context)!.hintTextLastName,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[2].hasFocus
@@ -308,7 +309,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           keyboardType: TextInputType.phone,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessageMobileNumber;
                             }
 
@@ -316,7 +317,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           },
                           decoration: InputDecoration(
                               hintText:
-                                  translation(context).hintTextMobileNumber,
+                                  translation(context)!.hintTextMobileNumber,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[3].hasFocus
@@ -341,14 +342,14 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           focusNode: _focusNodes[4],
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessageAddressNotEmpty;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: translation(context).hintTextAddress,
+                              hintText: translation(context)!.hintTextAddress,
                               contentPadding: EdgeInsets.only(left: 10.0),
                               hintStyle: TextStyle(
                                 color: _focusNodes[4].hasFocus
@@ -377,7 +378,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           onPressed: () {
                             addCustomer();
                           },
-                          child: Text(translation(context).save),
+                          child: Text(translation(context)!.save),
                           style: TextButton.styleFrom(
                             backgroundColor: Color.fromRGBO(62, 13, 59, 1),
                           ),

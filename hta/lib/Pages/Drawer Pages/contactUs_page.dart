@@ -43,7 +43,7 @@ class ContactUs extends StatelessWidget {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          translation(context).contactUs,
+          translation(context)!.contactUs,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -61,7 +61,7 @@ class ContactUs extends StatelessWidget {
               margin: EdgeInsets.only(top: 70, bottom: 20),
               // width: MediaQuery.of(context).size.width * 0.95,
               child: Text(
-                translation(context).contactUsPara,
+                translation(context)!.contactUsPara,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 15,
@@ -69,7 +69,7 @@ class ContactUs extends StatelessWidget {
               ),
             ),
             Text(
-              translation(context).contactUsWorkingTime,
+              translation(context)!.contactUsWorkingTime,
               style: TextStyle(fontSize: 16),
             ),
             Column(
@@ -98,14 +98,14 @@ class ContactUs extends StatelessWidget {
                               FontAwesomeIcons.whatsapp,
                               size: 19,
                             ),
-                            Text(translation(context).contactUsWhatsapp),
+                            Text(translation(context)!.contactUsWhatsapp),
                           ],
                         ),
                       )),
                 ),
                 Container(
                     margin: EdgeInsets.only(bottom: 10, top: 10),
-                    child: Text(translation(context).or)),
+                    child: Text(translation(context)!.or)),
                 Container(
                   // width: MediaQuery.of(context).size.width * 1,
                   margin: EdgeInsets.symmetric(horizontal: 0),
@@ -114,7 +114,7 @@ class ContactUs extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        translation(context).emailUs,
+                        translation(context)!.emailUs,
                         style: TextStyle(fontSize: 14),
                       ),
                       GestureDetector(

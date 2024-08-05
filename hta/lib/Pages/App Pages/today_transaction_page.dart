@@ -16,6 +16,7 @@ import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import 'addCustomer_page.dart';
 import 'home_page_card_info_page.dart';
 import 'package:in_app_update/in_app_update.dart';
@@ -93,7 +94,7 @@ class _TodayPageState extends State<TodayPage> {
     var organisation = sharedPreferences.getString('organisation');
 
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/customer/getAllCustomersForOrgainsationAdmin');
+        '${AppConstants.backendUrl}/api/customer/getAllCustomersForOrgainsationAdmin');
 
     final body = {"userType": "costomer", "organisation": organisation};
     final header = {

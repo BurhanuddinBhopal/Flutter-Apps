@@ -34,7 +34,7 @@ class _AccountSettingsState extends State<AccountSettings> {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          translation(context).settings,
+          translation(context)!.settings,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -65,7 +65,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                         Container(
                           margin: EdgeInsets.only(left: 18),
                           child: Text(
-                            translation(context).changePassword,
+                            translation(context)!.changePassword,
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,
@@ -120,7 +120,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                         Container(
                           margin: EdgeInsets.only(left: 18),
                           child: Text(
-                            translation(context).changeLanguage,
+                            translation(context)!.changeLanguage,
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w400,

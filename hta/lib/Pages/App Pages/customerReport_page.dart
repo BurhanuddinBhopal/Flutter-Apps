@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
+
 class CustomerReportPage extends StatefulWidget {
   final customerData;
 
@@ -32,6 +34,16 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
 
   var _customerData = {};
   var _organizationName;
+  String? countryCode;
+
+  Future<void> _getCountryCode() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    setState(() {
+      countryCode = sharedPreferences.getString('country') ?? 'IN';
+      print(countryCode);
+    });
+  }
 
   Future<void> customerData() async {
     setState(() {
@@ -41,7 +53,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/transactions/getOrganisationReportForOneCustomer');
+        '${AppConstants.backendUrl}/api/transactions/getOrganisationReportForOneCustomer');
     final body = {"customerId": _customerData['_id']};
     final header = {
       'Content-Type': 'application/json',
@@ -111,6 +123,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   @override
   void initState() {
     customerData();
+    _getCountryCode();
     // TODO: implement initState
     setState(() {
       _customerData = widget.customerData;
@@ -177,7 +190,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           padding:
                                               EdgeInsets.symmetric(vertical: 5),
                                           child: Text(
-                                            translation(context).overview,
+                                            translation(context)!.overview,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16),
@@ -214,7 +227,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         Column(
                                           children: [
                                             Text(
-                                              translation(context)
+                                              translation(context)!
                                                   .remainingAmountFromCustomers,
                                               style: TextStyle(
                                                   color: Colors.white,
@@ -223,19 +236,52 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                             Padding(
                                               padding: EdgeInsets.symmetric(
                                                   vertical: 10),
-                                              child: Text(
-                                                transactionDetails[
-                                                            'remainingFromCustomer'] !=
-                                                        null
-                                                    ? transactionDetails[
-                                                        'remainingFromCustomer']
-                                                    : '',
-                                                style: TextStyle(
-                                                  color: Color.fromRGBO(
-                                                      243, 31, 31, 1),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                ),
+                                              child: Row(
+                                                children: [
+                                                  countryCode == 'KW'
+                                                      ? Container(
+                                                          width: 22,
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  right: 5),
+                                                          child: ColorFiltered(
+                                                            colorFilter:
+                                                                ColorFilter
+                                                                    .mode(
+                                                              Color.fromRGBO(
+                                                                  243,
+                                                                  31,
+                                                                  31,
+                                                                  1), // Darken the image
+                                                              BlendMode.srcIn,
+                                                            ),
+                                                            child: Image.asset(
+                                                                'assets/images/kwd.png'),
+                                                          ),
+                                                        )
+                                                      : const Icon(
+                                                          Icons
+                                                              .currency_rupee_sharp,
+                                                          size: 18,
+                                                          color: Color.fromRGBO(
+                                                              243, 31, 31, 1),
+                                                        ),
+                                                  Text(
+                                                    transactionDetails[
+                                                                'remainingFromCustomer'] !=
+                                                            null
+                                                        ? transactionDetails[
+                                                            'remainingFromCustomer']
+                                                        : '',
+                                                    style: TextStyle(
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -266,7 +312,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          translation(context).todays,
+                                          translation(context)!.todays,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -298,7 +344,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          translation(context).customerSummary,
+                                          translation(context)!.customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -314,19 +360,39 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context).billRaised,
+                                            translation(context)!.billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                size: 16,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
@@ -349,7 +415,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context)
+                                            translation(context)!
                                                 .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -357,12 +423,32 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                                size: 16,
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
@@ -484,7 +570,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          translation(context).thisMonth,
+                                          translation(context)!.thisMonth,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -516,7 +602,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          translation(context).customerSummary,
+                                          translation(context)!.customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -532,19 +618,39 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context).billRaised,
+                                            translation(context)!.billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                                size: 16,
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
@@ -567,7 +673,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context)
+                                            translation(context)!
                                                 .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -575,12 +681,32 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                                size: 16,
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
@@ -626,7 +752,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 5),
                                         child: Text(
-                                          translation(context).thisYear,
+                                          translation(context)!.thisYear,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 12,
@@ -658,7 +784,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         padding:
                                             EdgeInsets.symmetric(vertical: 10),
                                         child: Text(
-                                          translation(context).customerSummary,
+                                          translation(context)!.customerSummary,
                                           style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 16),
@@ -674,19 +800,39 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context).billRaised,
+                                            translation(context)!.billRaised,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 13),
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                                size: 16,
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Color.fromRGBO(
+                                                          243, 31, 31, 1),
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),
@@ -709,7 +855,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                       Column(
                                         children: [
                                           Text(
-                                            translation(context)
+                                            translation(context)!
                                                 .paymentCollected,
                                             style: TextStyle(
                                                 color: Colors.white,
@@ -717,12 +863,31 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
-                                                Icons.currency_rupee_sharp,
-                                                color: Color.fromRGBO(
-                                                    243, 31, 31, 1),
-                                                size: 16,
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      width: 22,
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Color.fromRGBO(
+                                                              243,
+                                                              31,
+                                                              31,
+                                                              1), // Darken the image
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : const Icon(
+                                                      Icons
+                                                          .currency_rupee_sharp,
+                                                      size: 18,
+                                                      color: Colors.white,
+                                                    ),
                                               Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     vertical: 10),

@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import 'home_page_card_info_page.dart';
 
 class RaiseBillPage extends StatefulWidget {
@@ -59,10 +60,20 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   File? pickedImageCamera;
   File? pickedImageGallery;
   String? selectedImagePath;
+  String? countryCode;
 
   XFile? cameraImage;
   List<XFile>? galleryImages;
   List<String> allSelectedImages = [];
+
+  Future<void> _getCountryCode() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    setState(() {
+      countryCode = sharedPreferences.getString('country') ?? 'IN';
+      print(countryCode);
+    });
+  }
 
   pickMultipleImagesCamera() async {
     XFile? pickedImage = await ImagePicker()
@@ -109,7 +120,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
               child: Column(
                 children: [
                   Text(
-                    translation(context).selectImageFrom,
+                    translation(context)!.selectImageFrom,
                     style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
@@ -139,7 +150,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                     width: MediaQuery.of(context).size.width *
                                         0.15,
                                   ),
-                                  Text(translation(context).gallery),
+                                  Text(translation(context)!.gallery),
                                 ],
                               ),
                             ),
@@ -164,7 +175,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                     width: MediaQuery.of(context).size.width *
                                         0.15,
                                   ),
-                                  Text(translation(context).camera),
+                                  Text(translation(context)!.camera),
                                 ],
                               ),
                             ),
@@ -189,7 +200,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       isLoading = true;
     });
 
-    final uploadUrl = 'https://hta.hatimtechnologies.in/api/upload-media';
+    final uploadUrl = '${AppConstants.backendUrl}/api/upload-media';
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
@@ -220,6 +231,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
 
   @override
   void initState() {
+    _getCountryCode();
     setState(() {
       customerData = widget.customerData;
       finalPendingAmount = widget.pendingAmount;
@@ -257,7 +269,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       var token = sharedPreferences.getString('token');
 
       final url = Uri.parse(
-          'https://hta.hatimtechnologies.in/api/transactions/addTransaction');
+          '${AppConstants.backendUrl}/api/transactions/addTransaction');
 
       final body = {
         "orderId": "",
@@ -294,7 +306,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(translation(context).successMessageforTransaction),
+        title: Text(translation(context)!.successMessageforTransaction),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -302,7 +314,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -333,7 +345,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -378,7 +390,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              translation(context).raiseBill,
+                              translation(context)!.raiseBill,
                               style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w900,
@@ -403,7 +415,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                       padding:
                           EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       child: Text(
-                        translation(context).amount,
+                        translation(context)!.amount,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -417,32 +429,46 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return translation(context)
+                            return translation(context)!
                                 .validateMessageAmountNotEmpty;
                           }
                           double numericValue = double.parse(value);
                           if (numericValue <= 0) {
-                            return translation(context)
+                            return translation(context)!
                                 .validateMessageAmountLength;
                           }
 
                           return null;
                         },
                         decoration: InputDecoration(
-                            hintText: translation(context).hintTextAmount,
+                            hintText: translation(context)!.hintTextAmount,
                             hintStyle: TextStyle(
                               color: _focusNodes[0].hasFocus
                                   ? Color.fromRGBO(62, 13, 59, 1)
                                   : Colors.grey,
                               fontSize: 14.0,
                             ),
-                            prefixIcon: Icon(
-                              Icons.currency_rupee,
-                              size: 19.0,
-                              color: _focusNodes[0].hasFocus
-                                  ? Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                            ),
+                            prefixIcon: countryCode == 'KW'
+                                ? SizedBox(
+                                    width: 5,
+                                    height: 5,
+                                    child: ColorFiltered(
+                                      colorFilter: ColorFilter.mode(
+                                        Colors.grey.withOpacity(1),
+                                        BlendMode.srcIn,
+                                      ),
+                                      child: Image.asset(
+                                        'assets/images/kwd.png',
+                                      ),
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.currency_rupee,
+                                    size: 19.0,
+                                    color: _focusNodes[0].hasFocus
+                                        ? Color.fromRGBO(62, 13, 59, 1)
+                                        : Colors.grey,
+                                  ),
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(5.0)),
                             focusedBorder: OutlineInputBorder(
@@ -455,7 +481,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        translation(context).description,
+                        translation(context)!.description,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -468,7 +494,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         focusNode: _focusNodes[1],
                         controller: description,
                         decoration: InputDecoration(
-                            hintText: translation(context).hintTextDescription,
+                            hintText: translation(context)!.hintTextDescription,
                             hintStyle: TextStyle(
                               color: _focusNodes[1].hasFocus
                                   ? Color.fromRGBO(62, 13, 59, 1)
@@ -494,7 +520,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: Text(
-                        translation(context).date,
+                        translation(context)!.date,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                         ),
@@ -508,13 +534,13 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         controller: dateControllerForDisplay,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return translation(context)
+                            return translation(context)!
                                 .validateMessageDateNotEmpty;
                           }
                           DateTime enteredDate = DateTime.parse(value);
 
                           if (enteredDate.isAfter(currentDatetime)) {
-                            return translation(context)
+                            return translation(context)!
                                 .validateMessageDateLength;
                           }
                           return null;
@@ -544,7 +570,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                         ? Container(
                             margin: EdgeInsets.symmetric(vertical: 10),
                             child: Center(
-                              child: Text(translation(context).imageUploading),
+                              child: Text(translation(context)!.imageUploading),
                             ),
                           )
                         : (allSelectedImages.isEmpty && cameraImage == null)
@@ -616,7 +642,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                                     raiseBill();
                                   }
                                 },
-                          child: Text(translation(context).raiseBillCapital),
+                          child: Text(translation(context)!.raiseBillCapital),
                         ),
                 ),
               ],

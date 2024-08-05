@@ -9,6 +9,7 @@ import 'package:hta/Pages/App%20Pages/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../../constant.dart';
 import 'bottom_navigation_page.dart';
 
 class EditCustomerPage extends StatefulWidget {
@@ -413,8 +414,8 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
       var token = sharedPreferences.getString('token');
       var organisation = sharedPreferences.getString('organisation');
 
-      final url = Uri.parse(
-          'https://hta.hatimtechnologies.in/api/customer/editCustomer');
+      final url =
+          Uri.parse('${AppConstants.backendUrl}/api/customer/editCustomer');
 
       final body = {
         "organisationName": organisationName.text,

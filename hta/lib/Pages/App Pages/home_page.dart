@@ -16,9 +16,9 @@ import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import 'addCustomer_page.dart';
 import 'home_page_card_info_page.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -28,6 +28,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String finalNumber = '';
   bool isLoading = false;
+  String countryCode = 'IN';
 
   @override
   void initState() {
@@ -75,9 +76,11 @@ class _HomePageState extends State<HomePage> {
     var lastName = sharedPreferences.getString('lastName');
 
     var organisation = sharedPreferences.getString('organisation');
+    countryCode = sharedPreferences.getString('country') ?? 'IN';
+    print('${AppConstants.backendUrl}');
 
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/customer/getAllCustomersForOrgainsationAdmin');
+        '${AppConstants.backendUrl}/api/customer/getAllCustomersForOrgainsationAdmin');
 
     final body = {"userType": "costomer", "organisation": organisation};
     final header = {
@@ -503,17 +506,25 @@ class _HomePageState extends State<HomePage> {
                                                                                 12),
                                                                     child: Row(
                                                                       children: [
-                                                                        Icon(
-                                                                          Icons
-                                                                              .currency_rupee,
-                                                                          size:
-                                                                              12,
-                                                                          color: Color.fromRGBO(
-                                                                              62,
-                                                                              13,
-                                                                              59,
-                                                                              1),
-                                                                        ),
+                                                                        countryCode ==
+                                                                                'KW'
+                                                                            ? Container(
+                                                                                width: 14,
+                                                                                child: ColorFiltered(
+                                                                                    colorFilter: ColorFilter.mode(
+                                                                                      Colors.black.withOpacity(0.8),
+                                                                                      BlendMode.srcIn,
+                                                                                    ),
+                                                                                    child: Image.asset('assets/images/kwd.png')),
+                                                                              )
+                                                                            : Icon(
+                                                                                Icons.currency_rupee,
+                                                                                size: 12,
+                                                                                color: Color.fromRGBO(62, 13, 59, 1),
+                                                                              ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                4), // Add some space between icon/image and text
                                                                         Text(
                                                                           currentItem
                                                                               .pendingAmount
@@ -530,7 +541,7 @@ class _HomePageState extends State<HomePage> {
                                                                                 59,
                                                                                 1),
                                                                           ),
-                                                                        )
+                                                                        ),
                                                                       ],
                                                                     ),
                                                                   )

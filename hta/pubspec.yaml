@@ -102,6 +102,7 @@ flutter:
     - assets/images/image_placeholder.png
     - assets/images/success-green-check-mark-icon.webp
     - assets/profile_img/profile_pic.jpg
+    - assets/images/kwd.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/Account%20Pages/change_language_page.dart';
+import 'package:hta/Pages/Account%20Pages/signUp_page.dart';
 import 'package:hta/Pages/Account%20Pages/success_page.dart';
 
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';

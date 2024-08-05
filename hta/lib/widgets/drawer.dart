@@ -82,7 +82,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              translation(context).welcometoHTA,
+                              translation(context)!.welcometoHTA,
                               // 'Welcome to HTA',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
@@ -202,7 +202,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      translation(context).accountSettings,
+                                      translation(context)!.accountSettings,
                                       // 'Account Settings',
                                       style: TextStyle(
                                           fontSize: 17,
@@ -268,7 +268,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      translation(context).contactUs,
+                                      translation(context)!.contactUs,
                                       // 'Contact Us',
                                       style: TextStyle(
                                           fontSize: 17,
@@ -334,7 +334,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      translation(context).aboutUs,
+                                      translation(context)!.aboutUs,
                                       // 'About Us',
                                       style: TextStyle(
                                           fontSize: 17,
@@ -400,7 +400,7 @@ class _AppDrawerState extends State<AppDrawer> {
                                   Container(
                                     margin: EdgeInsets.only(left: 18),
                                     child: Text(
-                                      translation(context).privacyPolicy,
+                                      translation(context)!.privacyPolicy,
                                       // 'Privacy Policy',
                                       style: TextStyle(
                                           fontSize: 17,
@@ -455,7 +455,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         );
                       },
                       child: Text(
-                        translation(context).logOut,
+                        translation(context)!.logOut,
                         // 'LOG OUT'
                       ),
                       style: ElevatedButton.styleFrom(

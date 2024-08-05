@@ -34,6 +34,6 @@ Locale _locale(String languageCode) {
   }
 }
 
-AppLocalizations translation(BuildContext context) {
+AppLocalizations? translation(BuildContext context) {
   return AppLocalizations.of(context);
 }

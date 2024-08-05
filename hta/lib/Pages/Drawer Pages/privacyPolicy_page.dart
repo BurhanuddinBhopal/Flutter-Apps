@@ -24,7 +24,7 @@ class PrivacyPolicy extends StatelessWidget {
         backgroundColor: Color.fromARGB(221, 238, 234, 234),
         centerTitle: true,
         title: Text(
-          translation(context).privacyPolicy,
+          translation(context)!.privacyPolicy,
           style: TextStyle(color: Colors.black),
         ),
       ),
@@ -51,7 +51,7 @@ class PrivacyPolicy extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.only(left: 12),
                         child: Text(
-                          translation(context).privacyPolicyHeader1,
+                          translation(context)!.privacyPolicyHeader1,
                           style: TextStyle(fontSize: 20),
                         ),
                       )
@@ -64,7 +64,7 @@ class PrivacyPolicy extends StatelessWidget {
                       margin: EdgeInsets.only(left: 65, top: 15),
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Text(
-                        translation(context).privacyPolicyPara1,
+                        translation(context)!.privacyPolicyPara1,
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w500,
@@ -87,7 +87,7 @@ class PrivacyPolicy extends StatelessWidget {
                         padding: EdgeInsets.only(left: 12),
                         width: MediaQuery.of(context).size.width * 0.75,
                         child: Text(
-                          translation(context).privacyPolicyHeader2,
+                          translation(context)!.privacyPolicyHeader2,
                           style: TextStyle(fontSize: 20),
                         ),
                       )
@@ -100,7 +100,7 @@ class PrivacyPolicy extends StatelessWidget {
                       margin: EdgeInsets.only(left: 65, top: 15),
                       width: MediaQuery.of(context).size.width * 0.75,
                       child: Text(
-                        translation(context).privacyPolicyPara2,
+                        translation(context)!.privacyPolicyPara2,
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w500,
@@ -121,7 +121,7 @@ class PrivacyPolicy extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.only(top: 40),
                     child: Text(
-                      translation(context).privacyPolicyFooter1,
+                      translation(context)!.privacyPolicyFooter1,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.w500, color: Colors.black45),
@@ -134,7 +134,7 @@ class PrivacyPolicy extends StatelessWidget {
                       children: [
                         RichText(
                           text: TextSpan(
-                              text: translation(context).privacyPolicyFooter2,
+                              text: translation(context)!.privacyPolicyFooter2,
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Colors.black45),
@@ -144,7 +144,7 @@ class PrivacyPolicy extends StatelessWidget {
                                     margin: EdgeInsets.only(left: 5),
                                     child: LinkButton(
                                         urlLabel:
-                                            translation(context).privacyPolicy,
+                                            translation(context)!.privacyPolicy,
                                         url:
                                             'https://sites.google.com/view/htafinance/home'),
                                   ),

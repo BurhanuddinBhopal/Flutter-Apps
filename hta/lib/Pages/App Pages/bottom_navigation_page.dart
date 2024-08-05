@@ -51,20 +51,20 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
               FontAwesomeIcons.rectangleList,
               size: 20,
             ),
-            label: translation(context).customers,
+            label: translation(context)!.customers,
           ),
           BottomNavigationBarItem(
               icon: FaIcon(
                 FontAwesomeIcons.user,
                 size: 20,
               ),
-              label: translation(context).today),
+              label: translation(context)!.today),
           BottomNavigationBarItem(
               icon: FaIcon(
                 FontAwesomeIcons.calendar,
                 size: 20,
               ),
-              label: translation(context).report),
+              label: translation(context)!.report),
         ],
         backgroundColor: Color.fromRGBO(62, 13, 59, 1),
         currentIndex: _selectedIndex,

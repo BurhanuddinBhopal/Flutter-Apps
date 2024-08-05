@@ -32,19 +32,20 @@ class SuccessPage extends StatelessWidget {
             ),
             SizedBox(height: 40.0),
             Text(
-              'We are reviewing your account please wait',
+              'Now please do Sign In From the button below',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20.0),
-            Text(
-              'For faster service, please contact us on Whatsapp',
-              style: TextStyle(fontSize: 16.0),
-            ),
+            // SizedBox(height: 20.0),
+            // Text(
+            //   'For faster service, please contact us on Whatsapp',
+            //   style: TextStyle(fontSize: 16.0),
+            // ),
             SizedBox(height: 40.0),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 20),
@@ -64,33 +65,33 @@ class SuccessPage extends StatelessWidget {
                       child: Text('Sign In'),
                     ),
                   ),
-                  SizedBox(height: 20.0),
-                  ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(37, 211, 102, 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40.0),
-                        ),
-                      ),
-                      onPressed: (() {
-                        _launchWhatsApp();
-                      }),
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            FaIcon(
-                              FontAwesomeIcons.whatsapp,
-                              size: 19,
-                            ),
-                            Container(
-                                margin: EdgeInsets.symmetric(horizontal: 5),
-                                child: Text(
-                                    translation(context).contactUsWhatsapp)),
-                          ],
-                        ),
-                      )),
+                  // SizedBox(height: 20.0),
+                  // ElevatedButton(
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: Color.fromRGBO(37, 211, 102, 1),
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(40.0),
+                  //       ),
+                  //     ),
+                  //     onPressed: (() {
+                  //       _launchWhatsApp();
+                  //     }),
+                  //     child: Container(
+                  //       margin: EdgeInsets.symmetric(horizontal: 5),
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  //         children: [
+                  //           FaIcon(
+                  //             FontAwesomeIcons.whatsapp,
+                  //             size: 19,
+                  //           ),
+                  //           Container(
+                  //               margin: EdgeInsets.symmetric(horizontal: 5),
+                  //               child: Text(
+                  //                   translation(context)!.contactUsWhatsapp)),
+                  //         ],
+                  //       ),
+                  //     )),
                 ],
               ),
             ),

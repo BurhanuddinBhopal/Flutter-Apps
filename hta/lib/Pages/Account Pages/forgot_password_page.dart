@@ -9,6 +9,7 @@ import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import 'login_page.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
             child: Text(
-              translation(context).okay,
+              translation(context)!.okay,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -61,7 +62,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(
-          translation(context).successMessageforPassword,
+          translation(context)!.successMessageforPassword,
           textAlign: TextAlign.center,
         ),
         actions: <Widget>[
@@ -71,7 +72,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
@@ -95,8 +96,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       var token = sharedPreferences.getString('token');
-      final url = Uri.parse(
-          'https://hta.hatimtechnologies.in/api/user/change-user-password');
+      final url =
+          Uri.parse('${AppConstants.backendUrl}/api/user/change-user-password');
 
       final body = {
         'oldPassword': oldPassword.text,
@@ -173,7 +174,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    translation(context).changePassword,
+                                    translation(context)!.changePassword,
                                     style: TextStyle(
                                         fontSize: 24.0,
                                         fontWeight: FontWeight.w400,
@@ -198,7 +199,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            translation(context).oldPassword,
+                            translation(context)!.oldPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -212,10 +213,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             controller: oldPassword,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordLength;
                               }
 
@@ -256,7 +257,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            translation(context).newPassword,
+                            translation(context)!.newPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -270,10 +271,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             controller: newPassword,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordLength;
                               }
 
@@ -314,7 +315,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           padding: EdgeInsets.symmetric(
                               vertical: 10.0, horizontal: 25),
                           child: Text(
-                            translation(context).confirmPassword,
+                            translation(context)!.confirmPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
@@ -327,13 +328,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             obscureText: isHiddenPassword[2],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordNotEmpty;
                               } else if (value.length < 6) {
-                                return translation(context)
+                                return translation(context)!
                                     .validateMessagePasswordLength;
                               } else if (value != newPassword.text) {
-                                return translation(context).passwordDoNotMatch;
+                                return translation(context)!.passwordDoNotMatch;
                               }
 
                               return null;
@@ -388,7 +389,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               forgetPassword();
                             },
                             child: Text(
-                                translation(context).changePasswordCapital),
+                                translation(context)!.changePasswordCapital),
                           ),
                         ),
                       ],

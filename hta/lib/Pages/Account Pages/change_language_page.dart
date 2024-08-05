@@ -91,7 +91,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      translation(context).changeLanguage,
+                      translation(context)!.changeLanguage,
                       style: TextStyle(
                           fontSize: 24.0,
                           fontWeight: FontWeight.w400,

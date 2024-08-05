@@ -8,7 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/Pages/App%20Pages/customerReport_page.dart';
 import 'package:hta/Pages/App%20Pages/editCustomer_page.dart';
-import 'package:hta/Pages/App%20Pages/home_page.dart';
+
 import 'package:hta/language/language_constant.dart';
 
 import 'package:hta/widgets/refresh.dart';
@@ -17,6 +17,7 @@ import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import 'bottom_navigation_page.dart';
 import 'card_info_page_pay_bill_button_page.dart';
 import 'home_page_detailed_card_info_page.dart';
@@ -47,6 +48,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   var pendingAmount;
   bool isPaymentCollected = false;
   List<String>? imageUrls;
+  String? countryCode;
   void updateImageUrls(List<String> newImageUrls) {
     setState(() {
       imageUrls = newImageUrls;
@@ -62,6 +64,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   void initState() {
     transactionData();
     customerData();
+    _getCountryCode();
     setState(() {
       imageUrls = widget.imageUrls;
       _customerData = widget.customerData;
@@ -72,12 +75,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     super.initState();
   }
 
+  Future<void> _getCountryCode() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    setState(() {
+      countryCode = sharedPreferences.getString('country') ?? 'IN';
+      print(countryCode);
+    });
+  }
+
   Future<void> customerData() async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/customer/getOneCustomersForOrgainsationAdmin');
+        '${AppConstants.backendUrl}/api/customer/getOneCustomersForOrgainsationAdmin');
     final body = {
       'customerId': _customerData["_id"],
       'userType': 'costomer',
@@ -108,7 +120,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction');
+        '${AppConstants.backendUrl}/api/transactions/getAllTransaction');
     final body = {"customer": _customerData["_id"]};
 
     final header = {
@@ -142,7 +154,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/transactions/deleteTransaction');
+        '${AppConstants.backendUrl}/api/transactions/deleteTransaction');
     final body = {
       "customerId": _customerData["_id"],
       "transactionId": transactionId
@@ -172,14 +184,14 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(translation(context).confirmDelete),
+        title: Text(translation(context)!.confirmDelete),
         actions: <Widget>[
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromRGBO(62, 13, 59, 1),
             ),
             child: Text(
-              translation(context).yes,
+              translation(context)!.yes,
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
@@ -192,7 +204,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
               backgroundColor: Color.fromRGBO(62, 13, 59, 1),
             ),
             child: Text(
-              translation(context).no,
+              translation(context)!.no,
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
@@ -216,7 +228,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 backgroundColor: Color.fromRGBO(62, 13, 59, 1),
               ),
               child: Text(
-                translation(context).okay,
+                translation(context)!.okay,
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
@@ -424,20 +436,36 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                           margin: EdgeInsets.only(top: 3),
                                           child: Row(
                                             children: [
-                                              const Icon(
-                                                Icons.currency_rupee,
-                                                size: 20,
-                                                color: Color.fromRGBO(
-                                                    62, 13, 59, 1),
-                                              ),
+                                              countryCode == 'KW'
+                                                  ? Container(
+                                                      margin: EdgeInsets.only(
+                                                          right: 5),
+                                                      width: 20,
+                                                      child: ColorFiltered(
+                                                        colorFilter:
+                                                            ColorFilter.mode(
+                                                          Colors.black
+                                                              .withOpacity(1),
+                                                          BlendMode.srcIn,
+                                                        ),
+                                                        child: Image.asset(
+                                                            'assets/images/kwd.png'),
+                                                      ),
+                                                    )
+                                                  : Icon(
+                                                      Icons.currency_rupee,
+                                                      size: 20,
+                                                      color: Color.fromRGBO(
+                                                          62, 13, 59, 1),
+                                                    ),
                                               Text(
                                                 pendingAmount?.toString() ?? '',
                                                 style: TextStyle(
-                                                    color: Color.fromRGBO(
-                                                        62, 13, 59, 1),
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              )
+                                                  color: Color.fromRGBO(
+                                                      62, 13, 59, 1),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         )
@@ -685,7 +713,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             padding: EdgeInsets.symmetric(horizontal: 5),
                             child: Icon(Icons.add_to_photos),
                           ),
-                          Text(translation(context).paybillCapital),
+                          Text(translation(context)!.paybillCapital),
                         ],
                       ),
                     ),
@@ -716,7 +744,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               child: Icon(Icons.menu_book_sharp),
                             ),
-                            Text(translation(context).raiseBillCapital),
+                            Text(translation(context)!.raiseBillCapital),
                           ],
                         ),
                       ))
@@ -840,7 +868,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
               children: [
                 SlidableAction(
                   icon: Icons.delete,
-                  label: translation(context).delete,
+                  label: translation(context)!.delete,
                   backgroundColor: Colors.red,
                   onPressed: (context) {
                     _popupDialogBox(transaction['_id']);
@@ -869,22 +897,35 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                           // transaction["orderStatus"] == 'PAYMENT-COLLECTED'
                           isPaymentCollected
                               ? Text(
-                                  translation(context).paidAmount,
+                                  translation(context)!.paidAmount,
                                   style: TextStyle(color: Colors.white),
                                 )
                               : Text(
-                                  translation(context).billAmount,
+                                  translation(context)!.billAmount,
                                   style: TextStyle(color: Colors.white),
                                 ),
                           Container(
                             margin: EdgeInsets.only(top: 10),
                             child: Row(
                               children: [
-                                const Icon(
-                                  Icons.currency_rupee_sharp,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
+                                countryCode == 'KW'
+                                    ? Container(
+                                        margin: EdgeInsets.only(right: 5),
+                                        width: 20,
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            Colors.white.withOpacity(1),
+                                            BlendMode.srcIn,
+                                          ),
+                                          child: Image.asset(
+                                              'assets/images/kwd.png'),
+                                        ),
+                                      )
+                                    : const Icon(
+                                        Icons.currency_rupee_sharp,
+                                        size: 18,
+                                        color: Colors.white,
+                                      ),
                                 Container(
                                   child: Text(
                                     '${transaction["amount"]}',
@@ -907,13 +948,13 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                         children: [
                           transaction["orderStatus"] == 'PAYMENT-COLLECTED'
                               ? Text(
-                                  translation(context).paidOn,
+                                  translation(context)!.paidOn,
                                   style: TextStyle(
                                     color: Colors.white,
                                   ),
                                 )
                               : Text(
-                                  translation(context).raiseOn,
+                                  translation(context)!.raiseOn,
                                   style: TextStyle(
                                     color: Colors.white,
                                   ),

@@ -17,6 +17,8 @@ import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../constant.dart';
+
 class DetailedInfoPage extends StatefulWidget {
   final customerOrganization;
   final customerData;
@@ -43,6 +45,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   var billAmount;
   var pendingAmount;
   var mobileNumber;
+  String? countryCode;
 
   bool isLoading = false;
   List<String> imageUrls = [];
@@ -68,6 +71,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   @override
   void initState() {
     transactionData();
+    _getCountryCode();
     setState(() {
       _customerOrganization = widget.customerOrganization;
       _customerData = widget.customerData;
@@ -94,6 +98,15 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     super.initState();
   }
 
+  Future<void> _getCountryCode() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    setState(() {
+      countryCode = sharedPreferences.getString('country') ?? 'IN';
+      print(countryCode);
+    });
+  }
+
   Future<void> transactionData() async {
     setState(() {
       isLoading = true;
@@ -102,7 +115,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
     final url = Uri.parse(
-        'https://hta.hatimtechnologies.in/api/transactions/getAllTransaction');
+        '${AppConstants.backendUrl}/api/transactions/getAllTransaction');
     final body = {"customer": _customerData["_id"]};
     final header = {
       'Content-Type': 'application/json',
@@ -219,8 +232,8 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(translation(context).billAmount),
-                            Text(translation(context).description),
+                            Text(translation(context)!.billAmount),
+                            Text(translation(context)!.description),
                           ],
                         ),
                         Container(
@@ -230,17 +243,34 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                             children: [
                               Row(
                                 children: [
-                                  Icon(
-                                    Icons.currency_rupee,
-                                    size: 18,
-                                    color: Color.fromRGBO(62, 13, 59, 1),
-                                  ),
-                                  Text('${_customerOrganization["amount"]}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color.fromRGBO(62, 13, 59, 1),
-                                      ))
+                                  countryCode == 'KW'
+                                      ? Container(
+                                          width: 20,
+                                          margin: EdgeInsets.only(right: 5),
+                                          child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                              Colors.black.withOpacity(
+                                                  1), // Darken the image
+                                              BlendMode.srcIn,
+                                            ),
+                                            child: Image.asset(
+                                                'assets/images/kwd.png'),
+                                          ),
+                                        )
+                                      : const Icon(
+                                          Icons.currency_rupee_sharp,
+                                          size: 18,
+                                          color: Colors.white,
+                                        ),
+                                  Container(
+                                    child: Text(
+                                        '${_customerOrganization["amount"]}',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color.fromRGBO(62, 13, 59, 1),
+                                        )),
+                                  )
                                 ],
                               ),
                               Row(
@@ -293,7 +323,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
               child: imageUrls1.isEmpty
                   ? Center(
                       child: Text(
-                        translation(context).noImageFound,
+                        translation(context)!.noImageFound,
                         textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 30),
                       ),
@@ -308,7 +338,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                               errorWidget: (context, url, error) {
                                 return Center(
                                   child: Text(
-                                    translation(context).noImageFound,
+                                    translation(context)!.noImageFound,
                                     style: TextStyle(fontSize: 30),
                                   ),
                                 );
@@ -347,7 +377,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                                 errorWidget: (context, url, error) {
                                   return Center(
                                     child: Text(
-                                      translation(context).unableToLoadImage,
+                                      translation(context)!.unableToLoadImage,
                                       style: TextStyle(fontSize: 24),
                                     ),
                                   );
@@ -382,7 +412,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                         padding: EdgeInsets.symmetric(horizontal: 5),
                         child: Icon(Icons.message),
                       ),
-                      Text(translation(context).sendMessage),
+                      Text(translation(context)!.sendMessage),
                     ],
                   ),
                 ),
@@ -406,7 +436,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           child: FaIcon(FontAwesomeIcons.whatsapp),
                         ),
-                        Text(translation(context).whatsapp),
+                        Text(translation(context)!.whatsapp),
                       ],
                     ),
                   ))

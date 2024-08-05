@@ -38,6 +38,7 @@
     "enterValidMobileNumber": "कृपया वैध मोबाइल नंबर और पासवर्ड दर्ज करें",
     "mobileNumber": "मोबाइल नंबर",
     "validateMessageMobileNumber": "मोबाइल नंबर खाली नहीं हो सकता",
+    "validateMessageMobileNumberForValidNumber": "कृपया एक वैध 10-अंकीय मोबाइल नंबर दर्ज करें",
     "hintTextMobileNumber": "मोबाइल नंबर दर्ज करें",
     "password": "पासवर्ड",
     "validateMessagePasswordNotEmpty": "पासवर्ड खाली नहीं हो सकता",

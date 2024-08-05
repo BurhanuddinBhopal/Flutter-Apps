@@ -13,6 +13,7 @@ import 'package:page_transition/page_transition.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constant.dart';
 import '../Account Pages/forgot_password_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (ctx) => Center(
         child: AlertDialog(
-          title: Text(translation(context).errorOccurred),
+          title: Text(translation(context)!.errorOccurred),
           content: Text(message),
           actions: <Widget>[
             Center(
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(62, 13, 59, 1)),
                 child: Text(
-                  translation(context).okay,
+                  translation(context)!.okay,
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
@@ -66,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> userLogin() async {
     if (_formKey.currentState!.validate()) {
-      final url = Uri.parse('https://hta.hatimtechnologies.in/api/user/login');
+      final url = Uri.parse('${AppConstants.backendUrl}/api/user/login');
 
       final body = {
         'mobileNumber': mobileNumber.text,
@@ -82,12 +83,15 @@ class _LoginPageState extends State<LoginPage> {
 
         final responseData = jsonDecode(response.body.toString());
 
-        print(responseData);
+        print("responseData: $responseData");
 
         var code = responseData['code'];
         if (code == 1) {
           var mobileNumber = responseData["user"]['mobileNumber'];
+          var country = responseData['country'];
+          print(country);
           var token = responseData['token'];
+
           var name = responseData["user"]['name'];
           var lastName = responseData["user"]['lastName'];
           var organisation = responseData["user"]['organisation'];
@@ -99,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
           sharedPreferences.setString('organisation', organisation);
           sharedPreferences.setString('name', name);
           sharedPreferences.setString('lastName', lastName);
+          sharedPreferences.setString('country', country);
 
           Navigator.push(
             context,
@@ -126,7 +131,9 @@ class _LoginPageState extends State<LoginPage> {
             },
           );
         } else {
-          // Handle other response codes if needed
+          String errorMessage =
+              responseData['message'] ?? 'Something went wrong';
+          _showErrorDialog(errorMessage);
         }
       } catch (error) {
         print('Error occurred: $error');
@@ -144,12 +151,12 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(translation(context).confirmExit,
+          title: Text(translation(context)!.confirmExit,
               style: TextStyle(color: Colors.black, fontSize: 20.0)),
-          content: Text(translation(context).sureExit),
+          content: Text(translation(context)!.sureExit),
           actions: <Widget>[
             TextButton(
-              child: Text(translation(context).yes,
+              child: Text(translation(context)!.yes,
                   style: TextStyle(fontSize: 18.0)),
               onPressed: () {
                 Navigator.of(context)
@@ -157,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
             TextButton(
-              child: Text(translation(context).no,
+              child: Text(translation(context)!.no,
                   style: TextStyle(fontSize: 18.0)),
               onPressed: () {
                 Navigator.of(context)
@@ -226,7 +233,7 @@ class _LoginPageState extends State<LoginPage> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Text(
-                                  translation(context).signInSmall,
+                                  translation(context)!.signInSmall,
                                   // 'Sign In',
                                   style: TextStyle(
                                       fontSize: 24.0,
@@ -251,7 +258,7 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 25),
                         child: Text(
-                          translation(context).welcomeBack,
+                          translation(context)!.welcomeBack,
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.w600),
                         ),
@@ -261,7 +268,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 25),
                         child: Text(
-                          translation(context).mobileNumber,
+                          translation(context)!.mobileNumber,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -275,15 +282,18 @@ class _LoginPageState extends State<LoginPage> {
                           controller: mobileNumber,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessageMobileNumber;
+                            } else if (value.length != 10) {
+                              return translation(context)!
+                                  .validateMessageMobileNumberForValidNumber;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
                               hintText:
-                                  translation(context).hintTextMobileNumber,
+                                  translation(context)!.hintTextMobileNumber,
                               hintStyle: TextStyle(
                                 color: _focusNodes[0].hasFocus
                                     ? Color.fromRGBO(62, 13, 59, 1)
@@ -310,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 25),
                         child: Text(
-                          translation(context).password,
+                          translation(context)!.password,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
@@ -324,17 +334,17 @@ class _LoginPageState extends State<LoginPage> {
                           obscureText: isHiddenPassword,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessagePasswordNotEmpty;
                             } else if (value.length < 6) {
-                              return translation(context)
+                              return translation(context)!
                                   .validateMessagePasswordLength;
                             }
 
                             return null;
                           },
                           decoration: InputDecoration(
-                              hintText: translation(context).hintTextPassword,
+                              hintText: translation(context)!.hintTextPassword,
                               hintStyle: TextStyle(
                                 color: _focusNodes[1].hasFocus
                                     ? Color.fromRGBO(62, 13, 59, 1)
@@ -377,7 +387,7 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => ForgotPassword()));
                           },
                           child: Text(
-                            translation(context).forgotPassword,
+                            translation(context)!.forgotPassword,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Color.fromRGBO(62, 13, 59, 1),
@@ -401,7 +411,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             userLogin();
                           },
-                          child: Text(translation(context).signInCapital),
+                          child: Text(translation(context)!.signInCapital),
                         ),
                       ),
                       SizedBox(height: 10),
@@ -411,7 +421,7 @@ class _LoginPageState extends State<LoginPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Text(
-                              translation(context).dontHaveAccount,
+                              translation(context)!.dontHaveAccount,
                               style: TextStyle(
                                 fontSize: 12.0,
                               ),
@@ -424,7 +434,7 @@ class _LoginPageState extends State<LoginPage> {
                                         builder: (context) => SignUpPage()));
                               },
                               child: Text(
-                                translation(context).signUp,
+                                translation(context)!.signUp,
                                 style: TextStyle(
                                   color: Color.fromRGBO(62, 13, 59, 1),
                                   fontWeight: FontWeight.bold,
