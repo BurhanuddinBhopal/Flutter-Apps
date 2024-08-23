@@ -66,10 +66,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text(
-          translation(context)!.successMessageforPassword,
-          textAlign: TextAlign.center,
-        ),
+        title: Text(translation(context)!.successMessageforPassword),
         actions: <Widget>[
           Container(
             // margin: EdgeInsets.symmetric(horizontal: 120),
@@ -121,28 +118,55 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           headers: header,
         );
 
-        final responseData = jsonDecode(response.body.toString());
+        // Check if response is successful
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body.toString());
 
-        if (responseData['code'] == 1) {
-          _showPopupDialog(context);
-        } else {
-          String errorMessage = 'Something went wrong';
-          if (responseData is Map<String, dynamic> &&
-              responseData['message'] is String) {
-            errorMessage = responseData['message'];
+          if (responseData['code'] == 1) {
+            _showPopupDialog(context); // Show success dialog
+          } else {
+            String errorMessage =
+                responseData['message'] ?? 'Something went wrong';
+            _showGenericErrorDialog(errorMessage);
           }
-          _showErrorDialog(context, errorMessage);
-        }
-      } catch (error) {
-        if (error is SocketException) {
-          _showErrorDialog(context,
-              "No internet connection. Please check your network settings.");
         } else {
-          print('Error occurred: $error');
-          _showErrorDialog(context, 'Error occurred: $error');
+          // Handle non-200 status codes (e.g., 400, 500, etc.)
+          _showGenericErrorDialog(
+              'Server error: ${response.statusCode}. Please try again.');
         }
+      } on SocketException catch (_) {
+        // No Internet connection or failed to reach the server
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } on FormatException catch (e) {
+        // Invalid format or data issue
+        _showGenericErrorDialog(
+            'Invalid data format. Please check your input and try again.');
+      } catch (e) {
+        // Other unexpected errors
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       }
     }
+  }
+
+  void _showGenericErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final List<FocusNode> _focusNodes = [

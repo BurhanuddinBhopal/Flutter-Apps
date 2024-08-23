@@ -245,7 +245,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
     }
 
     dateControllerForDisplay.text =
-        DateFormat("dd-MM-yyyy").format(DateTime.now());
+        DateFormat("yyyy-MM-dd").format(DateTime.now());
 
     super.initState();
   }
@@ -299,7 +299,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
 
         final header = {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json', // Ensure content type is JSON
+          'Content-Type': 'application/json',
         };
 
         final response =
@@ -312,13 +312,17 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         } else {
           _showErrorDialog(responseData);
         }
+      } on SocketException catch (_) {
+        // No Internet connection or failed to reach the server
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } on FormatException catch (e) {
+        // Invalid amount format
+        _showGenericErrorDialog(
+            'Invalid amount format. Please enter a valid number.');
       } catch (e) {
-        if (e is FormatException) {
-          _showGenericErrorDialog(
-              'Invalid amount format. Please enter a valid number.');
-        } else {
-          _showGenericErrorDialog('Something went wrong. Please try again.');
-        }
+        // Other unexpected errors
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       } finally {
         setState(() {
           isButtonDisabled = false;

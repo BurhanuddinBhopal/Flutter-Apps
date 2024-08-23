@@ -2,35 +2,36 @@
 
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
-import 'package:hta/Pages/App%20Pages/image_page.dart';
-import 'package:hta/language/language_constant.dart';
-
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
+import 'package:hta/Pages/App%20Pages/image_page.dart';
+import 'package:hta/language/language_constant.dart';
 
 import '../../constant.dart';
 
 class DetailedInfoPage extends StatefulWidget {
   final customerOrganization;
   final customerData;
+  final double? pendingAmount;
   final List<String>? imageUrls;
   final Function(List<String>) onUpdateImageUrls;
 
   const DetailedInfoPage({
-    super.key,
     required this.customerOrganization,
     required this.customerData,
-    required this.imageUrls,
+    this.imageUrls,
     required this.onUpdateImageUrls,
+    required this.pendingAmount,
   });
 
   @override
@@ -45,6 +46,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   var name;
   var billAmount;
   double? dueAmount;
+  var _pendingAmount;
   var mobileNumber;
   String? countryCode;
 
@@ -76,8 +78,12 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     setState(() {
       _customerOrganization = widget.customerOrganization;
       _customerData = widget.customerData;
+      print("customerData: $_customerData");
+      print("customerOrganization: $_customerOrganization");
 
       image = [_customerOrganization['picture']];
+
+      _pendingAmount = widget.pendingAmount ?? "";
 
       mobileNumber = _customerData['mobileNumber'];
       name = _customerData["organisationName"];
@@ -148,11 +154,34 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     }
   }
 
+  String formatBillAmount(dynamic amount) {
+    // Convert the amount to a double if it's an int
+    double value = (amount is int) ? amount.toDouble() : amount;
+
+    // Check if the value has a decimal part
+    if (value % 1 == 0) {
+      return value.toStringAsFixed(0); // Display as whole number
+    } else {
+      return value.toStringAsFixed(2); // Display with two decimal places
+    }
+  }
+
+  String formatAmount(dynamic amount) {
+    if (amount == null) {
+      return ''; // Handle null case
+    } else if (amount is int || amount % 1 == 0) {
+      return amount
+          .toStringAsFixed(0); // Display as whole number if no decimal part
+    } else {
+      return amount.toStringAsFixed(2); // Display with two decimal places
+    }
+  }
+
   void _launchSms() async {
     try {
       String imageText = imageUrls1.join(', ');
       String uri =
-          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount $billAmount and your pending balance is ${dueAmount!.toStringAsFixed(2)}.\nImages: $imageText ")}';
+          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatAmount(_pendingAmount)}.\nImages: $imageText ")}';
 
       if (await launchUrl(Uri.parse(uri))) {
         // Handle success
@@ -173,7 +202,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     try {
       String imageText = imageUrls1.join(', ');
       String uri =
-          'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount $billAmount and your pending balance is ${dueAmount!.toStringAsFixed(2)}.\nImages: $imageText')}';
+          'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatAmount(_pendingAmount)}.\nImages: $imageText')}';
 
       if (await launch(uri)) {
         // Handle success
@@ -199,26 +228,23 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                      type: PageTransitionType.fade,
-                      child: (DetailedCardPage(
-                          customerData: _customerData,
-                          onUpdateImageUrls: updateImageUrls))),
-                );
-              },
-              icon: Icon(Icons.arrow_back)),
-          title: Center(child: Text('${_customerData["organisationName"]}')),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_none),
-            ),
-          ]),
+        backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageTransition(
+                    type: PageTransitionType.fade,
+                    child: (DetailedCardPage(
+                        customerData: _customerData,
+                        onUpdateImageUrls: updateImageUrls))),
+              );
+            },
+            icon: Icon(Icons.arrow_back)),
+        title: Container(
+            margin: EdgeInsets.symmetric(horizontal: 85),
+            child: Text('${_customerData["organisationName"]}')),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -281,7 +307,8 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                                         ),
                                   Container(
                                     child: Text(
-                                        '${_customerOrganization["amount"]}',
+                                        formatBillAmount(
+                                            _customerOrganization["amount"]),
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.w500,
@@ -321,7 +348,10 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                                   Container(
                                     child: dueAmount != null
                                         ? Text(
-                                            dueAmount!.toStringAsFixed(2),
+                                            _pendingAmount != null &&
+                                                    _pendingAmount != ""
+                                                ? formatAmount(_pendingAmount)
+                                                : '',
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w500,

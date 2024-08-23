@@ -146,6 +146,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       customerData: _customerData,
                       imageUrls: imageUrls,
                       onUpdateImageUrls: updateImageUrls,
+                      pendingAmount: _pendingAmount,
                     ),
                 MyRoutes.raisebillRoute: (context) => RaiseBillPage(
                       customerData: _customerData,

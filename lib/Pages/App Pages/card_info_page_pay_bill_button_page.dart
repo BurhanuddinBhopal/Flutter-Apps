@@ -252,7 +252,7 @@ class _PayBillPageState extends State<PayBillPage> {
     }
 
     dateControllerForDisplay.text =
-        DateFormat("dd-MM-yyyy").format(DateTime.now());
+        DateFormat("yyyy-MM-dd").format(DateTime.now());
 
     super.initState();
   }
@@ -315,13 +315,17 @@ class _PayBillPageState extends State<PayBillPage> {
         } else {
           _showErrorDialog(responseData);
         }
+      } on SocketException catch (_) {
+        // No Internet connection or failed to reach the server
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } on FormatException catch (e) {
+        // Invalid amount format
+        _showGenericErrorDialog(
+            'Invalid amount format. Please enter a valid number.');
       } catch (e) {
-        if (e is FormatException) {
-          _showGenericErrorDialog(
-              'Invalid amount format. Please enter a valid number.');
-        } else {
-          _showGenericErrorDialog('Something went wrong. Please try again.');
-        }
+        // Other unexpected errors
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       } finally {
         setState(() {
           isButtonDisabled = false;

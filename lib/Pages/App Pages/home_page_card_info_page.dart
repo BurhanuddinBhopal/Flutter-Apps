@@ -109,6 +109,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     );
     final responseData = jsonDecode(response.body.toString());
     setState(() {
+      print("responseData: $responseData");
       pendingAmount =
           double.parse(responseData['customer']['pendingAmount'].toString());
       print('pendingAmount233: $pendingAmount');
@@ -247,6 +248,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
 
   @override
   Widget build(BuildContext context) {
+    String formatPendingAmount(double? amount) {
+      // Check if the amount is null
+      if (amount == null) return '';
+
+      // Convert int to double if needed
+      double value = (amount is int) ? amount.toDouble() : amount;
+
+      // Check if the value has decimals
+      if (value % 1 == 0) {
+        return value.toStringAsFixed(0); // Display as whole number
+      } else {
+        return value.toStringAsFixed(2); // Display with two decimal places
+      }
+    }
+
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -310,7 +326,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 margin: EdgeInsets.only(left: 10, right: 10, top: 10),
                 height: 80,
                 child: isLoading
-                    ? Center(child: null)
+                    ? Center(
+                        child: Text(''),
+                      )
                     : RefreshWidget(
                         color: Color.fromRGBO(62, 13, 59, 1),
                         onRefresh: customerData,
@@ -342,7 +360,10 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                             Container(
                                               margin: EdgeInsets.only(left: 10),
                                               child: Text(
-                                                '${_customerData["location"]}',
+                                                _customerData["location"] !=
+                                                        null
+                                                    ? '${_customerData["location"]}'
+                                                    : '',
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(
                                                         62, 13, 59, 1),
@@ -358,7 +379,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                           Row(
                                             children: [
                                               Text(
-                                                '${_customerData["name"]}',
+                                                _customerData["name"] != null
+                                                    ? '${_customerData["name"]}'
+                                                    : '',
                                                 textAlign: TextAlign.right,
                                                 style: TextStyle(
                                                     fontWeight:
@@ -368,7 +391,10 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                 padding:
                                                     EdgeInsets.only(left: 5),
                                                 child: Text(
-                                                  '${_customerData["lastName"]}',
+                                                  _customerData["lastName"] !=
+                                                          null
+                                                      ? '${_customerData["lastName"]}'
+                                                      : '',
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                       fontWeight:
@@ -425,11 +451,14 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                 ),
                                               ),
                                               Container(
-                                                margin: EdgeInsets.only(
-                                                  left: 10,
-                                                ),
+                                                margin:
+                                                    EdgeInsets.only(left: 10),
                                                 child: Text(
-                                                  '${_customerData["mobileNumber"]}',
+                                                  _customerData[
+                                                              "mobileNumber"] !=
+                                                          null
+                                                      ? '${_customerData["mobileNumber"]}'
+                                                      : '',
                                                   style: TextStyle(
                                                       color: Color.fromRGBO(
                                                           62, 13, 59, 1),
@@ -467,8 +496,10 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                           62, 13, 59, 1),
                                                     ),
                                               Text(
-                                                pendingAmount!
-                                                    .toStringAsFixed(2),
+                                                pendingAmount != null
+                                                    ? formatPendingAmount(
+                                                        pendingAmount)
+                                                    : '',
                                                 style: TextStyle(
                                                   color: Color.fromRGBO(
                                                       62, 13, 59, 1),
@@ -841,6 +872,18 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
 
   // Function to build your transaction card widget
   Widget buildTransactionCard(dynamic transaction) {
+    String formatAmount(dynamic amount) {
+      // Ensure that the amount is treated as a double
+      double value = (amount is int) ? amount.toDouble() : amount;
+
+      // Check if the value is a whole number or has decimal places
+      if (value % 1 == 0) {
+        return value.toStringAsFixed(0); // Display as whole number
+      } else {
+        return value.toStringAsFixed(2); // Display with two decimal places
+      }
+    }
+
     isPaymentCollected = transaction["orderStatus"] == 'PAYMENT-COLLECTED';
 
     return WillPopScope(
@@ -856,6 +899,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       },
       child: GestureDetector(
         onTap: (() {
+          print("pendingAmount: $pendingAmount");
           Navigator.push(
             context,
             PageTransition(
@@ -865,6 +909,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 customerData: _customerData,
                 imageUrls: imageUrls,
                 onUpdateImageUrls: updateImageUrls,
+                pendingAmount: pendingAmount,
               ),
             ),
           );
@@ -937,7 +982,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                       ),
                                 Container(
                                   child: Text(
-                                    '${transaction["amount"]}',
+                                    formatAmount(transaction["amount"]),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,

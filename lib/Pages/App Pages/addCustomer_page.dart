@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttercontactpicker/fluttercontactpicker.dart';
@@ -53,36 +54,69 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
 
   Future<void> addCustomer() async {
     if (_formKey.currentState!.validate()) {
-      final SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      var token = sharedPreferences.getString('token');
-      var organisation = sharedPreferences.getString('organisation');
+      try {
+        final SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        var token = sharedPreferences.getString('token');
+        var organisation = sharedPreferences.getString('organisation');
 
-      final url =
-          Uri.parse('${AppConstants.backendUrl}/api/customer/addCustomer');
+        final url =
+            Uri.parse('${AppConstants.backendUrl}/api/customer/addCustomer');
 
-      final body = {
-        "organisationName": organisationName.text,
-        "name": name.text,
-        "lastName": lastName.text,
-        "mobileNumber": mobileNumber.text,
-        "userType": "costomer",
-        "organisation": organisation,
-      };
-      final header = {
-        'Authorization': 'Bearer $token',
-      };
-      print('print body: $body');
+        final body = {
+          "organisationName": organisationName.text,
+          "name": name.text,
+          "lastName": lastName.text,
+          "mobileNumber": mobileNumber.text,
+          "userType": "costomer",
+          "organisation": organisation,
+        };
+        final header = {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', // Ensure content type is JSON
+        };
+        print('print body: $body');
 
-      final response = await http.post(url, body: body, headers: header);
-      final responseData = jsonDecode(response.body.toString());
-      print("print responseData: $responseData");
-      if (responseData['code'] == 1) {
-        _showSuccessDialog();
-      } else {
-        _showErrorDialog(responseData);
+        final response =
+            await http.post(url, body: jsonEncode(body), headers: header);
+
+        final responseData = jsonDecode(response.body.toString());
+        print("print responseData: $responseData");
+
+        if (responseData['code'] == 1) {
+          _showSuccessDialog();
+        } else {
+          _showErrorDialog(responseData);
+        }
+      } on SocketException catch (_) {
+        // No Internet connection or failed to reach the server
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } catch (e) {
+        // Other unexpected errors
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       }
     }
+  }
+
+  void _showGenericErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showSuccessDialog() {

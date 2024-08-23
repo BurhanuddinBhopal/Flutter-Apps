@@ -71,7 +71,7 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> userSignUp() async {
     if (_formKey.currentState!.validate()) {
       if (selectedCountry == null) {
-        _showErrorDialog(context, 'Please select a country');
+        _showGenericErrorDialog('Please select a country');
         return;
       }
 
@@ -103,38 +103,60 @@ class _SignUpPageState extends State<SignUpPage> {
         print('Response status: ${response.statusCode}');
         print('Response body: ${response.body}');
 
-        final responseData = jsonDecode(response.body.toString());
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body.toString());
 
-        if (responseData['code'] == 1) {
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.fade,
-              child: SuccessPage(),
-            ),
-          );
-        } else {
-          String errorMessage = 'Something went wrong';
-          if (responseData is Map<String, dynamic> &&
-              responseData['message'] is String) {
-            errorMessage = responseData['message'];
+          if (responseData['code'] == 1) {
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: SuccessPage(),
+              ),
+            );
+          } else {
+            String errorMessage =
+                responseData['message'] ?? 'Something went wrong';
+            _showGenericErrorDialog(errorMessage);
           }
-          _showErrorDialog(context, errorMessage);
-        }
-      } catch (error) {
-        if (error is SocketException) {
-          _showErrorDialog(context,
-              "No internet connection. Please check your network settings.");
         } else {
-          print('Error occurred: $error');
-          _showErrorDialog(context, 'Error occurred: $error');
+          _showGenericErrorDialog(
+              'Server error: ${response.statusCode}. Please try again.');
         }
+      } on SocketException catch (_) {
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } on FormatException catch (e) {
+        _showGenericErrorDialog(
+            'Invalid data format. Please check your input and try again.');
+      } catch (e) {
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       } finally {
         setState(() {
           _isLoading = false;
         });
       }
     }
+  }
+
+  void _showGenericErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<bool> _onBackButtonPressed(BuildContext context) async {

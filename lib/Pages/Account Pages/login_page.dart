@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/Account%20Pages/signUp_page.dart';
@@ -81,66 +83,100 @@ class _LoginPageState extends State<LoginPage> {
           body: body,
         );
 
-        final responseData = jsonDecode(response.body.toString());
+        // Check if response is successful
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body.toString());
 
-        print("responseData: $responseData");
+          print("responseData: $responseData");
 
-        var code = responseData['code'];
-        if (code == 1) {
-          var mobileNumber = responseData["user"]['mobileNumber'];
-          var country = responseData['country'];
-          print(country);
-          var token = responseData['token'];
+          var code = responseData['code'];
+          if (code == 1) {
+            var mobileNumber = responseData["user"]['mobileNumber'];
+            var country = responseData['country'];
+            print(country);
+            var token = responseData['token'];
 
-          var name = responseData["user"]['name'];
-          var lastName = responseData["user"]['lastName'];
-          var organisation = responseData["user"]['organisation'];
+            var name = responseData["user"]['name'];
+            var lastName = responseData["user"]['lastName'];
+            var organisation = responseData["user"]['organisation'];
 
-          final SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          sharedPreferences.setString('mobileNumber', mobileNumber);
-          sharedPreferences.setString('token', token);
-          sharedPreferences.setString('organisation', organisation);
-          sharedPreferences.setString('name', name);
-          sharedPreferences.setString('lastName', lastName);
-          sharedPreferences.setString('country', country);
+            final SharedPreferences sharedPreferences =
+                await SharedPreferences.getInstance();
+            sharedPreferences.setString('mobileNumber', mobileNumber);
+            sharedPreferences.setString('token', token);
+            sharedPreferences.setString('organisation', organisation);
+            sharedPreferences.setString('name', name);
+            sharedPreferences.setString('lastName', lastName);
+            sharedPreferences.setString('country', country);
 
-          Navigator.push(
-            context,
-            PageTransition(
-              type: PageTransitionType.fade,
-              child: BottomNavigationPage(),
-            ),
-          );
-        } else if (code == 2) {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text("Account Reviewing"),
-                content: Text("Your account is on review, So please wait"),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("OK"),
-                  ),
-                ],
-              );
-            },
-          );
+            Navigator.push(
+              context,
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: BottomNavigationPage(),
+              ),
+            );
+          } else if (code == 2) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Account Reviewing"),
+                  content: Text("Your account is under review. Please wait."),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("OK"),
+                    ),
+                  ],
+                );
+              },
+            );
+          } else {
+            String errorMessage =
+                responseData['message'] ?? 'Something went wrong';
+            _showErrorDialog(errorMessage);
+          }
         } else {
-          String errorMessage =
-              responseData['message'] ?? 'Something went wrong';
-          _showErrorDialog(errorMessage);
+          // Handle non-200 status codes (e.g., 400, 500, etc.)
+          _showErrorDialog(
+              'Server error: ${response.statusCode}. Please try again.');
         }
-      } catch (error) {
-        print('Error occurred: $error');
-        var errorMessage = error;
-        _showErrorDialog(errorMessage.toString());
+      } on SocketException catch (_) {
+        // No Internet connection or failed to reach the server
+        _showGenericErrorDialog(
+            'No Internet connection. Please check your network and try again.');
+      } on FormatException catch (e) {
+        // Invalid format or data issue
+        _showGenericErrorDialog(
+            'Invalid data format. Please check your input and try again.');
+      } catch (e) {
+        // Other unexpected errors
+        _showGenericErrorDialog('Something went wrong. Please try again.');
       }
     }
+  }
+
+  void _showGenericErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<bool> _onBackButtonPressed(BuildContext context) async {

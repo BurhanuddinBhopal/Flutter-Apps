@@ -74,7 +74,9 @@ class _TodayPageState extends State<TodayPage> {
 
     super.initState();
     todayCustomerTransactionReport();
+
     checkForUpdate();
+    fetchData();
     _checkConnectivity();
     fetchTodayTransactionData(DateTime.now());
     _getCountryCode();
@@ -215,6 +217,9 @@ class _TodayPageState extends State<TodayPage> {
         print('API Response: ${response.body}');
         dailyTransaction = responseData['dailyTransaction'];
 
+        dailyTransaction.sort((a, b) => DateTime.parse(b["createdAt"])
+            .compareTo(DateTime.parse(a["createdAt"])));
+
         setState(() {
           _searchController.text = _currentFilter;
         });
@@ -229,6 +234,57 @@ class _TodayPageState extends State<TodayPage> {
         // Update the UI with the fetched transactions
       });
     }
+  }
+
+  Future<void> fetchData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+
+    var token = sharedPreferences.getString('token');
+    print(token);
+    // ignore: unused_local_variable
+    var lastName = sharedPreferences.getString('lastName');
+
+    var organisation = sharedPreferences.getString('organisation');
+    countryCode = sharedPreferences.getString('country') ?? 'IN';
+    print(AppConstants.backendUrl);
+
+    final url = Uri.parse(
+        '${AppConstants.backendUrl}/api/customer/getAllCustomersForOrgainsationAdmin');
+
+    final body = {"userType": "costomer", "organisation": organisation};
+    final header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final response = await http.post(
+      url,
+      headers: header,
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      final List<dynamic> itemListJson = responseData['allCustomer'];
+
+      setState(() {
+        allCutomerList =
+            itemListJson.map((itemJson) => Item.fromJson(itemJson)).toList();
+        filteredList = allCutomerList;
+        filteredCustomerData = responseData['allCustomer'];
+        allCutomerData = responseData['allCustomer'];
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _fetchToday() {
@@ -297,14 +353,6 @@ class _TodayPageState extends State<TodayPage> {
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
       print(countryCode);
-    });
-  }
-
-  void navigateToDetailedCardPage(int index) {
-    setState(() {
-      print('filteredCustomerData: $filteredCustomerData');
-      selectedCustomerData =
-          filteredCustomerData[index]; // Save the selected customer data
     });
   }
 
@@ -427,89 +475,84 @@ class _TodayPageState extends State<TodayPage> {
                       Container(
                         margin: EdgeInsets.only(top: 0),
                         width: MediaQuery.of(context).size.width * 1,
-                        child: Card(
-                          color: Colors.black,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Row(
-                                children: [
-                                  countryCode == 'KW'
-                                      ? Container(
-                                          width: 22,
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              Color.fromRGBO(243, 31, 31,
-                                                  1), // Darken the image
-                                              BlendMode.srcIn,
-                                            ),
-                                            child: Image.asset(
-                                                'assets/images/kwd.png'),
+                        color: Colors.black,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Row(
+                              children: [
+                                countryCode == 'KW'
+                                    ? Container(
+                                        width: 22,
+                                        margin: EdgeInsets.only(right: 5),
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            Color.fromRGBO(243, 31, 31,
+                                                1), // Darken the image
+                                            BlendMode.srcIn,
                                           ),
-                                        )
-                                      : const Icon(
-                                          Icons.currency_rupee_sharp,
-                                          size: 18,
-                                          color: Color.fromRGBO(243, 31, 31, 1),
+                                          child: Image.asset(
+                                              'assets/images/kwd.png'),
                                         ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Text(
-                                      todayRaised ?? '',
-                                      style: TextStyle(
+                                      )
+                                    : const Icon(
+                                        Icons.currency_rupee_sharp,
+                                        size: 18,
                                         color: Color.fromRGBO(243, 31, 31, 1),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
                                       ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(
+                                    todayRaised ?? '',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(243, 31, 31, 1),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
                                     ),
                                   ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  countryCode == 'KW'
-                                      ? Container(
-                                          width: 22,
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                              Color.fromRGBO(52, 135, 89,
-                                                  1), // Darken the image
-                                              BlendMode.srcIn,
-                                            ),
-                                            child: Image.asset(
-                                                'assets/images/kwd.png'),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                countryCode == 'KW'
+                                    ? Container(
+                                        width: 22,
+                                        margin: EdgeInsets.only(right: 5),
+                                        child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                            Color.fromRGBO(52, 135, 89,
+                                                1), // Darken the image
+                                            BlendMode.srcIn,
                                           ),
-                                        )
-                                      : const Icon(Icons.currency_rupee_sharp,
-                                          size: 18,
-                                          color:
-                                              Color.fromRGBO(52, 135, 89, 1)),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 10),
-                                    child: Text(
-                                      todayCollected ?? '',
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(52, 135, 89, 1),
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
+                                          child: Image.asset(
+                                              'assets/images/kwd.png'),
+                                        ),
+                                      )
+                                    : const Icon(Icons.currency_rupee_sharp,
+                                        size: 18,
+                                        color: Color.fromRGBO(52, 135, 89, 1)),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10),
+                                  child: Text(
+                                    todayCollected ?? '',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(52, 135, 89, 1),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(
                         child: Container(
                           height: MediaQuery.of(context).size.height * 0.7,
-                          padding: EdgeInsets.only(top: 10),
-                          margin: EdgeInsets.only(left: 100, right: 20),
+                          margin:
+                              EdgeInsets.only(left: 100, right: 20, top: 10),
                           child: ListView.builder(
                             itemCount: dailyTransaction.length,
                             itemBuilder: (context, index) {
@@ -522,19 +565,21 @@ class _TodayPageState extends State<TodayPage> {
                                       ["organisationName"];
                               // transactionId = transactionData1[index]['_id'];
 
-                              return Container(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: DetailedCardPage(
-                                            customerData:
-                                                filteredCustomerData[index],
-                                          ),
-                                        ));
-                                  },
+                              return GestureDetector(
+                                onTap: () {
+                                  print(filteredCustomerData[index]);
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.fade,
+                                        child: DetailedCardPage(
+                                          customerData:
+                                              filteredCustomerData[index],
+                                        ),
+                                      ));
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(bottom: 3),
                                   child: Card(
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
