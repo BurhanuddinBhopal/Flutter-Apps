@@ -3,10 +3,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/App%20Pages/home_page.dart';
+import 'package:hta/language/language_constant.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -40,7 +40,6 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
       });
     }
     setState(() {
-      print('customerData coming from info page: ${widget.customerData}');
       _customerData = widget.customerData;
       _organizationName = _customerData['organisationName'];
       _name = _customerData['name'];
@@ -150,16 +149,12 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
         'Content-Type': 'application/json', // Ensure content type is JSON
       };
 
-      print('print body: $body');
-
       try {
         final response =
             await http.post(url, body: jsonEncode(body), headers: header);
 
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body.toString());
-
-          print("Response Data: $responseData");
 
           if (responseData['code'] == 1) {
             _showSuccesDialog(); // Success response
@@ -270,157 +265,258 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                       //     ),
                       //   ),
                       // ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                        child: TextFormField(
-                          controller: organisationName,
-                          focusNode: _focusNodes[0],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Organization Name cannot be empty';
-                            }
-
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Organization Name",
-                              contentPadding: EdgeInsets.only(left: 10.0),
-                              hintStyle: TextStyle(
-                                color: _focusNodes[0].hasFocus
-                                    ? Color.fromRGBO(62, 13, 59, 1)
-                                    : Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2,
-                                      color: Color.fromRGBO(62, 13, 59, 1)))),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                        child: TextFormField(
-                          controller: name,
-                          focusNode: _focusNodes[1],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Name cannot be empty';
-                            }
-
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              hintText: "Name",
-                              contentPadding: EdgeInsets.only(left: 10.0),
-                              hintStyle: TextStyle(
-                                color: _focusNodes[1].hasFocus
-                                    ? Color.fromRGBO(62, 13, 59, 1)
-                                    : Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2,
-                                      color: Color.fromRGBO(62, 13, 59, 1)))),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                        child: TextFormField(
-                          controller: lastName,
-                          focusNode: _focusNodes[2],
-                          decoration: InputDecoration(
-                              hintText: "Last Name",
-                              contentPadding: EdgeInsets.only(left: 10.0),
-                              hintStyle: TextStyle(
-                                color: _focusNodes[2].hasFocus
-                                    ? Color.fromRGBO(62, 13, 59, 1)
-                                    : Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2,
-                                      color: Color.fromRGBO(62, 13, 59, 1)))),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                        child: TextFormField(
-                          enabled: false,
-                          focusNode: _focusNodes[3],
-                          controller: mobileNumber,
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Phone Number cannot be empty';
-                            }
-
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              // labelText:'Disabled Field',
-                              hintText: "Phone Number",
-                              contentPadding: EdgeInsets.only(left: 10.0),
-                              hintStyle: TextStyle(
-                                color: _focusNodes[3].hasFocus
-                                    ? Color.fromRGBO(62, 13, 59, 1)
-                                    : Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2,
-                                      color: Color.fromRGBO(62, 13, 59, 1)))),
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(left: 12.0, right: 12.0, top: 12.0),
-                        child: TextFormField(
-                          controller: location,
-                          focusNode: _focusNodes[4],
-                          // validator: (value) {
-                          //   if (value!.isEmpty) {
-                          //     return 'Address cannot be empty';
-                          //   }
-
-                          //   return null;
-                          // },
-                          decoration: InputDecoration(
-                              hintText: "Address",
-                              contentPadding: EdgeInsets.only(left: 10.0),
-                              hintStyle: TextStyle(
-                                color: _focusNodes[4].hasFocus
-                                    ? Color.fromRGBO(62, 13, 59, 1)
-                                    : Colors.grey,
-                                fontSize: 14.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2,
-                                      color: Color.fromRGBO(62, 13, 59, 1)))),
-                        ),
-                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translation(context)!.hintTextOrganisation,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(
+                                        62, 13, 59, 1), // Label color
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        5.0), // Margin between label and text field
+                                TextFormField(
+                                  controller: organisationName,
+                                  focusNode: _focusNodes[0],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translation(context)!
+                                          .validateMessageOrganisationNotEmpty;
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: translation(context)!
+                                        .hintTextOrganisation,
+                                    contentPadding: EdgeInsets.only(left: 10.0),
+                                    hintStyle: TextStyle(
+                                      color: _focusNodes[0].hasFocus
+                                          ? Color.fromRGBO(62, 13, 59, 1)
+                                          : Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translation(context)!.hintTextAdminName,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(
+                                        62, 13, 59, 1), // Label color
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        5.0), // Margin between label and text field
+                                TextFormField(
+                                  controller: name,
+                                  focusNode: _focusNodes[1],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translation(context)!
+                                          .validateMessageNameNotEmpty;
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        translation(context)!.hintTextAdminName,
+                                    contentPadding: EdgeInsets.only(left: 10.0),
+                                    hintStyle: TextStyle(
+                                      color: _focusNodes[1].hasFocus
+                                          ? Color.fromRGBO(62, 13, 59, 1)
+                                          : Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translation(context)!.hintTextLastName,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(
+                                        62, 13, 59, 1), // Label color
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        5.0), // Margin between label and text field
+                                TextFormField(
+                                  controller: lastName,
+                                  focusNode: _focusNodes[2],
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        translation(context)!.hintTextLastName,
+                                    contentPadding: EdgeInsets.only(left: 10.0),
+                                    hintStyle: TextStyle(
+                                      color: _focusNodes[2].hasFocus
+                                          ? Color.fromRGBO(62, 13, 59, 1)
+                                          : Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translation(context)!.mobileNumber,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(
+                                        62, 13, 59, 1), // Label color
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        5.0), // Margin between label and text field
+                                TextFormField(
+                                  enabled: false,
+                                  focusNode: _focusNodes[3],
+                                  controller: mobileNumber,
+                                  keyboardType: TextInputType.phone,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translation(context)!
+                                          .validateMessageMobileNumber;
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    hintText: translation(context)!
+                                        .hintTextMobileNumber,
+                                    contentPadding: EdgeInsets.only(left: 10.0),
+                                    hintStyle: TextStyle(
+                                      color: _focusNodes[3].hasFocus
+                                          ? Color.fromRGBO(62, 13, 59, 1)
+                                          : Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: 12.0, right: 12.0, top: 12.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  translation(context)!.hintTextAddress,
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color.fromRGBO(
+                                        62, 13, 59, 1), // Label color
+                                  ),
+                                ),
+                                SizedBox(
+                                    height:
+                                        5.0), // Margin between label and text field
+                                TextFormField(
+                                  controller: location,
+                                  focusNode: _focusNodes[4],
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        translation(context)!.hintTextAddress,
+                                    contentPadding: EdgeInsets.only(left: 10.0),
+                                    hintStyle: TextStyle(
+                                      color: _focusNodes[4].hasFocus
+                                          ? Color.fromRGBO(62, 13, 59, 1)
+                                          : Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        width: 2,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                   Column(

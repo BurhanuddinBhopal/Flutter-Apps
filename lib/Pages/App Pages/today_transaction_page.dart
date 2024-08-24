@@ -193,8 +193,6 @@ class _TodayPageState extends State<TodayPage> {
       String selectedDateTime =
           DateFormat("yyyy-MM-ddTHH:mm:ss.000Z").format(date.toUtc());
 
-      print('Selected DateTime for API: $selectedDateTime');
-
       final url = Uri.parse(
           '${AppConstants.backendUrl}/api/transactions/getDailyTransaction');
 
@@ -213,8 +211,7 @@ class _TodayPageState extends State<TodayPage> {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-        print('Request Body: $body');
-        print('API Response: ${response.body}');
+
         dailyTransaction = responseData['dailyTransaction'];
 
         dailyTransaction.sort((a, b) => DateTime.parse(b["createdAt"])
@@ -224,7 +221,7 @@ class _TodayPageState extends State<TodayPage> {
           _searchController.text = _currentFilter;
         });
       } else {
-        print('Failed to fetch data. Status code: ${response.statusCode}');
+        ;
         print('Response body: ${response.body}');
       }
     } catch (e) {
@@ -245,13 +242,12 @@ class _TodayPageState extends State<TodayPage> {
         await SharedPreferences.getInstance();
 
     var token = sharedPreferences.getString('token');
-    print(token);
+
     // ignore: unused_local_variable
     var lastName = sharedPreferences.getString('lastName');
 
     var organisation = sharedPreferences.getString('organisation');
     countryCode = sharedPreferences.getString('country') ?? 'IN';
-    print(AppConstants.backendUrl);
 
     final url = Uri.parse(
         '${AppConstants.backendUrl}/api/customer/getAllCustomersForOrgainsationAdmin');

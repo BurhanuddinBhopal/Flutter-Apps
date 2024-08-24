@@ -328,7 +328,6 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 
@@ -406,41 +405,34 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print('Customer IDs sent successfully for year: ${response.body}');
 
       // Update the state with the response data
       setState(() {
         updateYearlyData(responseData);
       });
-    } else {
-      print('Failed to send customer IDs: ${response.statusCode}');
-    }
+    } else {}
   }
 
   void updateYearlyData(Map<String, dynamic> responseData) {
-    print('Response Data: $responseData');
-
     if (responseData['years'] != null && responseData['amounts'] != null) {
       // Convert years to a list of strings
       years = List<String>.from(
           responseData['years'].map((year) => year.toString()));
 
-      // Convert amounts to a list of doubles directly
-      yearlyValues = List<double>.from(responseData['amounts']);
-
-      // Print years and yearlyValues before setting state
-      print('Years: $years');
-      print('Yearly Values: $yearlyValues');
+      // Convert amounts to a list of doubles, handling int to double conversion
+      yearlyValues = List<double>.from(
+        responseData['amounts']
+            .map((amount) => (amount is int) ? amount.toDouble() : amount),
+      );
 
       setState(() {
-        // Update the state
-        // The state is already updated in this method
+        // Update the state with the converted values
       });
     } else {
       // If the data is null or empty, reset the values
       years = [];
       yearlyValues = [];
-      print('No data available');
+
       setState(() {
         years = [];
         yearlyValues = [];
@@ -449,12 +441,9 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   }
 
   Future<void> customersMonthlyTransactionData() async {
-    print("currentYear: $currentYear");
-
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
-    print('token: $token');
 
     final url = Uri.parse(
       '${AppConstants.backendUrl}/api/report/getMonthlyReportPerYear',
@@ -477,7 +466,6 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     );
 
     if (response.statusCode == 200) {
-      print(_customerData["_id"]);
       final Map<String, dynamic> responseData = jsonDecode(response.body);
 
       List<String> responseMonths = List<String>.from(responseData['months']);
@@ -488,10 +476,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
         months = responseMonths.map((month) => month.substring(0, 3)).toList();
         values = responseAmounts;
       });
-      print('response: ${response.body}');
-    } else {
-      print('Failed to send customer IDs: ${response.statusCode}');
-    }
+    } else {}
   }
 
   String formatNumber(double value) {
@@ -618,7 +603,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                         ),
                       ),
                       Container(
-                          margin: EdgeInsets.only(top: 10),
+                          margin: EdgeInsets.only(top: 10, bottom: 5),
                           width: MediaQuery.of(context).size.width * 1,
                           color: Colors.black,
                           padding: EdgeInsets.symmetric(vertical: 5),
@@ -706,7 +691,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                       ),
 
                       Container(
-                          margin: EdgeInsets.only(top: 20),
+                          margin: EdgeInsets.only(top: 20, bottom: 5),
                           width: MediaQuery.of(context).size.width * 1,
                           color: Colors.black,
                           padding: EdgeInsets.symmetric(vertical: 5),
@@ -848,14 +833,14 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                         height: 300,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
+                              vertical: 20, horizontal: 15),
                           child: BarChart(
                             BarChartData(
                               alignment: BarChartAlignment.spaceAround,
                               maxY: values.isNotEmpty
                                   ? values
                                       .reduce((a, b) => a > b ? a : b)
-                                      .toDouble() // Dynamically set maxY
+                                      .toDouble()
                                   : 0.0,
                               barTouchData: BarTouchData(enabled: false),
                               titlesData: FlTitlesData(
@@ -935,7 +920,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                             toY: values[index].toDouble(),
                                             color: const Color.fromRGBO(
                                                 62, 13, 59, 1),
-                                            width: 15,
+                                            width: 20, // Increased width
                                             borderRadius: BorderRadius
                                                 .zero, // Square corners
                                           ),
@@ -968,7 +953,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                         height: 300,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 20),
+                              vertical: 20, horizontal: 15),
                           child: BarChart(
                             BarChartData(
                               alignment: BarChartAlignment.spaceAround,

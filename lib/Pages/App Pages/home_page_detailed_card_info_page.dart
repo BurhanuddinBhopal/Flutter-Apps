@@ -61,47 +61,42 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    // Get the arguments from the route
     final args = ModalRoute.of(context)!.settings.arguments;
-
     if (args != null) {
-      // Assuming the argument is a List<String>
       image = args as List<String>;
     }
   }
 
   @override
   void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() {
     transactionData();
     _getCountryCode();
     setState(() {
       _customerOrganization = widget.customerOrganization;
       _customerData = widget.customerData;
-      print("customerData: $_customerData");
-      print("customerOrganization: $_customerOrganization");
 
-      image = [_customerOrganization['picture']];
-
-      _pendingAmount = widget.pendingAmount ?? "";
-
+      // Ensure proper conversion
+      dueAmount = getFormattedDueAmount(_customerOrganization["dueAmount"]);
+      _pendingAmount = widget.pendingAmount ?? 0.0;
       mobileNumber = _customerData['mobileNumber'];
       name = _customerData["organisationName"];
-      billAmount = _customerOrganization["amount"];
+      billAmount = getFormattedDueAmount(_customerOrganization["amount"]);
 
+      // Handle image URLs
       if (image is List<String>) {
         imageUrls.addAll(image as List<String>);
         if (imageUrls.isNotEmpty) {
-          // Split the first element of imageUrls and add to imageUrls1
           imageUrls1.addAll(imageUrls[0].split(','));
         }
       } else if (image is String) {
-        // If 'image' is a single string, split it into multiple URLs
         imageUrls = (image as String).split(',');
       }
     });
-
-    super.initState();
   }
 
   Future<void> _getCountryCode() async {
@@ -137,10 +132,8 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
         List<dynamic> transactions = responseData['allTransaction'];
 
         if (transactions.isNotEmpty) {
-          dueAmount = double.parse(transactions[0]['dueAmount'].toString());
-        } else {
-          print('No transactions found.');
-        }
+          // Handle non-empty transactions
+        } else {}
       } else {
         print("Failed to load data. Status code: ${response.statusCode}");
         print("Response body: ${response.body}");
@@ -154,24 +147,33 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     }
   }
 
-  String formatBillAmount(dynamic amount) {
-    // Convert the amount to a double if it's an int
-    double value = (amount is int) ? amount.toDouble() : amount;
+  double? getFormattedDueAmount(dynamic amount) {
+    if (amount == null) {
+      return null;
+    }
+    // Convert to double if necessary
+    return (amount is int) ? amount.toDouble() : amount as double;
+  }
 
-    // Check if the value has a decimal part
-    if (value % 1 == 0) {
-      return value.toStringAsFixed(0); // Display as whole number
+  String formatDueAmount(double? amount) {
+    if (amount == null) {
+      return ''; // Handle null case
+    }
+    // Check if the number has decimal places
+    if (amount % 1 == 0) {
+      return amount.toStringAsFixed(0); // Display as whole number
     } else {
-      return value.toStringAsFixed(2); // Display with two decimal places
+      return amount.toStringAsFixed(2); // Display with two decimal places
     }
   }
 
-  String formatAmount(dynamic amount) {
+  String formatBillAmount(double? amount) {
     if (amount == null) {
       return ''; // Handle null case
-    } else if (amount is int || amount % 1 == 0) {
-      return amount
-          .toStringAsFixed(0); // Display as whole number if no decimal part
+    }
+    // Check if the value has a decimal part
+    if (amount % 1 == 0) {
+      return amount.toStringAsFixed(0); // Display as whole number
     } else {
       return amount.toStringAsFixed(2); // Display with two decimal places
     }
@@ -181,7 +183,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     try {
       String imageText = imageUrls1.join(', ');
       String uri =
-          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatAmount(_pendingAmount)}.\nImages: $imageText ")}';
+          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText ")}';
 
       if (await launchUrl(Uri.parse(uri))) {
         // Handle success
@@ -202,7 +204,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     try {
       String imageText = imageUrls1.join(', ');
       String uri =
-          'https://wa.me/number:$mobileNumber:/?text=${Uri.parse('Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatAmount(_pendingAmount)}.\nImages: $imageText')}';
+          'https://wa.me/number:$mobileNumber:/?text=${Uri.encodeComponent('Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText')}';
 
       if (await launch(uri)) {
         // Handle success
@@ -225,6 +227,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -235,15 +238,18 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                 context,
                 PageTransition(
                     type: PageTransitionType.fade,
-                    child: (DetailedCardPage(
+                    child: DetailedCardPage(
                         customerData: _customerData,
-                        onUpdateImageUrls: updateImageUrls))),
+                        onUpdateImageUrls: updateImageUrls)),
               );
             },
             icon: Icon(Icons.arrow_back)),
-        title: Container(
-            margin: EdgeInsets.symmetric(horizontal: 85),
-            child: Text('${_customerData["organisationName"]}')),
+        centerTitle: true,
+        title: Text(
+          '${_customerData["organisationName"]}',
+          textAlign: TextAlign.center,
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -254,9 +260,9 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
                 context,
                 PageTransition(
                     type: PageTransitionType.fade,
-                    child: (DetailedCardPage(
+                    child: DetailedCardPage(
                         customerData: _customerData,
-                        onUpdateImageUrls: updateImageUrls))),
+                        onUpdateImageUrls: updateImageUrls)),
               );
               return false;
             },
@@ -264,175 +270,152 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
               margin: EdgeInsets.only(left: 10, right: 10, top: 10),
               height: MediaQuery.of(context).size.height * 0.16,
               child: Card(
-                  elevation: 0,
-                  color: Color.fromARGB(228, 244, 242, 242),
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Row(
+                elevation: 0,
+                color: Color.fromARGB(228, 244, 242, 242),
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            translation(context)!.billAmount,
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            translation(context)!.remainingBalance,
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              translation(context)!.billAmount,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                            Text(
-                              translation(context)!.remainingBalance,
-                              style: TextStyle(fontWeight: FontWeight.w600),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  countryCode == 'KW'
-                                      ? Container(
-                                          width: 20,
-                                          margin: EdgeInsets.only(right: 5),
-                                          child: Image.asset(
-                                            'assets/images/kwd.png',
-                                            color:
-                                                Color.fromRGBO(62, 13, 59, 1),
-                                          ),
-                                        )
-                                      : const Icon(
-                                          Icons.currency_rupee_sharp,
-                                          size: 18,
+                            Row(
+                              children: [
+                                countryCode == 'KW'
+                                    ? Container(
+                                        width: 20,
+                                        margin: EdgeInsets.only(right: 5),
+                                        child: Image.asset(
+                                          'assets/images/kwd.png',
                                           color: Color.fromRGBO(62, 13, 59, 1),
                                         ),
-                                  Container(
-                                    child: Text(
-                                        formatBillAmount(
-                                            _customerOrganization["amount"]),
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color.fromRGBO(62, 13, 59, 1),
-                                        )),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  dueAmount != null
-                                      ? countryCode == 'KW'
-                                          ? Container(
-                                              width: 20,
-                                              margin: EdgeInsets.only(right: 5),
-                                              child: Image.asset(
-                                                'assets/images/kwd.png',
-                                                color: Color.fromRGBO(
-                                                    62, 13, 59, 1),
-                                              ),
-                                            )
-                                          : const Icon(
-                                              Icons.currency_rupee_sharp,
-                                              size: 18,
-                                              color:
-                                                  Color.fromRGBO(62, 13, 59, 1),
-                                            )
-                                      : Text(
-                                          '',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w500,
-                                            color:
-                                                Color.fromRGBO(62, 13, 59, 1),
-                                          ),
-                                        ),
-                                  Container(
-                                    child: dueAmount != null
-                                        ? Text(
-                                            _pendingAmount != null &&
-                                                    _pendingAmount != ""
-                                                ? formatAmount(_pendingAmount)
-                                                : '',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
+                                      )
+                                    : const Icon(
+                                        Icons.currency_rupee_sharp,
+                                        size: 18,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                Container(
+                                  child: Text(
+                                    formatBillAmount(getFormattedDueAmount(
+                                        _customerOrganization["amount"])),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromRGBO(62, 13, 59, 1),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                dueAmount != null
+                                    ? countryCode == 'KW'
+                                        ? Container(
+                                            width: 20,
+                                            margin: EdgeInsets.only(right: 5),
+                                            child: Image.asset(
+                                              'assets/images/kwd.png',
                                               color:
                                                   Color.fromRGBO(62, 13, 59, 1),
                                             ),
                                           )
-                                        : Text(
-                                            '',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  Color.fromRGBO(62, 13, 59, 1),
-                                            ),
-                                          ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    child: Icon(
+                                        : const Icon(
+                                            Icons.currency_rupee_sharp,
+                                            size: 18,
+                                            color:
+                                                Color.fromRGBO(62, 13, 59, 1),
+                                          )
+                                    : Container(),
+                                Container(
+                                  child: Text(
+                                    formatDueAmount(dueAmount),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
                                       color: Color.fromRGBO(62, 13, 59, 1),
-                                      Icons.calendar_month_outlined,
-                                      size: 18,
                                     ),
                                   ),
-                                  Container(
-                                      margin: EdgeInsets.only(left: 8),
-                                      child: Text(
-                                        DateFormat('dd-MM-yyyy').format(
-                                            DateTime.parse(
-                                                _customerOrganization[
-                                                    "createdAt"])),
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color.fromRGBO(62, 13, 59, 1),
-                                        ),
-                                      ))
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    translation(context)!.description,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w600),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                )
+                              ],
+                            ),
+                          ],
                         ),
-                        Container(
-                          margin: EdgeInsets.only(top: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                _customerOrganization["message"],
-                                style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color.fromRGBO(62, 13, 59, 1)),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
-                  )),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  child: Icon(
+                                    color: Color.fromRGBO(62, 13, 59, 1),
+                                    Icons.calendar_month_outlined,
+                                    size: 18,
+                                  ),
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(left: 8),
+                                    child: Text(
+                                      DateFormat('dd-MM-yyyy').format(
+                                          DateTime.parse(_customerOrganization[
+                                              "createdAt"])),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color.fromRGBO(62, 13, 59, 1),
+                                      ),
+                                    ))
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  translation(context)!.description,
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              _customerOrganization["message"],
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromRGBO(62, 13, 59, 1)),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
           SizedBox(

@@ -83,7 +83,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 
@@ -109,10 +108,8 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     );
     final responseData = jsonDecode(response.body.toString());
     setState(() {
-      print("responseData: $responseData");
       pendingAmount =
           double.parse(responseData['customer']['pendingAmount'].toString());
-      print('pendingAmount233: $pendingAmount');
     });
   }
 
@@ -152,9 +149,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   }
 
   Future<void> deleteTransaction(String transactionId) async {
-    print("transactionId: $transactionId");
-    print("customerId34553: $_customerData['_id']");
-
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
@@ -252,14 +246,13 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       // Check if the amount is null
       if (amount == null) return '';
 
-      // Convert int to double if needed
-      double value = (amount is int) ? amount.toDouble() : amount;
-
-      // Check if the value has decimals
-      if (value % 1 == 0) {
-        return value.toStringAsFixed(0); // Display as whole number
+      // Check if the value has decimal places
+      if (amount % 1 == 0) {
+        // Display as whole number, including negative numbers
+        return amount.toStringAsFixed(0);
       } else {
-        return value.toStringAsFixed(2); // Display with two decimal places
+        // Display with two decimal places, including negative numbers
+        return amount.toStringAsFixed(2);
       }
     }
 
@@ -899,7 +892,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       },
       child: GestureDetector(
         onTap: (() {
-          print("pendingAmount: $pendingAmount");
           Navigator.push(
             context,
             PageTransition(

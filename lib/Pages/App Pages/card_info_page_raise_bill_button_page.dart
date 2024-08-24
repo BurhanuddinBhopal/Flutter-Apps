@@ -72,7 +72,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 

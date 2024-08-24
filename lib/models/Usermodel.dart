@@ -32,4 +32,17 @@ class Item {
           json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'organisationName': organisationName,
+      'lastName': lastName,
+      'location': location,
+      'pendingAmount': pendingAmount,
+      'mobileNumber': mobileNumber,
+      'date': date.toIso8601String(),
+    };
+  }
 }

@@ -13,7 +13,6 @@ class CustomerDataWrapper extends StatelessWidget {
     required this.todayTransactions,
   });
   void updateImageUrls(List<String> newImageUrls) {
-    print("Updated image URLs in Home Page: $newImageUrls");
     // Update the state or perform other actions
   }
 

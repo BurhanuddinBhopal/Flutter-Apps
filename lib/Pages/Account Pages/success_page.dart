@@ -31,7 +31,7 @@ class SuccessPage extends StatelessWidget {
             ),
             const SizedBox(height: 40.0),
             const Text(
-              'Now please do Sign In From the button below',
+              'Now please do Sign In from the button below',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),

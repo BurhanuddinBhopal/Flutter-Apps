@@ -30,12 +30,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String finalNumber = '';
   bool isLoading = false;
+  var _pendingAmount;
   String countryCode = 'IN';
   bool _isConnected = true;
+  var _customerData = {};
   var customerData;
   var person;
   var organizationName;
   double? pendingAmount;
+  var transactionData1 = [];
   var date;
   List<Item> filteredList = [];
   List<Item> allCutomerList = [];
@@ -108,6 +111,17 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  String formatPendingAmount(double amount) {
+    // Check if the value has decimal places
+    if (amount % 1 == 0) {
+      // Display as whole number if there's no decimal part
+      return amount.toStringAsFixed(0);
+    } else {
+      // Display with two decimal places if there is a decimal part
+      return amount.toStringAsFixed(2);
+    }
+  }
+
   Future<void> fetchData() async {
     setState(() {
       isLoading = true;
@@ -117,23 +131,18 @@ class _HomePageState extends State<HomePage> {
         await SharedPreferences.getInstance();
 
     var token = sharedPreferences.getString('token');
-    print(token);
-    // ignore: unused_local_variable
-    var lastName = sharedPreferences.getString('lastName');
-
     var organisation = sharedPreferences.getString('organisation');
     countryCode = sharedPreferences.getString('country') ?? 'IN';
-    print(AppConstants.backendUrl);
 
     final url = Uri.parse(
         '${AppConstants.backendUrl}/api/customer/getAllCustomersForOrgainsationAdmin');
-
     final body = {"userType": "costomer", "organisation": organisation};
     final header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     };
 
+    // Fetch customer data
     final response = await http.post(
       url,
       headers: header,
@@ -142,9 +151,16 @@ class _HomePageState extends State<HomePage> {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-
       final List<dynamic> itemListJson = responseData['allCustomer'];
 
+      // Sort the customers by 'createdAt' in descending order
+      itemListJson.sort((a, b) {
+        final dateA = DateTime.parse(a['createdAt']);
+        final dateB = DateTime.parse(b['createdAt']);
+        return dateB.compareTo(dateA); // Newest first
+      });
+
+      // Save sorted customer data to state
       setState(() {
         allCutomerList =
             itemListJson.map((itemJson) => Item.fromJson(itemJson)).toList();
@@ -216,7 +232,6 @@ class _HomePageState extends State<HomePage> {
   List<String> imageUrls = [];
 
   void updateImageUrls(List<String> newImageUrls) {
-    print("Updated image URLs in Home Page: $newImageUrls");
     // Update the state or perform other actions
     setState(() {
       imageUrls = newImageUrls;
@@ -413,8 +428,6 @@ class _HomePageState extends State<HomePage> {
                                   final currentItem = filteredList[index];
                                   return GestureDetector(
                                       onTap: (() {
-                                        print(
-                                            'filteredCustomerData: $filteredCustomerData[$index]');
                                         Navigator.push(
                                             context,
                                             PageTransition(
@@ -573,7 +586,7 @@ class _HomePageState extends State<HomePage> {
                                                                           SizedBox(
                                                                               width: 4), // Add some space between icon/image and text
                                                                           Text(
-                                                                            currentItem.pendingAmount.toStringAsFixed(2),
+                                                                            formatPendingAmount(currentItem.pendingAmount),
                                                                             style:
                                                                                 TextStyle(
                                                                               fontSize: 12,

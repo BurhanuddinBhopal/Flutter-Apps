@@ -25,7 +25,7 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   PhoneContact? _phoneContact;
 
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController address;
+  final address = TextEditingController();
 
   final List<FocusNode> _focusNodes = [
     FocusNode(),
@@ -49,7 +49,6 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    address = TextEditingController(text: 'India');
   }
 
   Future<void> addCustomer() async {
@@ -75,13 +74,11 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json', // Ensure content type is JSON
         };
-        print('print body: $body');
 
         final response =
             await http.post(url, body: jsonEncode(body), headers: header);
 
         final responseData = jsonDecode(response.body.toString());
-        print("print responseData: $responseData");
 
         if (responseData['code'] == 1) {
           _showSuccessDialog();
@@ -336,15 +333,37 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           if (value!.isEmpty) {
                             return translation(context)!
                                 .validateMessageMobileNumber;
-                          } else if (value.length != 10) {
-                            return translation(context)!
-                                .validateMessageMobileNumberForValidNumber;
                           }
                           return null;
                         },
                         decoration: InputDecoration(
                             hintText:
                                 translation(context)!.hintTextMobileNumber,
+                            contentPadding: const EdgeInsets.only(left: 10.0),
+                            hintStyle: TextStyle(
+                              color: _focusNodes[3].hasFocus
+                                  ? const Color.fromRGBO(62, 13, 59, 1)
+                                  : Colors.grey,
+                              fontSize: 14.0,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Color.fromRGBO(62, 13, 59, 1)))),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 12.0, right: 12.0, top: 12.0),
+                      child: TextFormField(
+                        focusNode: _focusNodes[4],
+                        controller: address,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                            hintText: translation(context)!.hintTextAddress,
                             contentPadding: const EdgeInsets.only(left: 10.0),
                             hintStyle: TextStyle(
                               color: _focusNodes[3].hasFocus

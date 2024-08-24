@@ -3,7 +3,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/Account%20Pages/signUp_page.dart';
@@ -87,13 +86,11 @@ class _LoginPageState extends State<LoginPage> {
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body.toString());
 
-          print("responseData: $responseData");
-
           var code = responseData['code'];
           if (code == 1) {
             var mobileNumber = responseData["user"]['mobileNumber'];
             var country = responseData['country'];
-            print(country);
+
             var token = responseData['token'];
 
             var name = responseData["user"]['name'];
@@ -115,24 +112,6 @@ class _LoginPageState extends State<LoginPage> {
                 type: PageTransitionType.fade,
                 child: BottomNavigationPage(),
               ),
-            );
-          } else if (code == 2) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Account Reviewing"),
-                  content: Text("Your account is under review. Please wait."),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("OK"),
-                    ),
-                  ],
-                );
-              },
             );
           } else {
             String errorMessage =
@@ -327,11 +306,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (value!.isEmpty) {
                                   return translation(context)!
                                       .validateMessageMobileNumber;
-                                } else if (value.length != 10) {
-                                  return translation(context)!
-                                      .validateMessageMobileNumberForValidNumber;
                                 }
-
                                 return null;
                               },
                               decoration: InputDecoration(

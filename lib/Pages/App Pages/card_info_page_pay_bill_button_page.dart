@@ -73,7 +73,6 @@ class _PayBillPageState extends State<PayBillPage> {
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 

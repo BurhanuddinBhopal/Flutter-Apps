@@ -141,7 +141,6 @@ class _ReportPageState extends State<ReportPage> {
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 
@@ -204,7 +203,6 @@ class _ReportPageState extends State<ReportPage> {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = json.decode(response.body);
-      print('Customer IDs sent successfully for year: ${response.body}');
 
       // Update the state with the response data
       setState(() {
@@ -216,23 +214,21 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   void updateYearlyData(Map<String, dynamic> responseData) {
-    print('Response Data: $responseData');
-
     if (responseData['years'] != null && responseData['amounts'] != null) {
       // Convert years to a list of strings
       years = List<String>.from(
           responseData['years'].map((year) => year.toString()));
 
-      // Convert amounts to a list of doubles directly
-      yearlyValues = List<double>.from(responseData['amounts']);
+      // Convert amounts to a list of doubles, handling int to double conversion
+      yearlyValues = List<double>.from(
+        responseData['amounts']
+            .map((amount) => (amount is int) ? amount.toDouble() : amount),
+      );
 
       // Print years and yearlyValues before setting state
-      print('Years: $years');
-      print('Yearly Values: $yearlyValues');
 
       setState(() {
-        // Update the state
-        // The state is already updated in this method
+        // Update the state with the converted values
       });
     } else {
       // If the data is null or empty, reset the values
@@ -247,8 +243,6 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Future<void> customersMonthlyTransactionData() async {
-    print("currentYear: $currentYear");
-
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     var token = sharedPreferences.getString('token');
@@ -420,7 +414,7 @@ class _ReportPageState extends State<ReportPage> {
                         ),
                       ),
                       Container(
-                          margin: EdgeInsets.only(top: 10),
+                          margin: EdgeInsets.only(top: 10, bottom: 5),
                           width: MediaQuery.of(context).size.width * 1,
                           color: Colors.black,
                           padding: EdgeInsets.symmetric(vertical: 5),
@@ -508,7 +502,7 @@ class _ReportPageState extends State<ReportPage> {
                       ),
 
                       Container(
-                          margin: EdgeInsets.only(top: 20),
+                          margin: EdgeInsets.only(top: 20, bottom: 5),
                           width: MediaQuery.of(context).size.width * 1,
                           color: Colors.black,
                           padding: EdgeInsets.symmetric(vertical: 5),
@@ -656,8 +650,9 @@ class _ReportPageState extends State<ReportPage> {
                               alignment: BarChartAlignment.spaceAround,
                               maxY: values.isNotEmpty
                                   ? values
-                                      .reduce((a, b) => a > b ? a : b)
-                                      .toDouble() // Dynamically set maxY
+                                          .reduce((a, b) => a > b ? a : b)
+                                          .toDouble() *
+                                      1.1
                                   : 0.0,
                               barTouchData: BarTouchData(enabled: false),
                               titlesData: FlTitlesData(
@@ -679,7 +674,7 @@ class _ReportPageState extends State<ReportPage> {
                                         style: style,
                                       );
                                     },
-                                    reservedSize: 28,
+                                    reservedSize: 40,
                                   ),
                                 ),
                                 leftTitles: AxisTitles(

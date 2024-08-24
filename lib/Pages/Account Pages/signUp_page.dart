@@ -414,9 +414,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         if (value!.isEmpty) {
                           return translation(context)!
                               .validateMessageMobileNumber;
-                        } else if (value.length != 10) {
-                          return translation(context)!
-                              .validateMessageMobileNumberForValidNumber;
                         }
                         return null;
                       },

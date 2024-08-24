@@ -41,7 +41,6 @@ class _AppDrawerState extends State<AppDrawer> {
       setState(() {
         version = packageInfo.version;
       });
-      print('App version: $version');
     } catch (e) {
       print('Failed to get app version: $e');
     }
@@ -58,7 +57,6 @@ class _AppDrawerState extends State<AppDrawer> {
 
     setState(() {
       finalNumber = mobileNumber!;
-      print('finalNumber: $finalNumber');
       finalName = name!;
       finalLastname = lastName!;
       country = storedCountry;
