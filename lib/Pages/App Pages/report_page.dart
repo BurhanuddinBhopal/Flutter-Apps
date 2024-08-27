@@ -278,7 +278,6 @@ class _ReportPageState extends State<ReportPage> {
         months = responseMonths.map((month) => month.substring(0, 3)).toList();
         values = responseAmounts;
       });
-      print('response: ${response.body}');
     } else {
       print('Failed to send customer IDs: ${response.statusCode}');
     }

@@ -221,15 +221,12 @@ class _TodayPageState extends State<TodayPage> {
           _searchController.text = _currentFilter;
         });
       } else {
-        ;
         print('Response body: ${response.body}');
       }
     } catch (e) {
       print('Error occurred: $e');
     } finally {
-      setState(() {
-        // Update the UI with the fetched transactions
-      });
+      setState(() {});
     }
   }
 

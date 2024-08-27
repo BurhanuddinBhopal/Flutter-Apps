@@ -456,16 +456,17 @@ class _AppDrawerState extends State<AppDrawer> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (country != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 30),
-                          child: Image.asset(
-                            country == 'IN'
-                                ? 'assets/images/Flag_of_India.png'
-                                : 'assets/images/Flag_of_Kuwait.png',
-                            width: MediaQuery.of(context).size.width * 0.2,
-                          ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30),
+                        child: Image.asset(
+                          (country == 'IN' || country == 'KW')
+                              ? (country == 'IN'
+                                  ? 'assets/images/Flag_of_India.png'
+                                  : 'assets/images/Flag_of_Kuwait.png')
+                              : 'assets/images/Flag_of_India.png', // Default to India
+                          width: MediaQuery.of(context).size.width * 0.2,
                         ),
+                      ),
                     ],
                   ),
                   Container(

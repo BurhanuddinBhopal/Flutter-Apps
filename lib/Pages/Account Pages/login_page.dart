@@ -84,19 +84,22 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check if response is successful
         if (response.statusCode == 200) {
+          print('Response Body: ${response.body}');
+
           final responseData = jsonDecode(response.body.toString());
 
-          var code = responseData['code'];
-          if (code == 1) {
-            var mobileNumber = responseData["user"]['mobileNumber'];
-            var country = responseData['country'];
+          if (responseData['code'] == 1) {
+            var mobileNumber =
+                responseData["user"]['mobileNumber'] ?? ''; // Ensure not null
+            var country = responseData['country'] ?? ''; // Ensure not null
+            var token = responseData['token'] ?? ''; // Ensure not null
+            var name = responseData["user"]['name'] ?? ''; // Ensure not null
+            var lastName =
+                responseData["user"]['lastName'] ?? ''; // Ensure not null
+            var organisation =
+                responseData["user"]['organisation'] ?? ''; // Ensure not null
 
-            var token = responseData['token'];
-
-            var name = responseData["user"]['name'];
-            var lastName = responseData["user"]['lastName'];
-            var organisation = responseData["user"]['organisation'];
-
+            // Now store in SharedPreferences
             final SharedPreferences sharedPreferences =
                 await SharedPreferences.getInstance();
             sharedPreferences.setString('mobileNumber', mobileNumber);
@@ -114,25 +117,22 @@ class _LoginPageState extends State<LoginPage> {
               ),
             );
           } else {
-            String errorMessage =
-                responseData['message'] ?? 'Something went wrong';
+            String errorMessage = responseData['message'] ?? 'Unknown error';
             _showErrorDialog(errorMessage);
           }
         } else {
-          // Handle non-200 status codes (e.g., 400, 500, etc.)
           _showErrorDialog(
               'Server error: ${response.statusCode}. Please try again.');
         }
       } on SocketException catch (_) {
-        // No Internet connection or failed to reach the server
         _showGenericErrorDialog(
             'No Internet connection. Please check your network and try again.');
       } on FormatException catch (e) {
-        // Invalid format or data issue
+        print('FormatException: ${e.toString()}');
         _showGenericErrorDialog(
             'Invalid data format. Please check your input and try again.');
       } catch (e) {
-        // Other unexpected errors
+        print('Exception: ${e.toString()}');
         _showGenericErrorDialog('Something went wrong. Please try again.');
       }
     }

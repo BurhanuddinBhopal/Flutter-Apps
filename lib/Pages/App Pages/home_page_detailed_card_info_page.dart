@@ -159,11 +159,20 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     if (amount == null) {
       return ''; // Handle null case
     }
+    // Ensure the amount is rounded to a double with two decimal places to avoid floating point issues
+    double roundedAmount = double.parse(amount.toStringAsFixed(2));
+
+    // Special case for 0
+    if (roundedAmount == 0.00) {
+      return '0';
+    }
+
     // Check if the number has decimal places
-    if (amount % 1 == 0) {
-      return amount.toStringAsFixed(0); // Display as whole number
+    if (roundedAmount % 1 == 0) {
+      return roundedAmount.toStringAsFixed(0); // Display as whole number
     } else {
-      return amount.toStringAsFixed(2); // Display with two decimal places
+      return roundedAmount
+          .toStringAsFixed(2); // Display with two decimal places
     }
   }
 

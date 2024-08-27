@@ -201,206 +201,213 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Material(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final PhoneContact contact =
-                              await FlutterContactPicker.pickPhoneContact();
-                          setState(() {
-                            _phoneContact = contact;
-                            organisationName.text =
-                                _phoneContact!.fullName.toString();
-                            name.text = _phoneContact!.fullName.toString();
-                            mobileNumber.text =
-                                _phoneContact!.phoneNumber!.number.toString();
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero),
-                          minimumSize: const Size(250, 40),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            final PhoneContact contact =
+                                await FlutterContactPicker.pickPhoneContact();
+                            setState(() {
+                              _phoneContact = contact;
+                              organisationName.text =
+                                  _phoneContact!.fullName.toString();
+                              name.text = _phoneContact!.fullName.toString();
+                              mobileNumber.text =
+                                  _phoneContact!.phoneNumber!.number.toString();
+                            });
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(62, 13, 59, 1),
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero),
+                            minimumSize: const Size(250, 40),
+                          ),
+                          child: Text(
+                            translation(context)!.selectFromPhonebook,
+                            style: const TextStyle(color: Colors.white),
+                          ),
                         ),
-                        child: Text(
-                          translation(context)!.selectFromPhonebook,
-                          style: const TextStyle(color: Colors.white),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          controller: organisationName,
+                          focusNode: _focusNodes[0],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return translation(context)!
+                                  .validateMessageOrganisationNotEmpty;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              hintText:
+                                  translation(context)!.hintTextOrganisation,
+                              contentPadding: const EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[0].hasFocus
+                                    ? const Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, right: 12.0, top: 12.0),
-                      child: TextFormField(
-                        controller: organisationName,
-                        focusNode: _focusNodes[0],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return translation(context)!
-                                .validateMessageOrganisationNotEmpty;
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText:
-                                translation(context)!.hintTextOrganisation,
-                            contentPadding: const EdgeInsets.only(left: 10.0),
-                            hintStyle: TextStyle(
-                              color: _focusNodes[0].hasFocus
-                                  ? const Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                              fontSize: 14.0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, right: 12.0, top: 12.0),
-                      child: TextFormField(
-                        controller: name,
-                        focusNode: _focusNodes[1],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return translation(context)!
-                                .validateMessageNameNotEmpty;
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText: translation(context)!.hintTextName,
-                            contentPadding: const EdgeInsets.only(left: 10.0),
-                            hintStyle: TextStyle(
-                              color: _focusNodes[1].hasFocus
-                                  ? const Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                              fontSize: 14.0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, right: 12.0, top: 12.0),
-                      child: TextFormField(
-                        controller: lastName,
-                        focusNode: _focusNodes[2],
-                        decoration: InputDecoration(
-                            hintText: translation(context)!.hintTextLastName,
-                            contentPadding: const EdgeInsets.only(left: 10.0),
-                            hintStyle: TextStyle(
-                              color: _focusNodes[2].hasFocus
-                                  ? const Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                              fontSize: 14.0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, right: 12.0, top: 12.0),
-                      child: TextFormField(
-                        focusNode: _focusNodes[3],
-                        controller: mobileNumber,
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return translation(context)!
-                                .validateMessageMobileNumber;
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                            hintText:
-                                translation(context)!.hintTextMobileNumber,
-                            contentPadding: const EdgeInsets.only(left: 10.0),
-                            hintStyle: TextStyle(
-                              color: _focusNodes[3].hasFocus
-                                  ? const Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                              fontSize: 14.0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, right: 12.0, top: 12.0),
-                      child: TextFormField(
-                        focusNode: _focusNodes[4],
-                        controller: address,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                            hintText: translation(context)!.hintTextAddress,
-                            contentPadding: const EdgeInsets.only(left: 10.0),
-                            hintStyle: TextStyle(
-                              color: _focusNodes[3].hasFocus
-                                  ? const Color.fromRGBO(62, 13, 59, 1)
-                                  : Colors.grey,
-                              fontSize: 14.0,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Container(
-                      color: const Color.fromRGBO(62, 13, 59, 1),
-                      height: 70.0,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          addCustomer();
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          controller: name,
+                          focusNode: _focusNodes[1],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return translation(context)!
+                                  .validateMessageNameNotEmpty;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              hintText: translation(context)!.hintTextName,
+                              contentPadding: const EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[1].hasFocus
+                                    ? const Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
                         ),
-                        child: Text(translation(context)!.save),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          controller: lastName,
+                          focusNode: _focusNodes[2],
+                          decoration: InputDecoration(
+                              hintText: translation(context)!.hintTextLastName,
+                              contentPadding: const EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[2].hasFocus
+                                    ? const Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          focusNode: _focusNodes[3],
+                          controller: mobileNumber,
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return translation(context)!
+                                  .validateMessageMobileNumber;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                              hintText:
+                                  translation(context)!.hintTextMobileNumber,
+                              contentPadding: const EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[3].hasFocus
+                                    ? const Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, right: 12.0, top: 12.0),
+                        child: TextFormField(
+                          focusNode: _focusNodes[4],
+                          controller: address,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                              hintText: translation(context)!.hintTextAddress,
+                              contentPadding: const EdgeInsets.only(left: 10.0),
+                              hintStyle: TextStyle(
+                                color: _focusNodes[3].hasFocus
+                                    ? const Color.fromRGBO(62, 13, 59, 1)
+                                    : Colors.grey,
+                                fontSize: 14.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      width: 2,
+                                      color: Color.fromRGBO(62, 13, 59, 1)))),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.2,
+                  ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: ElevatedButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Color.fromRGBO(62, 13, 59, 1),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero),
+                            minimumSize: Size(350, 50),
+                          ),
+                          onPressed: () {
+                            addCustomer();
+                          },
+                          child: Text(translation(context)!.save),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
