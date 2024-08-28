@@ -24,14 +24,14 @@ class DetailedInfoPage extends StatefulWidget {
   final customerData;
   final double? pendingAmount;
   final List<String>? imageUrls;
-  final Function(List<String>) onUpdateImageUrls;
+  // final Function(List<String>)? onUpdateImageUrls;
 
   const DetailedInfoPage({
     required this.customerOrganization,
     required this.customerData,
     this.imageUrls,
-    required this.onUpdateImageUrls,
-    required this.pendingAmount,
+    // this.onUpdateImageUrls,
+    this.pendingAmount,
   });
 
   @override
@@ -44,28 +44,15 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   List<String>? image;
 
   var name;
-  var billAmount;
+  double? billAmount; // Use double for better control
   double? dueAmount;
-  var _pendingAmount;
+  double? _pendingAmount;
   var mobileNumber;
   String? countryCode;
 
   bool isLoading = false;
   List<String> imageUrls = [];
   List<String> imageUrls1 = [];
-
-  void updateImageUrls(List<String> newImageUrls) {
-    widget.onUpdateImageUrls(newImageUrls);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments;
-    if (args != null) {
-      image = args as List<String>;
-    }
-  }
 
   @override
   void initState() {
@@ -80,14 +67,15 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       _customerOrganization = widget.customerOrganization;
       _customerData = widget.customerData;
 
-      // Ensure proper conversion
+      // Ensure proper conversion and handling of amounts
+      billAmount = getFormattedDueAmount(_customerOrganization["amount"]);
       dueAmount = getFormattedDueAmount(_customerOrganization["dueAmount"]);
       _pendingAmount = widget.pendingAmount ?? 0.0;
       mobileNumber = _customerData['mobileNumber'];
       name = _customerData["organisationName"];
-      billAmount = getFormattedDueAmount(_customerOrganization["amount"]);
 
       // Handle image URLs
+      image = [_customerOrganization['picture']];
       if (image is List<String>) {
         imageUrls.addAll(image as List<String>);
         if (imageUrls.isNotEmpty) {
@@ -130,13 +118,9 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
         List<dynamic> transactions = responseData['allTransaction'];
-
-        if (transactions.isNotEmpty) {
-          // Handle non-empty transactions
-        } else {}
+        // Handle transactions if necessary
       } else {
         print("Failed to load data. Status code: ${response.statusCode}");
-        print("Response body: ${response.body}");
       }
     } catch (e) {
       print("Error: $e");
@@ -151,48 +135,42 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
     if (amount == null) {
       return null;
     }
-    // Convert to double if necessary
-    return (amount is int) ? amount.toDouble() : amount as double;
-  }
-
-  String formatDueAmount(double? amount) {
-    if (amount == null) {
-      return ''; // Handle null case
-    }
-    // Ensure the amount is rounded to a double with two decimal places to avoid floating point issues
-    double roundedAmount = double.parse(amount.toStringAsFixed(2));
-
-    // Special case for 0
-    if (roundedAmount == 0.00) {
-      return '0';
-    }
-
-    // Check if the number has decimal places
-    if (roundedAmount % 1 == 0) {
-      return roundedAmount.toStringAsFixed(0); // Display as whole number
-    } else {
-      return roundedAmount
-          .toStringAsFixed(2); // Display with two decimal places
-    }
+    // Ensure type safety
+    return (amount is int) ? amount.toDouble() : amount as double?;
   }
 
   String formatBillAmount(double? amount) {
-    if (amount == null) {
-      return ''; // Handle null case
-    }
-    // Check if the value has a decimal part
-    if (amount % 1 == 0) {
-      return amount.toStringAsFixed(0); // Display as whole number
-    } else {
-      return amount.toStringAsFixed(2); // Display with two decimal places
-    }
+    if (amount == null) return '';
+    // Use toStringAsFixed to handle decimal points properly
+    return amount % 1 == 0
+        ? amount.toStringAsFixed(0)
+        : amount.toStringAsFixed(2);
   }
+
+  String formatDueAmount(double? amount) {
+    if (amount == null) return '';
+    double roundedAmount = double.parse(amount.toStringAsFixed(2));
+    return roundedAmount % 1 == 0
+        ? roundedAmount.toStringAsFixed(0)
+        : roundedAmount.toStringAsFixed(2);
+  }
+
+  // String getCurrencySymbol() {
+  //   if (countryCode == 'IN') {
+  //     return '₹';
+  //   } else if (countryCode == 'KW') {
+  //     return 'KD';
+  //   } else {
+  //     return '';
+  //   }
+  // }
 
   void _launchSms() async {
     try {
       String imageText = imageUrls1.join(', ');
+      // String currencySymbol = getCurrencySymbol();
       String uri =
-          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText ")}';
+          'sms:$mobileNumber?body=${Uri.encodeComponent("Hi $name, your bill has been raised for an amount of ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText ")}';
 
       if (await launchUrl(Uri.parse(uri))) {
         // Handle success
@@ -212,10 +190,13 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
   void launchWhatsapp() async {
     try {
       String imageText = imageUrls1.join(', ');
+      // String currencySymbol = getCurrencySymbol();
+      String message =
+          'Hi $name, your bill has been raised for an amount of ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText';
       String uri =
-          'https://wa.me/number:$mobileNumber:/?text=${Uri.encodeComponent('Hi $name your bill has been raised for amount ${formatBillAmount(billAmount)} and your pending balance is ${formatBillAmount(_pendingAmount)}.\nImages: $imageText')}';
+          'https://wa.me/$mobileNumber?text=${Uri.encodeComponent(message)}';
 
-      if (await launch(uri)) {
+      if (await launchUrl(Uri.parse(uri))) {
         // Handle success
       } else {
         throw 'Failed to launch WhatsApp';
@@ -243,14 +224,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
         backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
         leading: IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: DetailedCardPage(
-                        customerData: _customerData,
-                        onUpdateImageUrls: updateImageUrls)),
-              );
+              Navigator.of(context).pop();
             },
             icon: Icon(Icons.arrow_back)),
         centerTitle: true,
@@ -265,14 +239,7 @@ class _DetailedInfoPageState extends State<DetailedInfoPage> {
         children: [
           WillPopScope(
             onWillPop: () async {
-              Navigator.push(
-                context,
-                PageTransition(
-                    type: PageTransitionType.fade,
-                    child: DetailedCardPage(
-                        customerData: _customerData,
-                        onUpdateImageUrls: updateImageUrls)),
-              );
+              Navigator.of(context).pop();
               return false;
             },
             child: Container(

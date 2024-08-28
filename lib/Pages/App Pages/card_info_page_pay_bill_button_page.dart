@@ -370,13 +370,21 @@ class _PayBillPageState extends State<PayBillPage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => DetailedCardPage(
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => DetailedCardPage(
+                //             customerData: customerData,
+                //             onUpdateImageUrls: widget.onUpdateImageUrls)));
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailedCardPage(
                             customerData: customerData,
-                            imageUrls: uploadedImageUrls,
-                            onUpdateImageUrls: widget.onUpdateImageUrls)));
+                            onUpdateImageUrls: widget.onUpdateImageUrls,
+                          )),
+                  (Route<dynamic> route) => false,
+                );
               },
             ),
           )
@@ -455,7 +463,7 @@ class _PayBillPageState extends State<PayBillPage> {
                                 color: Colors.white,
                               ),
                               onPressed: () {
-                                Navigator.of(context).pop();
+                                Navigator.pop(context);
                               },
                             ),
                           ],

@@ -117,7 +117,8 @@
     "changeLanguageCapital": "भाषा बदलें",
     "signUp": "साइन अप करें",
     "signUpCapital": "साइन अप करें",
-    "shareStatement": "वक्तव्य साझा करें"
+    "shareStatement": "वक्तव्य साझा करें",
+    "validateMessageMobileNumberForCountryCode": "कृपया देश कोड के साथ मोबाइल नंबर दर्ज करें\n(उदाहरण के लिए, भारत के लिए +91)"
 
 
 

@@ -20,7 +20,8 @@ class ReportPage extends StatefulWidget {
   State<ReportPage> createState() => _ReportPageState();
 }
 
-class _ReportPageState extends State<ReportPage> {
+class _ReportPageState extends State<ReportPage>
+    with AutomaticKeepAliveClientMixin {
   var transactionDetails = {};
   var todayRaised;
   var todayCollected;
@@ -325,7 +326,11 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(62, 13, 59, 1),

@@ -19,6 +19,7 @@ class MyRoutes {
   static String reportPageRoute = "/reportPage";
   static String todayPageRoute = "/todayPage";
   static String changeLanguageRoute = "/changeLanguagePage";
+  static String bottomNavigationRoute = "/bottomNavigationPage";
 }
 
 // void navigateToDetailedCardPage(BuildContext context, {Customer? customer, dynamic customerData}) {

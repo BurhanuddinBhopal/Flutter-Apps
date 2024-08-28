@@ -1,15 +1,16 @@
 import 'dart:convert';
-// import 'dart:io';
+import 'dart:io';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
-// import 'package:intl/intl.dart';
-// import 'package:path_provider/path_provider.dart';
-// import 'package:pdf/widgets.dart' as pw;
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,35 +46,6 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   List<String> months = [];
   List<int> values = [];
 
-  // List<String> months = [
-  //   "Jan",
-  //   "Feb",
-  //   "Mar",
-  //   "Apr",
-  //   "May",
-  //   "Jun",
-  //   "Jul",
-  //   "Aug",
-  //   "Sep",
-  //   "Oct",
-  //   "Nov",
-  //   "Dec"
-  // ];
-  // List<int> values = [
-  //   50,
-  //   100,
-  //   150,
-  //   200,
-  //   250,
-  //   300,
-  //   350,
-  //   400,
-  //   450,
-  //   500,
-  //   550,
-  //   600
-  // ];
-
   List<String> years = [];
   List<double> yearlyValues = [];
   String currentYear = DateTime.now().year.toString();
@@ -101,76 +73,76 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     }
   }
 
-  // void _showDateRangeDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Select Date Range'),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextField(
-  //               readOnly: true,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'Start Date',
-  //               ),
-  //               onTap: () => _selectDate(
-  //                 context,
-  //                 _startDate ?? DateTime.now(),
-  //                 (selectedDate) {
-  //                   setState(() {
-  //                     _startDate = selectedDate;
-  //                     _startDateController.text =
-  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
-  //                   });
-  //                 },
-  //                 DateTime.now(), // Pass current date for validation
-  //               ),
-  //               controller: _startDateController,
-  //             ),
-  //             TextField(
-  //               readOnly: true,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'End Date',
-  //               ),
-  //               onTap: () => _selectDate(
-  //                 context,
-  //                 _endDate ?? DateTime.now(),
-  //                 (selectedDate) {
-  //                   setState(() {
-  //                     _endDate = selectedDate;
-  //                     _endDateController.text =
-  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
-  //                   });
-  //                 },
-  //                 DateTime.now(), // Pass current date for validation
-  //               ),
-  //               controller: _endDateController,
-  //             ),
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Center(
-  //                 child: Text(
-  //               'Submit',
-  //               style: TextStyle(fontWeight: FontWeight.w600),
-  //             )),
-  //             onPressed: () {
-  //               shareStatementData(
-  //                 _customerData['_id'],
-  //                 _startDate!,
-  //                 _endDate!,
-  //               );
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showDateRangeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Date Range'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Start Date',
+                ),
+                onTap: () => _selectDate(
+                  context,
+                  _startDate ?? DateTime.now(),
+                  (selectedDate) {
+                    setState(() {
+                      _startDate = selectedDate;
+                      _startDateController.text =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                    });
+                  },
+                  DateTime.now(), // Pass current date for validation
+                ),
+                controller: _startDateController,
+              ),
+              TextField(
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'End Date',
+                ),
+                onTap: () => _selectDate(
+                  context,
+                  _endDate ?? DateTime.now(),
+                  (selectedDate) {
+                    setState(() {
+                      _endDate = selectedDate;
+                      _endDateController.text =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                    });
+                  },
+                  DateTime.now(), // Pass current date for validation
+                ),
+                controller: _endDateController,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Center(
+                  child: Text(
+                'Submit',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              )),
+              onPressed: () {
+                shareStatementData(
+                  _customerData['_id'],
+                  _startDate!,
+                  _endDate!,
+                );
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   // Future<void> shareStatementData(
   //     String customerId, DateTime startDate, DateTime endDate) async {
@@ -206,122 +178,121 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   //     print('Error occurred while sharing statement data: $e');
   //   }
   // }
-  // Future<void> shareStatementData(
-  //     String customerId, DateTime startDate, DateTime endDate) async {
-  //   final SharedPreferences sharedPreferences =
-  //       await SharedPreferences.getInstance();
-  //   var token = sharedPreferences.getString('token');
+  Future<void> shareStatementData(
+      String customerId, DateTime startDate, DateTime endDate) async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var token = sharedPreferences.getString('token');
 
-  //   final url = Uri.parse('${AppConstants.backendUrl}/api/report/getStatement');
+    final url = Uri.parse('${AppConstants.backendUrl}/api/report/getStatement');
 
-  //   final body = {
-  //     "customerId": customerId,
-  //     "startDate": startDate.toUtc().toIso8601String(),
-  //     "endDate": endDate.toUtc().toIso8601String(),
-  //   };
+    final body = {
+      "customerId": customerId,
+      "startDate": startDate.toUtc().toIso8601String(),
+      "endDate": endDate.toUtc().toIso8601String(),
+    };
 
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //       body: json.encode(body),
-  //     );
-  //     final responseData = jsonDecode(response.body.toString());
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(body),
+      );
+      final responseData = jsonDecode(response.body.toString());
 
-  //     if (response.statusCode == 200) {
-  //       final transactions =
-  //           responseData['cutomerTransaction'] as List<dynamic>? ?? [];
+      if (response.statusCode == 200) {
+        final transactions =
+            responseData['cutomerTransaction'] as List<dynamic>? ?? [];
 
-  //       final pdf = pw.Document();
-  //       double totalDebit = 0;
-  //       double totalCredit = 0;
+        final pdf = pw.Document();
+        double totalDebit = 0;
+        double totalCredit = 0;
 
-  //       pdf.addPage(
-  //         pw.Page(
-  //           build: (pw.Context context) {
-  //             return pw.Column(
-  //               crossAxisAlignment: pw.CrossAxisAlignment.start,
-  //               children: [
-  //                 pw.Text('Transaction Statement',
-  //                     style: const pw.TextStyle(fontSize: 24)),
-  //                 pw.SizedBox(height: 20),
-  //                 pw.Text(
-  //                     'Organisation: ${responseData['organisation']['OrganisationName']}'),
-  //                 pw.Text(
-  //                     'Contact: ${responseData['organisation']['OrganisationContact']}'),
-  //                 pw.SizedBox(height: 20),
-  //                 if (transactions.isEmpty)
-  //                   pw.Text(
-  //                       'No transactions available for the selected date range.'),
-  //                 if (transactions.isNotEmpty)
-  //                   pw.Table.fromTextArray(
-  //                     headers: [
-  //                       'Date',
-  //                       'Transaction Type',
-  //                       'Debit',
-  //                       'Credit',
-  //                       'Remaining Balance',
-  //                     ],
-  //                     data: transactions.map((transaction) {
-  //                       final date = DateTime.parse(
-  //                           transaction['orderPlaceHolder']['date']);
-  //                       final orderStatus = transaction['orderStatus'];
-  //                       final amount = transaction['amount'] ?? 0.0;
-  //                       final dueAmount = transaction['dueAmount'] ?? 0.0;
-  //                       final isCredit = orderStatus == 'PAYMENT-COLLECTED';
+        pdf.addPage(
+          pw.Page(
+            build: (pw.Context context) {
+              return pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text('Transaction Statement',
+                      style: const pw.TextStyle(fontSize: 24)),
+                  pw.SizedBox(height: 20),
+                  pw.Text(
+                      'Organisation: ${responseData['organisation']['OrganisationName']}'),
+                  pw.Text(
+                      'Contact: ${responseData['organisation']['OrganisationContact']}'),
+                  pw.SizedBox(height: 20),
+                  if (transactions.isEmpty)
+                    pw.Text(
+                        'No transactions available for the selected date range.'),
+                  if (transactions.isNotEmpty)
+                    pw.Table.fromTextArray(
+                      headers: [
+                        'Date',
+                        'Transaction Type',
+                        'Debit',
+                        'Credit',
+                        'Remaining Balance',
+                      ],
+                      data: [
+                        ...transactions.map((transaction) {
+                          final date = DateTime.parse(
+                              transaction['orderPlaceHolder']['date']);
+                          final orderStatus = transaction['orderStatus'];
+                          final amount = transaction['amount'] ?? 0.0;
+                          final dueAmount = transaction['dueAmount'] ?? 0.0;
+                          final isCredit = orderStatus == 'PAYMENT-COLLECTED';
 
-  //                       if (isCredit) {
-  //                         totalCredit += amount;
-  //                       } else {
-  //                         totalDebit += amount;
-  //                       }
+                          if (isCredit) {
+                            totalCredit += amount;
+                          } else {
+                            totalDebit += amount;
+                          }
 
-  //                       return [
-  //                         DateFormat('yyyy-MM-dd').format(date),
-  //                         orderStatus,
-  //                         isCredit ? '-' : amount.toString(),
-  //                         isCredit ? amount.toString() : '-',
-  //                         dueAmount.toString(),
-  //                       ];
-  //                     }).toList(),
-  //                   ),
-  //                 pw.SizedBox(height: 20),
-  //                 pw.Row(
-  //                   mainAxisAlignment: pw.MainAxisAlignment.end,
-  //                   children: [
-  //                     pw.Text('Total Debit: $totalDebit'),
-  //                   ],
-  //                 ),
-  //                 pw.Row(
-  //                   mainAxisAlignment: pw.MainAxisAlignment.end,
-  //                   children: [
-  //                     pw.Text('Total Credit: $totalCredit'),
-  //                   ],
-  //                 ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //       );
+                          return [
+                            DateFormat('yyyy-MM-dd').format(date),
+                            orderStatus,
+                            isCredit ? '-' : amount.toString(),
+                            isCredit ? amount.toString() : '-',
+                            dueAmount.toString(),
+                          ];
+                        }).toList(),
+                        // Add the total row
+                        [
+                          '', // Empty date
+                          'Total', // Text under "Transaction Type"
+                          totalDebit
+                              .toString(), // Debit total under Debit column
+                          totalCredit
+                              .toString(), // Credit total under Credit column
+                          '' // Empty Remaining Balance
+                        ],
+                      ],
+                    ),
+                ],
+              );
+            },
+          ),
+        );
 
-  //       final output = await getTemporaryDirectory();
-  //       final file = File("${output.path}/statement.pdf");
-  //       await file.writeAsBytes(await pdf.save());
+        final output = await getTemporaryDirectory();
+        final file = File("${output.path}/statement.pdf");
+        await file.writeAsBytes(await pdf.save());
 
-  //       await Share.shareXFiles(
-  //         [XFile(file.path)],
-  //         text: 'Here is your transaction statement',
-  //       );
-  //     } else {
-  //       print('Failed to share statement data: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     print('Error occurred while sharing statement data: $e');
-  //   }
-  // }
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Here is your transaction statement',
+        );
+      } else {
+        print('Failed to share statement data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred while sharing statement data: $e');
+    }
+  }
 
   Future<void> _getCountryCode() async {
     final SharedPreferences sharedPreferences =
@@ -1141,9 +1112,9 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                             minimumSize: const Size(350, 50),
                           ),
                           onPressed: () {
-                            _refresh();
+                            _showDateRangeDialog();
                           },
-                          child: Text(translation(context)!.refresh),
+                          child: Text(translation(context)!.shareStatement),
                         ),
                       ),
                     ],

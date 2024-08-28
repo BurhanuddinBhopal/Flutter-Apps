@@ -10,6 +10,7 @@ import 'package:hta/Pages/App%20Pages/customerReport_page.dart';
 import 'package:hta/Pages/App%20Pages/editCustomer_page.dart';
 
 import 'package:hta/language/language_constant.dart';
+import 'package:hta/utils/routes.dart';
 
 import 'package:hta/widgets/refresh.dart';
 import 'package:http/http.dart' as http;
@@ -26,13 +27,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class DetailedCardPage extends StatefulWidget {
   final dynamic customerData;
-  final List<String>? imageUrls;
+
   final Function(List<String>)? onUpdateImageUrls;
 
   const DetailedCardPage({
     super.key,
     required this.customerData,
-    this.imageUrls,
     this.onUpdateImageUrls,
   });
 
@@ -44,7 +44,7 @@ class DetailedCardPage extends StatefulWidget {
 }
 
 class _DetailedCardPageState extends State<DetailedCardPage> {
-  var _customerData = {};
+  Map<String, dynamic> _customerData = {};
   var transactionData1 = [];
   double? pendingAmount;
   bool isPaymentCollected = false;
@@ -55,6 +55,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   void updateImageUrls(List<String> newImageUrls) {
     setState(() {
       imageUrls = newImageUrls;
+      print("imageUrls: ${widget.onUpdateImageUrls}");
     });
     widget.onUpdateImageUrls!(imageUrls!);
   }
@@ -65,17 +66,19 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
 
   @override
   void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() {
     transactionData();
     customerData();
     _getCountryCode();
     setState(() {
-      imageUrls = widget.imageUrls;
       _customerData = widget.customerData;
 
       mobileNumber = _customerData["mobileNumber"];
     });
-
-    super.initState();
   }
 
   Future<void> _getCountryCode() async {
@@ -265,12 +268,27 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       appBar: AppBar(
         backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
         leading: IconButton(
+            // onPressed: () {
+            //   // Navigator.push(
+            //   //     context,
+            //   //     PageTransition(
+            //   //         type: PageTransitionType.fade,
+            //   //         child: (BottomNavigationPage())));
+            //   // Navigator.popUntil(
+            //   //     context, ModalRoute.withName(MyRoutes.bottomNavigationRoute));
+            //   Navigator.pop(context);
+            // },
             onPressed: () {
-              Navigator.push(
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushAndRemoveUntil(
                   context,
-                  PageTransition(
-                      type: PageTransitionType.fade,
-                      child: (BottomNavigationPage())));
+                  MaterialPageRoute(
+                      builder: (context) => BottomNavigationPage()),
+                  (Route<dynamic> route) => false,
+                );
+              }
             },
             icon: Icon(Icons.arrow_back)),
         title: Text('${_customerData["organisationName"]}'),
@@ -512,205 +530,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                         ),
                       ),
               ),
-              // Container(
-              //   height: MediaQuery.of(context).size.height * 0.7,
-              //   margin: EdgeInsets.only(left: 100, right: 20),
-              //   child: isLoading
-              //       ? Center(
-              //           child: CircularProgressIndicator(
-              //             color: Color.fromRGBO(62, 13, 59, 1),
-              //           ),
-              //         )
-              //       : RefreshWidget(
-              //           color: Color.fromRGBO(62, 13, 59, 1),
-              //           onRefresh: transactionData,
-              //           child: ListView.builder(
-              //             itemCount: transactionData1.length,
-              //             itemBuilder: (context, index) {
-              //               // transactionId = transactionData1[index]['_id'];
-
-              //               return WillPopScope(
-              //                 onWillPop: () async {
-              //                   Navigator.push(
-              //                     context,
-              //                     PageTransition(
-              //                         type: PageTransitionType.fade,
-              //                         child: (BottomNavigationPage())),
-              //                   );
-              //                   return false;
-              //                 },
-              //                 child: GestureDetector(
-              //                   onTap: (() {
-              //                     Navigator.push(
-              //                       context,
-              //                       PageTransition(
-              //                           type: PageTransitionType.fade,
-              //                           child: DetailedInfoPage(
-              //                             customerOrganization:
-              //                                 transactionData1[index],
-              //                             customerData: _customerData,
-              //                           )),
-              //                     );
-              //                   }),
-              //                   child: Container(
-              //                     margin: EdgeInsets.only(top: 10),
-              //                     child: Slidable(
-              //                       endActionPane: ActionPane(
-              //                         motion: BehindMotion(),
-              //                         children: [
-              //                           SlidableAction(
-              //                               icon: Icons.delete,
-              //                               label: 'Delete',
-              //                               backgroundColor: Colors.red,
-              //                               onPressed: (context) {
-              //                                 _popupDialogBox(
-              //                                     transactionData1[index]
-              //                                         ['_id']);
-              //                               })
-              //                         ],
-              //                       ),
-              //                       child: Card(
-              //                         shape: RoundedRectangleBorder(
-              //                             borderRadius:
-              //                                 BorderRadius.circular(10)),
-              //                         color: transactionData1[index]
-              //                                     ["orderStatus"] ==
-              //                                 'PAYMENT-COLLECTED'
-              //                             ? Color.fromRGBO(52, 135, 89, 1)
-              //                             : Color.fromRGBO(186, 0, 0, 1),
-              //                         child: Container(
-              //                           child: Row(
-              //                             mainAxisAlignment:
-              //                                 MainAxisAlignment.spaceBetween,
-              //                             children: [
-              //                               Container(
-              //                                 margin: EdgeInsets.only(
-              //                                     top: 10,
-              //                                     left: 10,
-              //                                     bottom: 10),
-              //                                 child: Column(
-              //                                   crossAxisAlignment:
-              //                                       CrossAxisAlignment.start,
-              //                                   children: [
-              //                                     transactionData1[index]
-              //                                                 ["orderStatus"] ==
-              //                                             'PAYMENT-COLLECTED'
-              //                                         ? Text(
-              //                                             'Paid Amount',
-              //                                             style: TextStyle(
-              //                                                 color:
-              //                                                     Colors.white),
-              //                                           )
-              //                                         : Text(
-              //                                             'Bill Amount',
-              //                                             style: TextStyle(
-              //                                                 color:
-              //                                                     Colors.white),
-              //                                           ),
-              //                                     Container(
-              //                                       margin: EdgeInsets.only(
-              //                                           top: 10),
-              //                                       child: Row(
-              //                                         children: [
-              //                                           const Icon(
-              //                                             Icons
-              //                                                 .currency_rupee_sharp,
-              //                                             size: 18,
-              //                                             color: Colors.white,
-              //                                           ),
-              //                                           Container(
-              //                                             child: Text(
-              //                                               '${transactionData1[index]["amount"]}',
-              //                                               style: TextStyle(
-              //                                                   color: Colors
-              //                                                       .white,
-              //                                                   fontSize: 14),
-              //                                             ),
-              //                                           ),
-              //                                         ],
-              //                                       ),
-              //                                     )
-              //                                   ],
-              //                                 ),
-              //                               ),
-              //                               Container(
-              //                                 margin: EdgeInsets.only(
-              //                                     bottom: 10,
-              //                                     right: 10,
-              //                                     top: 10),
-              //                                 child: Column(
-              //                                   crossAxisAlignment:
-              //                                       CrossAxisAlignment.end,
-              //                                   children: [
-              //                                     transactionData1[index]
-              //                                                 ["orderStatus"] ==
-              //                                             'PAYMENT-COLLECTED'
-              //                                         ? Text(
-              //                                             'Paid on',
-              //                                             style: TextStyle(
-              //                                               color: Colors.white,
-              //                                             ),
-              //                                           )
-              //                                         : Text(
-              //                                             'Raised on',
-              //                                             style: TextStyle(
-              //                                               color: Colors.white,
-              //                                             ),
-              //                                           ),
-              //                                     Container(
-              //                                       margin: EdgeInsets.only(
-              //                                           top: 10),
-              //                                       child: Row(
-              //                                         children: [
-              //                                           Container(
-              //                                             margin:
-              //                                                 EdgeInsets.only(
-              //                                                     right: 20),
-              //                                             child: Icon(
-              //                                               Icons
-              //                                                   .calendar_today,
-              //                                               size: 18,
-              //                                               color: Colors.white,
-              //                                             ),
-              //                                           ),
-              //                                           Container(
-              //                                             margin:
-              //                                                 EdgeInsets.only(
-              //                                                     left: 0),
-              //                                             child: Text(
-              //                                               DateFormat(
-              //                                                       'dd-MM-yyyy')
-              //                                                   .format(DateTime.parse(
-              //                                                       transactionData1[
-              //                                                               index]
-              //                                                           [
-              //                                                           "createdAt"])),
-              //                                               style: TextStyle(
-              //                                                 color:
-              //                                                     Colors.white,
-              //                                                 fontSize: 14,
-              //                                               ),
-              //                                             ),
-              //                                           )
-              //                                         ],
-              //                                       ),
-              //                                     )
-              //                                   ],
-              //                                 ),
-              //                               )
-              //                             ],
-              //                           ),
-              //                         ),
-              //                       ),
-              //                     ),
-              //                   ),
-              //                 ),
-              //               );
-              //             },
-              //           ),
-              //         ),
-              // ),
-
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7,
                 child: buildTransactionListView(),
@@ -731,13 +550,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             borderRadius: BorderRadius.zero,
                           )),
                       onPressed: () {
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => PayBillPage(
+                        //             customerData: _customerData,
+                        //             pendingAmount: pendingAmount,
+                        //             onUpdateImageUrls: updateImageUrls)));
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => PayBillPage(
-                                    customerData: _customerData,
-                                    pendingAmount: pendingAmount,
-                                    onUpdateImageUrls: updateImageUrls)));
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PayBillPage(
+                                  customerData: _customerData,
+                                  pendingAmount: pendingAmount,
+                                  onUpdateImageUrls: updateImageUrls)),
+                        );
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -761,14 +588,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                               borderRadius: BorderRadius.zero,
                             )),
                         onPressed: () {
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => RaiseBillPage(
+                          //               customerData: _customerData,
+                          //               pendingAmount: pendingAmount,
+                          //               onUpdateImageUrls: updateImageUrls,
+                          //             )));
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => RaiseBillPage(
-                                        customerData: _customerData,
-                                        pendingAmount: pendingAmount,
-                                        onUpdateImageUrls: updateImageUrls,
-                                      )));
+                                      customerData: _customerData,
+                                      pendingAmount: pendingAmount,
+                                      onUpdateImageUrls: updateImageUrls)));
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -881,17 +715,21 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
 
     return WillPopScope(
       onWillPop: () async {
-        Navigator.push(
-          context,
-          PageTransition(
-            type: PageTransitionType.fade,
-            child: (BottomNavigationPage()),
-          ),
-        );
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => BottomNavigationPage()),
+            (Route<dynamic> route) => false,
+          );
+        }
         return false;
       },
       child: GestureDetector(
         onTap: (() {
+          print("transaction: $transaction");
+          print("customerData: $_customerData");
           Navigator.push(
             context,
             PageTransition(
@@ -900,7 +738,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                 customerOrganization: transaction,
                 customerData: _customerData,
                 imageUrls: imageUrls,
-                onUpdateImageUrls: updateImageUrls,
+                // onUpdateImageUrls: updateImageUrls,
                 pendingAmount: pendingAmount,
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hta/Pages/App%20Pages/home_page_card_info_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:hta/Pages/Account%20Pages/change_language_page.dart';
@@ -17,6 +18,7 @@ import 'Pages/Account Pages/login_page.dart';
 import 'Pages/App Pages/bottom_navigation_page.dart';
 import 'Pages/App Pages/card_info_page_pay_bill_button_page.dart';
 import 'Pages/App Pages/home_page_detailed_card_info_page.dart';
+import 'Pages/App Pages/today_transaction_page.dart';
 import 'Pages/Drawer Pages/aboutUs_page.dart';
 import 'Pages/Drawer Pages/accountSetting_page.dart';
 import 'Pages/Drawer Pages/contactUs_page.dart';
@@ -140,12 +142,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               routes: {
                 MyRoutes.homeRoute: (context) => HomePage(),
                 MyRoutes.loginRoute: (context) => LoginPage(),
-                // MyRoutes.detailedcardRoute: (context) => DetailedCardPage(),
+                MyRoutes.detailedcardRoute: (context) => DetailedCardPage(
+                      customerData: _customerData,
+                    ),
                 MyRoutes.detailedinfoRoute: (context) => DetailedInfoPage(
                       customerOrganization: transactionData1,
                       customerData: _customerData,
                       imageUrls: imageUrls,
-                      onUpdateImageUrls: updateImageUrls,
+                      // onUpdateImageUrls: updateImageUrls,
                       pendingAmount: _pendingAmount,
                     ),
                 MyRoutes.raisebillRoute: (context) => RaiseBillPage(
@@ -156,7 +160,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 MyRoutes.paybillRoute: (context) => PayBillPage(
                       customerData: _customerData,
                       pendingAmount: _pendingAmount,
-                      onUpdateImageUrls: updateImageUrls,
+                      // onUpdateImageUrls: updateImageUrls,
                     ),
                 MyRoutes.accountSettingsRoute: (context) => AccountSettings(),
                 MyRoutes.contactUsRoute: (context) => ContactUs(),
@@ -165,10 +169,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 MyRoutes.forgotPasswordRoute: (context) => ForgotPassword(),
                 MyRoutes.reportPageRoute: (context) => ReportPage(),
                 MyRoutes.changeLanguageRoute: (context) => ChangeLanguage(),
-                // MyRoutes.todayPageRoute: (context) => TodayPage(
-                //       customerData: _customerData,
-                //       // fullCustomerData: _customerData,
-                //     ),
+                MyRoutes.todayPageRoute: (context) => TodayPage(),
+                MyRoutes.bottomNavigationRoute: (context) =>
+                    BottomNavigationPage(),
               });
         }
       },

@@ -39,6 +39,7 @@
     "mobileNumber": "Mobile Number",
     "validateMessageMobileNumber": "Mobile Number cannot be empty",
     "validateMessageMobileNumberForValidNumber": "Please enter a valid 10-digit mobile number",
+    "validateMessageMobileNumberForCountryCode": "Please enter mobile number with country code\n(e.g., +91 for India).",
     "hintTextMobileNumber": "Enter Mobile Number",
     "password": "Password",
     "validateMessagePasswordNotEmpty": "Password cannot be empty",

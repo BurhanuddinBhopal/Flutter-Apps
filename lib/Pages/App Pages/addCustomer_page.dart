@@ -215,13 +215,36 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                           onPressed: () async {
                             final PhoneContact contact =
                                 await FlutterContactPicker.pickPhoneContact();
+
                             setState(() {
                               _phoneContact = contact;
                               organisationName.text =
                                   _phoneContact!.fullName.toString();
                               name.text = _phoneContact!.fullName.toString();
-                              mobileNumber.text =
-                                  _phoneContact!.phoneNumber!.number.toString();
+
+                              String rawNumber = _phoneContact!
+                                  .phoneNumber!.number
+                                  .toString()
+                                  .trim();
+
+                              // Remove all non-numeric characters except the + sign
+                              rawNumber =
+                                  rawNumber.replaceAll(RegExp(r'[^0-9+]'), '');
+
+                              // Check if the number already has a country code (starts with +)
+                              if (rawNumber.startsWith('+')) {
+                                // Preserve the original country code
+                                mobileNumber.text = rawNumber;
+                              } else {
+                                // Handle numbers without a country code
+                                // Remove leading zero, if present
+                                if (rawNumber.startsWith('0')) {
+                                  rawNumber = rawNumber.substring(1);
+                                }
+
+                                // Prepend +91 to the cleaned number
+                                mobileNumber.text = '+91' + rawNumber;
+                              }
                             });
                           },
                           style: TextButton.styleFrom(
@@ -336,6 +359,15 @@ class _AddCustomerPageState extends State<AddCustomerPage> {
                               return translation(context)!
                                   .validateMessageMobileNumber;
                             }
+
+                            final RegExp phoneRegExp =
+                                RegExp(r'^\+\d{1,3}\d{10}$');
+
+                            if (!phoneRegExp.hasMatch(value)) {
+                              return translation(context)!
+                                  .validateMessageMobileNumberForCountryCode;
+                            }
+
                             return null;
                           },
                           decoration: InputDecoration(

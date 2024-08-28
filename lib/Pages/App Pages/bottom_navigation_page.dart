@@ -15,37 +15,46 @@ class BottomNavigationPage extends StatefulWidget {
 }
 
 class _BottomNavigationPageState extends State<BottomNavigationPage> {
-  List<Widget> widgetList = [];
-  int _selectedIndex = 0;
-  bool isLoading = false;
+  // List<Widget> widgetList = [];
+  // int _selectedIndex = 0;
+  // bool isLoading = false;
 
-  var transactionData1 = [];
+  // var transactionData1 = [];
 
-  var customerData;
-  List<dynamic>? transactionData;
-  List<Transaction>? transactions;
+  // var customerData;
+  // List<dynamic>? transactionData;
+  // List<Transaction>? transactions;
 
-  // var _fullCustomerData = [];
+  // // var _fullCustomerData = [];
 
-  @override
-  void initState() {
-    super.initState();
-    widgetList = [HomePage(), TodayPage(), ReportPage()];
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   widgetList = [HomePage(), TodayPage(), ReportPage()];
+  // }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //   });
+  // }
+
+  int _currentIndex = 0;
+
+  // Cache the pages to prevent reloading and maintain state
+  final List<Widget> _pages = [
+    HomePage(),
+    TodayPage(),
+    ReportPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final selectedWidget =
-        widgetList.isNotEmpty ? widgetList[_selectedIndex] : HomePage();
-
     return Scaffold(
-      body: selectedWidget,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -69,10 +78,14 @@ class _BottomNavigationPageState extends State<BottomNavigationPage> {
               label: translation(context)!.report),
         ],
         backgroundColor: const Color.fromRGBO(62, 13, 59, 1),
-        currentIndex: _selectedIndex,
         unselectedItemColor: Colors.grey,
         selectedItemColor: Colors.white,
-        onTap: _onItemTapped,
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }

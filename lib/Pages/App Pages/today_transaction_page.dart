@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/Pages/App%20Pages/home_page_detailed_card_info_page.dart';
 
 import 'package:hta/models/Usermodel.dart';
 
@@ -27,7 +28,8 @@ class TodayPage extends StatefulWidget {
   State<TodayPage> createState() => _TodayPageState();
 }
 
-class _TodayPageState extends State<TodayPage> {
+class _TodayPageState extends State<TodayPage>
+    with AutomaticKeepAliveClientMixin {
   String finalNumber = '';
   bool isLoading = false;
   var customerData;
@@ -226,7 +228,9 @@ class _TodayPageState extends State<TodayPage> {
     } catch (e) {
       print('Error occurred: $e');
     } finally {
-      setState(() {});
+      setState(() {
+        // Update the UI with the fetched transactions
+      });
     }
   }
 
@@ -239,11 +243,13 @@ class _TodayPageState extends State<TodayPage> {
         await SharedPreferences.getInstance();
 
     var token = sharedPreferences.getString('token');
+    print(token);
 
     // ignore: unused_local_variable
     var lastName = sharedPreferences.getString('lastName');
 
     var organisation = sharedPreferences.getString('organisation');
+    print(organisation);
     countryCode = sharedPreferences.getString('country') ?? 'IN';
 
     final url = Uri.parse(
@@ -330,22 +336,11 @@ class _TodayPageState extends State<TodayPage> {
   int suggestionsCount = 12;
   final focus = FocusNode();
 
-  List<String> imageUrls = [];
-
-  void updateImageUrls(List<String> newImageUrls) {
-    print("Updated image URLs in Home Page: $newImageUrls");
-    // Update the state or perform other actions
-    setState(() {
-      imageUrls = newImageUrls;
-    });
-  }
-
   Future<void> _getCountryCode() async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     setState(() {
       countryCode = sharedPreferences.getString('country') ?? 'IN';
-      print(countryCode);
     });
   }
 
@@ -359,7 +354,11 @@ class _TodayPageState extends State<TodayPage> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -449,9 +448,14 @@ class _TodayPageState extends State<TodayPage> {
         ],
       ),
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Color.fromRGBO(62, 13, 59, 1),
+          ? Container(
+              color: Color.fromRGBO(62, 13, 59,
+                  1), // Set background color to match your app's theme
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Colors
+                      .white, // Set the color of the loading indicator to white
+                ),
               ),
             )
           : RefreshWidget(
@@ -556,20 +560,25 @@ class _TodayPageState extends State<TodayPage> {
                               String customerOrganizationName =
                                   dailyTransaction[index]["customer"]
                                       ["organisationName"];
-                              // transactionId = transactionData1[index]['_id'];
 
                               return GestureDetector(
                                 onTap: () {
-                                  print(filteredCustomerData[index]);
+                                  print("daily: ${dailyTransaction[index]}");
+                                  print("filtered: ${filteredCustomerData}");
                                   Navigator.push(
                                       context,
                                       PageTransition(
-                                        type: PageTransitionType.fade,
-                                        child: DetailedCardPage(
-                                          customerData:
-                                              filteredCustomerData[index],
-                                        ),
-                                      ));
+                                          type: PageTransitionType.fade,
+                                          child: DetailedInfoPage(
+                                              customerOrganization:
+                                                  dailyTransaction[index],
+                                              customerData:
+                                                  filteredCustomerData)
+                                          // child: DetailedCardPage(
+                                          //   customerData:
+                                          //       filteredCustomerData[index],
+                                          // ),
+                                          ));
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(bottom: 3),
