@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String backendUrl = "https://dev.hta.hatimtechnologies.in";
+  static const String backendUrl = "https://hta.hatimtechnologies.in";
 
   static const List<String> supportedLanguages = ['en', 'es', 'fr', 'de'];
 

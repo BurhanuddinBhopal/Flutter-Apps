@@ -282,288 +282,290 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
             )
-          : WillPopScope(
-              onWillPop: () => _onBackButtonPressed(context),
-              child: Container(
-                color: Color.fromRGBO(62, 13, 59, 1),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: BouncingScrollPhysics(),
-                            itemCount: filteredList.length,
-                            itemBuilder: (context, index) {
-                              final currentItem = filteredList[index];
-                              return GestureDetector(
-                                  onTap: (() {
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: DetailedCardPage(
-                                            customerData:
-                                                filteredCustomerData[index],
-                                          ),
-                                        ));
-                                  }),
-                                  child: Container(
-                                    margin: EdgeInsets.all(6),
-                                    height: MediaQuery.of(context).size.height *
-                                        0.18,
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: Container(
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(left: 12),
-                                                  child: CircleAvatar(
-                                                    radius:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width *
-                                                            0.1,
-                                                    backgroundImage: AssetImage(
-                                                        'assets/profile_img/profile_pic.jpg'),
-                                                  ),
-                                                ),
-                                              ],
+          : RefreshWidget(
+              color: Color.fromRGBO(62, 13, 59, 1),
+              onRefresh: _refresh,
+              child: WillPopScope(
+                onWillPop: () => _onBackButtonPressed(context),
+                child: Container(
+                  color: Color.fromRGBO(62, 13, 59, 1),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: BouncingScrollPhysics(),
+                              itemCount: filteredList.length,
+                              itemBuilder: (context, index) {
+                                final currentItem = filteredList[index];
+                                return GestureDetector(
+                                    onTap: (() {
+                                      Navigator.push(
+                                          context,
+                                          PageTransition(
+                                            type: PageTransitionType.fade,
+                                            child: DetailedCardPage(
+                                              customerData:
+                                                  filteredCustomerData[index],
                                             ),
-                                            Container(
-                                                margin: EdgeInsets.symmetric(
-                                                    horizontal: 12,
-                                                    vertical: 23),
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      currentItem
-                                                          .organisationName,
-                                                      style: TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w500),
+                                          ));
+                                    }),
+                                    child: Container(
+                                      margin: EdgeInsets.all(6),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.18,
+                                      child: Card(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Container(
+                                          child: Row(
+                                            children: [
+                                              Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 12),
+                                                    child: CircleAvatar(
+                                                      radius:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.1,
+                                                      backgroundImage: AssetImage(
+                                                          'assets/profile_img/profile_pic.jpg'),
                                                     ),
-                                                    Container(
-                                                        margin: EdgeInsets.only(
-                                                            top: 6),
-                                                        child: Row(
-                                                          children: [
-                                                            Text(
-                                                              currentItem.name,
-                                                              style: TextStyle(
-                                                                  fontSize: 14),
-                                                            ),
-                                                            Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      left: 5),
-                                                              child: Text(
+                                                  ),
+                                                ],
+                                              ),
+                                              Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 23),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        currentItem
+                                                            .organisationName,
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                      Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 6),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
                                                                 currentItem
-                                                                    .lastName,
+                                                                    .name,
                                                                 style: TextStyle(
                                                                     fontSize:
                                                                         14),
                                                               ),
-                                                            )
-                                                          ],
-                                                        )),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.6,
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    top: 10),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Row(
-                                                                  children: [
-                                                                    Icon(
-                                                                      Icons
-                                                                          .location_on,
-                                                                      size: 12,
-                                                                      color: Colors
-                                                                          .black26,
-                                                                    ),
-                                                                    Text(
-                                                                      currentItem
-                                                                          .location,
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight: FontWeight
-                                                                              .bold,
-                                                                          color:
-                                                                              Colors.black26),
-                                                                    ),
-                                                                  ],
+                                                              Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        left:
+                                                                            5),
+                                                                child: Text(
+                                                                  currentItem
+                                                                      .lastName,
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          14),
                                                                 ),
-                                                                Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
-                                                                          top:
-                                                                              12),
-                                                                  child: Row(
+                                                              )
+                                                            ],
+                                                          )),
+                                                      SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.6,
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                      top: 10),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Row(
                                                                     children: [
-                                                                      countryCode ==
-                                                                              'KW'
-                                                                          ? SizedBox(
-                                                                              width: 14,
-                                                                              child: ColorFiltered(
-                                                                                  colorFilter: ColorFilter.mode(
-                                                                                    Colors.black.withOpacity(0.8),
-                                                                                    BlendMode.srcIn,
-                                                                                  ),
-                                                                                  child: Image.asset('assets/images/kwd.png')),
-                                                                            )
-                                                                          : Icon(
-                                                                              Icons.currency_rupee,
-                                                                              size: 12,
-                                                                              color: Color.fromRGBO(62, 13, 59, 1),
-                                                                            ),
-                                                                      SizedBox(
-                                                                          width:
-                                                                              4), // Add some space between icon/image and text
-                                                                      Text(
-                                                                        formatPendingAmount(
-                                                                            currentItem.pendingAmount),
-                                                                        style:
-                                                                            TextStyle(
-                                                                          fontSize:
-                                                                              12,
-                                                                          fontWeight:
-                                                                              FontWeight.w900,
-                                                                          color: Color.fromRGBO(
-                                                                              62,
-                                                                              13,
-                                                                              59,
-                                                                              1),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                              top: 10,
-                                                            ),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                Container(
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        margin: EdgeInsets.only(
-                                                                            right:
-                                                                                5),
-                                                                        child: Icon(
-                                                                            Icons
-                                                                                .call,
-                                                                            size:
-                                                                                12,
-                                                                            color:
-                                                                                Colors.black26),
+                                                                      Icon(
+                                                                        Icons
+                                                                            .location_on,
+                                                                        size:
+                                                                            12,
+                                                                        color: Colors
+                                                                            .black26,
                                                                       ),
                                                                       Text(
                                                                         currentItem
-                                                                            .mobileNumber,
+                                                                            .location,
                                                                         style: TextStyle(
-                                                                            color: Colors
-                                                                                .black26,
                                                                             fontSize:
                                                                                 12,
                                                                             fontWeight:
-                                                                                FontWeight.bold),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Container(
-                                                                  margin: EdgeInsets
-                                                                      .only(
-                                                                          top:
-                                                                              12),
-                                                                  child: Row(
-                                                                    children: [
-                                                                      Container(
-                                                                        margin:
-                                                                            EdgeInsets.only(
-                                                                          right:
-                                                                              5,
-                                                                        ),
-                                                                        child:
-                                                                            Icon(
-                                                                          Icons
-                                                                              .calendar_month_rounded,
-                                                                          size:
-                                                                              12,
-                                                                          color:
-                                                                              Colors.black26,
-                                                                        ),
+                                                                                FontWeight.bold,
+                                                                            color: Colors.black26),
                                                                       ),
-                                                                      Text(
-                                                                        DateFormat('dd-MM-yyyy').format(DateTime.parse(currentItem
-                                                                            .date
-                                                                            .toString())),
-                                                                        style: TextStyle(
-                                                                            color: Colors
-                                                                                .black26,
+                                                                    ],
+                                                                  ),
+                                                                  Container(
+                                                                    margin: EdgeInsets
+                                                                        .only(
+                                                                            top:
+                                                                                12),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        countryCode ==
+                                                                                'KW'
+                                                                            ? SizedBox(
+                                                                                width: 14,
+                                                                                child: ColorFiltered(
+                                                                                    colorFilter: ColorFilter.mode(
+                                                                                      Colors.black.withOpacity(0.8),
+                                                                                      BlendMode.srcIn,
+                                                                                    ),
+                                                                                    child: Image.asset('assets/images/kwd.png')),
+                                                                              )
+                                                                            : Icon(
+                                                                                Icons.currency_rupee,
+                                                                                size: 12,
+                                                                                color: Color.fromRGBO(62, 13, 59, 1),
+                                                                              ),
+                                                                        SizedBox(
+                                                                            width:
+                                                                                4), // Add some space between icon/image and text
+                                                                        Text(
+                                                                          formatPendingAmount(
+                                                                              currentItem.pendingAmount),
+                                                                          style:
+                                                                              TextStyle(
                                                                             fontSize:
                                                                                 12,
                                                                             fontWeight:
-                                                                                FontWeight.bold),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
+                                                                                FontWeight.w900,
+                                                                            color: Color.fromRGBO(
+                                                                                62,
+                                                                                13,
+                                                                                59,
+                                                                                1),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ],
-                                                ))
-                                          ],
+                                                            Container(
+                                                              margin: EdgeInsets
+                                                                  .only(
+                                                                top: 10,
+                                                              ),
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  Container(
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          margin:
+                                                                              EdgeInsets.only(right: 5),
+                                                                          child: Icon(
+                                                                              Icons.call,
+                                                                              size: 12,
+                                                                              color: Colors.black26),
+                                                                        ),
+                                                                        Text(
+                                                                          currentItem
+                                                                              .mobileNumber,
+                                                                          style: TextStyle(
+                                                                              color: Colors.black26,
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.bold),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    margin: EdgeInsets
+                                                                        .only(
+                                                                            top:
+                                                                                12),
+                                                                    child: Row(
+                                                                      children: [
+                                                                        Container(
+                                                                          margin:
+                                                                              EdgeInsets.only(
+                                                                            right:
+                                                                                5,
+                                                                          ),
+                                                                          child:
+                                                                              Icon(
+                                                                            Icons.calendar_month_rounded,
+                                                                            size:
+                                                                                12,
+                                                                            color:
+                                                                                Colors.black26,
+                                                                          ),
+                                                                        ),
+                                                                        Text(
+                                                                          DateFormat('dd-MM-yyyy').format(DateTime.parse(currentItem
+                                                                              .date
+                                                                              .toString())),
+                                                                          style: TextStyle(
+                                                                              color: Colors.black26,
+                                                                              fontSize: 12,
+                                                                              fontWeight: FontWeight.bold),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ))
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ));
-                            }),
+                                    ));
+                              }),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

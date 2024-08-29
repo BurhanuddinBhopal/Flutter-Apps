@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/widgets/drawer.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -235,7 +236,6 @@ class _ReportPageState extends State<ReportPage>
       // If the data is null or empty, reset the values
       years = [];
       yearlyValues = [];
-      print('No data available');
       setState(() {
         years = [];
         yearlyValues = [];
@@ -317,8 +317,14 @@ class _ReportPageState extends State<ReportPage>
 
   String formatNumber(double value) {
     if (value >= 100000) {
-      return '${(value / 100000).toStringAsFixed(0)}L';
-    } else if (value >= 9999) {
+      double lakhsValue = value / 100000;
+      // Show one decimal place for non-integers like 1.5L
+      if (lakhsValue % 1 != 0) {
+        return '${lakhsValue.toStringAsFixed(1)}L';
+      } else {
+        return '${lakhsValue.toStringAsFixed(0)}L';
+      }
+    } else if (value >= 10000) {
       return '${(value / 1000).toStringAsFixed(1)}K';
     } else {
       return value.toInt().toString();
@@ -338,7 +344,6 @@ class _ReportPageState extends State<ReportPage>
         title: Text(
           translation(context)!.welcometoHTA,
         ),
-        automaticallyImplyLeading: false,
       ),
       body: isLoading
           ? const Center(
@@ -967,6 +972,7 @@ class _ReportPageState extends State<ReportPage>
                 ),
               ),
             ),
+      drawer: AppDrawer(),
     );
   }
 }

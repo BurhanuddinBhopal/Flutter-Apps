@@ -55,7 +55,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
   void updateImageUrls(List<String> newImageUrls) {
     setState(() {
       imageUrls = newImageUrls;
-      print("imageUrls: ${widget.onUpdateImageUrls}");
     });
     widget.onUpdateImageUrls!(imageUrls!);
   }
@@ -502,7 +501,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                     )
                                                   : Icon(
                                                       Icons.currency_rupee,
-                                                      size: 20,
+                                                      size: 15,
                                                       color: Color.fromRGBO(
                                                           62, 13, 59, 1),
                                                     ),
@@ -728,8 +727,6 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
       },
       child: GestureDetector(
         onTap: (() {
-          print("transaction: $transaction");
-          print("customerData: $_customerData");
           Navigator.push(
             context,
             PageTransition(

@@ -185,40 +185,90 @@ class _TodayPageState extends State<TodayPage>
     });
   }
 
+  // Future<void> fetchTodayTransactionData(DateTime date) async {
+//   try {
+//     final SharedPreferences sharedPreferences =
+//         await SharedPreferences.getInstance();
+//     var token = sharedPreferences.getString('token');
+
+//     // Convert to local date and set times for midnight boundaries
+//     DateTime todayMidnight = DateTime(date.year, date.month, date.day);
+//     DateTime todayEnd = todayMidnight.add(Duration(days: 1));
+
+//     // Convert to UTC format for the API call
+//     String todayStartFormatted =
+//         DateFormat("yyyy-MM-ddTHH:mm:ss.000Z").format(todayMidnight.toUtc());
+//     String todayEndFormatted =
+//         DateFormat("yyyy-MM-ddTHH:mm:ss.000Z").format(todayEnd.toUtc());
+
+//     final url = Uri.parse(
+//         '${AppConstants.backendUrl}/api/transactions/getDailyTransaction');
+
+//     final body = {
+//       'startDate': todayStartFormatted,
+//       'endDate': todayEndFormatted,
+//     };
+
+//     final headers = {
+//       'Content-Type': 'application/json',
+//       'Authorization': 'Bearer $token',
+//     };
+
+//     final response = await http.post(
+//       url,
+//       headers: headers,
+//       body: jsonEncode(body),
+//     );
+
+//     if (response.statusCode == 200) {
+//       final Map<String, dynamic> responseData = json.decode(response.body);
+
+//       dailyTransaction = responseData['dailyTransaction'];
+
+//       // Sort the transactions by creation time in descending order
+//       dailyTransaction.sort((a, b) => DateTime.parse(b["createdAt"])
+//           .compareTo(DateTime.parse(a["createdAt"])));
+
+//       setState(() {
+//         _searchController.text = _currentFilter;
+//       });
+//     } else {
+//       print('Response body: ${response.body}');
+//     }
+//   } catch (e) {
+//     print('Error occurred: $e');
+//   } finally {
+//     setState(() {
+//       // Update the UI with the fetched transactions
+//     });
+//   }
+// }
+
   Future<void> fetchTodayTransactionData(DateTime date) async {
     try {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       var token = sharedPreferences.getString('token');
 
-      // Convert the selected date to UTC and format it correctly
       String selectedDateTime =
           DateFormat("yyyy-MM-ddTHH:mm:ss.000Z").format(date.toUtc());
-
       final url = Uri.parse(
           '${AppConstants.backendUrl}/api/transactions/getDailyTransaction');
-
       final body = {'date': selectedDateTime};
-
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       };
-
       final response = await http.post(
         url,
         headers: headers,
         body: jsonEncode(body),
       );
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
-
         dailyTransaction = responseData['dailyTransaction'];
-
         dailyTransaction.sort((a, b) => DateTime.parse(b["createdAt"])
             .compareTo(DateTime.parse(a["createdAt"])));
-
         setState(() {
           _searchController.text = _currentFilter;
         });
@@ -228,6 +278,7 @@ class _TodayPageState extends State<TodayPage>
     } catch (e) {
       print('Error occurred: $e');
     } finally {
+      setState(() {});
       setState(() {
         // Update the UI with the fetched transactions
       });
@@ -243,13 +294,12 @@ class _TodayPageState extends State<TodayPage>
         await SharedPreferences.getInstance();
 
     var token = sharedPreferences.getString('token');
-    print(token);
 
     // ignore: unused_local_variable
     var lastName = sharedPreferences.getString('lastName');
 
     var organisation = sharedPreferences.getString('organisation');
-    print(organisation);
+
     countryCode = sharedPreferences.getString('country') ?? 'IN';
 
     final url = Uri.parse(
@@ -563,22 +613,32 @@ class _TodayPageState extends State<TodayPage>
 
                               return GestureDetector(
                                 onTap: () {
-                                  print("daily: ${dailyTransaction[index]}");
-                                  print("filtered: ${filteredCustomerData}");
-                                  Navigator.push(
+                                  String customerId = dailyTransaction[index]
+                                      ["customer"]["_id"];
+
+                                  var customerData =
+                                      filteredCustomerData.firstWhere(
+                                    (customer) => customer['_id'] == customerId,
+                                    orElse: () => null,
+                                  );
+
+                                  if (customerData != null) {
+                                    Navigator.push(
                                       context,
                                       PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: DetailedInfoPage(
-                                              customerOrganization:
-                                                  dailyTransaction[index],
-                                              customerData:
-                                                  filteredCustomerData)
-                                          // child: DetailedCardPage(
-                                          //   customerData:
-                                          //       filteredCustomerData[index],
-                                          // ),
-                                          ));
+                                        type: PageTransitionType.fade,
+                                        child: DetailedInfoPage(
+                                          customerOrganization:
+                                              dailyTransaction[index],
+                                          customerData: customerData,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    print(
+                                        "Customer not found for transaction.");
+                                    // Handle the case where the customer was not found
+                                  }
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(bottom: 3),

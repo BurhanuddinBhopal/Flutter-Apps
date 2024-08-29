@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/Pages/App%20Pages/bottom_navigation_page.dart';
 import 'package:hta/Pages/App%20Pages/home_page.dart';
 import 'package:hta/language/language_constant.dart';
 
@@ -89,8 +90,10 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BottomNavigationPage()));
               },
             ),
           )

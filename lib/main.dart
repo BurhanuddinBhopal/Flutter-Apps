@@ -91,7 +91,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   List<String> imageUrls = [];
 
   void updateImageUrls(List<String> newImageUrls) {
-    print("Updated image URLs in Home Page: $newImageUrls");
     // Update the state or perform other actions
     setState(() {
       imageUrls = newImageUrls;

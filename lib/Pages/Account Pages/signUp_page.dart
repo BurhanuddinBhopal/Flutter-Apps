@@ -99,10 +99,6 @@ class _SignUpPageState extends State<SignUpPage> {
           headers: {'Content-Type': 'application/json'},
         );
 
-        print('Request body: $body');
-        print('Response status: ${response.statusCode}');
-        print('Response body: ${response.body}');
-
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body.toString());
 

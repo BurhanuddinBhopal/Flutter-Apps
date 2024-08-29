@@ -84,8 +84,6 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check if response is successful
         if (response.statusCode == 200) {
-          print('Response Body: ${response.body}');
-
           final responseData = jsonDecode(response.body.toString());
 
           if (responseData['code'] == 1) {

@@ -49,100 +49,100 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   List<String> years = [];
   List<double> yearlyValues = [];
   String currentYear = DateTime.now().year.toString();
-  DateTime? _startDate;
-  DateTime? _endDate;
+  // DateTime? _startDate;
+  // DateTime? _endDate;
 
-  final TextEditingController _startDateController = TextEditingController();
-  final TextEditingController _endDateController = TextEditingController();
+  // final TextEditingController _startDateController = TextEditingController();
+  // final TextEditingController _endDateController = TextEditingController();
 
-  Future<void> _selectDate(
-    BuildContext context,
-    DateTime initialDate,
-    Function(DateTime) onDateSelected,
-    DateTime currentDate, // Add currentDate parameter
-  ) async {
-    final DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1900), // Minimum selectable date
-      lastDate: currentDate, // Set the maximum date to currentDate
-    );
+  // Future<void> _selectDate(
+  //   BuildContext context,
+  //   DateTime initialDate,
+  //   Function(DateTime) onDateSelected,
+  //   DateTime currentDate, // Add currentDate parameter
+  // ) async {
+  //   final DateTime? selectedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: initialDate,
+  //     firstDate: DateTime(1900), // Minimum selectable date
+  //     lastDate: currentDate, // Set the maximum date to currentDate
+  //   );
 
-    if (selectedDate != null && selectedDate != initialDate) {
-      onDateSelected(selectedDate);
-    }
-  }
+  //   if (selectedDate != null && selectedDate != initialDate) {
+  //     onDateSelected(selectedDate);
+  //   }
+  // }
 
-  void _showDateRangeDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select Date Range'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'Start Date',
-                ),
-                onTap: () => _selectDate(
-                  context,
-                  _startDate ?? DateTime.now(),
-                  (selectedDate) {
-                    setState(() {
-                      _startDate = selectedDate;
-                      _startDateController.text =
-                          DateFormat('yyyy-MM-dd').format(selectedDate);
-                    });
-                  },
-                  DateTime.now(), // Pass current date for validation
-                ),
-                controller: _startDateController,
-              ),
-              TextField(
-                readOnly: true,
-                decoration: const InputDecoration(
-                  labelText: 'End Date',
-                ),
-                onTap: () => _selectDate(
-                  context,
-                  _endDate ?? DateTime.now(),
-                  (selectedDate) {
-                    setState(() {
-                      _endDate = selectedDate;
-                      _endDateController.text =
-                          DateFormat('yyyy-MM-dd').format(selectedDate);
-                    });
-                  },
-                  DateTime.now(), // Pass current date for validation
-                ),
-                controller: _endDateController,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Center(
-                  child: Text(
-                'Submit',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              )),
-              onPressed: () {
-                shareStatementData(
-                  _customerData['_id'],
-                  _startDate!,
-                  _endDate!,
-                );
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showDateRangeDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Select Date Range'),
+  //         content: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             TextField(
+  //               readOnly: true,
+  //               decoration: const InputDecoration(
+  //                 labelText: 'Start Date',
+  //               ),
+  //               onTap: () => _selectDate(
+  //                 context,
+  //                 _startDate ?? DateTime.now(),
+  //                 (selectedDate) {
+  //                   setState(() {
+  //                     _startDate = selectedDate;
+  //                     _startDateController.text =
+  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
+  //                   });
+  //                 },
+  //                 DateTime.now(), // Pass current date for validation
+  //               ),
+  //               controller: _startDateController,
+  //             ),
+  //             TextField(
+  //               readOnly: true,
+  //               decoration: const InputDecoration(
+  //                 labelText: 'End Date',
+  //               ),
+  //               onTap: () => _selectDate(
+  //                 context,
+  //                 _endDate ?? DateTime.now(),
+  //                 (selectedDate) {
+  //                   setState(() {
+  //                     _endDate = selectedDate;
+  //                     _endDateController.text =
+  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
+  //                   });
+  //                 },
+  //                 DateTime.now(), // Pass current date for validation
+  //               ),
+  //               controller: _endDateController,
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: const Center(
+  //                 child: Text(
+  //               'Submit',
+  //               style: TextStyle(fontWeight: FontWeight.w600),
+  //             )),
+  //             onPressed: () {
+  //               shareStatementData(
+  //                 _customerData['_id'],
+  //                 _startDate!,
+  //                 _endDate!,
+  //               );
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   // Future<void> shareStatementData(
   //     String customerId, DateTime startDate, DateTime endDate) async {
@@ -170,7 +170,88 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   //     final responseData = jsonDecode(response.body.toString());
 
   //     if (response.statusCode == 200) {
-  //       print("responseData: $responseData");
+  //       final transactions =
+  //           responseData['cutomerTransaction'] as List<dynamic>? ?? [];
+
+  //       final pdf = pw.Document();
+  //       double totalDebit = 0;
+  //       double totalCredit = 0;
+
+  //       pdf.addPage(
+  //         pw.Page(
+  //           build: (pw.Context context) {
+  //             return pw.Column(
+  //               crossAxisAlignment: pw.CrossAxisAlignment.start,
+  //               children: [
+  //                 pw.Text('Transaction Statement',
+  //                     style: const pw.TextStyle(fontSize: 24)),
+  //                 pw.SizedBox(height: 20),
+  //                 pw.Text(
+  //                     'Organisation: ${responseData['organisation']['OrganisationName']}'),
+  //                 pw.Text(
+  //                     'Contact: ${responseData['organisation']['OrganisationContact']}'),
+  //                 pw.SizedBox(height: 20),
+  //                 if (transactions.isEmpty)
+  //                   pw.Text(
+  //                       'No transactions available for the selected date range.'),
+  //                 if (transactions.isNotEmpty)
+  //                   pw.Table.fromTextArray(
+  //                     headers: [
+  //                       'Date',
+  //                       'Transaction Type',
+  //                       'Debit',
+  //                       'Credit',
+  //                       'Remaining Balance',
+  //                     ],
+  //                     data: [
+  //                       ...transactions.map((transaction) {
+  //                         final date = DateTime.parse(
+  //                             transaction['orderPlaceHolder']['date']);
+  //                         final orderStatus = transaction['orderStatus'];
+  //                         final amount = transaction['amount'] ?? 0.0;
+  //                         final dueAmount = transaction['dueAmount'] ?? 0.0;
+  //                         final isCredit = orderStatus == 'PAYMENT-COLLECTED';
+
+  //                         if (isCredit) {
+  //                           totalCredit += amount;
+  //                         } else {
+  //                           totalDebit += amount;
+  //                         }
+
+  //                         return [
+  //                           DateFormat('yyyy-MM-dd').format(date),
+  //                           orderStatus,
+  //                           isCredit ? '-' : amount.toString(),
+  //                           isCredit ? amount.toString() : '-',
+  //                           dueAmount.toString(),
+  //                         ];
+  //                       }).toList(),
+  //                       // Add the total row
+  //                       [
+  //                         '', // Empty date
+  //                         'Total', // Text under "Transaction Type"
+  //                         totalDebit
+  //                             .toString(), // Debit total under Debit column
+  //                         totalCredit
+  //                             .toString(), // Credit total under Credit column
+  //                         '' // Empty Remaining Balance
+  //                       ],
+  //                     ],
+  //                   ),
+  //               ],
+  //             );
+  //           },
+  //         ),
+  //       );
+
+  //       final output = await getTemporaryDirectory();
+  //       final file = File("${output.path}/statement.pdf");
+  //       await file.writeAsBytes(await pdf.save());
+
+  //       await Share.shareXFiles(
+  //         [XFile(file.path)],
+  //         text: 'Here is your transaction statement',
+  //       );
   //     } else {
   //       print('Failed to share statement data: ${response.body}');
   //     }
@@ -178,121 +259,6 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   //     print('Error occurred while sharing statement data: $e');
   //   }
   // }
-  Future<void> shareStatementData(
-      String customerId, DateTime startDate, DateTime endDate) async {
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
-    var token = sharedPreferences.getString('token');
-
-    final url = Uri.parse('${AppConstants.backendUrl}/api/report/getStatement');
-
-    final body = {
-      "customerId": customerId,
-      "startDate": startDate.toUtc().toIso8601String(),
-      "endDate": endDate.toUtc().toIso8601String(),
-    };
-
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(body),
-      );
-      final responseData = jsonDecode(response.body.toString());
-
-      if (response.statusCode == 200) {
-        final transactions =
-            responseData['cutomerTransaction'] as List<dynamic>? ?? [];
-
-        final pdf = pw.Document();
-        double totalDebit = 0;
-        double totalCredit = 0;
-
-        pdf.addPage(
-          pw.Page(
-            build: (pw.Context context) {
-              return pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text('Transaction Statement',
-                      style: const pw.TextStyle(fontSize: 24)),
-                  pw.SizedBox(height: 20),
-                  pw.Text(
-                      'Organisation: ${responseData['organisation']['OrganisationName']}'),
-                  pw.Text(
-                      'Contact: ${responseData['organisation']['OrganisationContact']}'),
-                  pw.SizedBox(height: 20),
-                  if (transactions.isEmpty)
-                    pw.Text(
-                        'No transactions available for the selected date range.'),
-                  if (transactions.isNotEmpty)
-                    pw.Table.fromTextArray(
-                      headers: [
-                        'Date',
-                        'Transaction Type',
-                        'Debit',
-                        'Credit',
-                        'Remaining Balance',
-                      ],
-                      data: [
-                        ...transactions.map((transaction) {
-                          final date = DateTime.parse(
-                              transaction['orderPlaceHolder']['date']);
-                          final orderStatus = transaction['orderStatus'];
-                          final amount = transaction['amount'] ?? 0.0;
-                          final dueAmount = transaction['dueAmount'] ?? 0.0;
-                          final isCredit = orderStatus == 'PAYMENT-COLLECTED';
-
-                          if (isCredit) {
-                            totalCredit += amount;
-                          } else {
-                            totalDebit += amount;
-                          }
-
-                          return [
-                            DateFormat('yyyy-MM-dd').format(date),
-                            orderStatus,
-                            isCredit ? '-' : amount.toString(),
-                            isCredit ? amount.toString() : '-',
-                            dueAmount.toString(),
-                          ];
-                        }).toList(),
-                        // Add the total row
-                        [
-                          '', // Empty date
-                          'Total', // Text under "Transaction Type"
-                          totalDebit
-                              .toString(), // Debit total under Debit column
-                          totalCredit
-                              .toString(), // Credit total under Credit column
-                          '' // Empty Remaining Balance
-                        ],
-                      ],
-                    ),
-                ],
-              );
-            },
-          ),
-        );
-
-        final output = await getTemporaryDirectory();
-        final file = File("${output.path}/statement.pdf");
-        await file.writeAsBytes(await pdf.save());
-
-        await Share.shareXFiles(
-          [XFile(file.path)],
-          text: 'Here is your transaction statement',
-        );
-      } else {
-        print('Failed to share statement data: ${response.body}');
-      }
-    } catch (e) {
-      print('Error occurred while sharing statement data: $e');
-    }
-  }
 
   Future<void> _getCountryCode() async {
     final SharedPreferences sharedPreferences =
@@ -452,8 +418,14 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
 
   String formatNumber(double value) {
     if (value >= 100000) {
-      return '${(value / 100000).toStringAsFixed(0)}L';
-    } else if (value >= 9999) {
+      double lakhsValue = value / 100000;
+      // Show one decimal place for non-integers like 1.5L
+      if (lakhsValue % 1 != 0) {
+        return '${lakhsValue.toStringAsFixed(1)}L';
+      } else {
+        return '${lakhsValue.toStringAsFixed(0)}L';
+      }
+    } else if (value >= 10000) {
       return '${(value / 1000).toStringAsFixed(1)}K';
     } else {
       return value.toInt().toString();
@@ -472,7 +444,6 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     }
     setState(() {
       _customerData = widget.customerData;
-      print(_customerData);
       _organizationName = _customerData['organisationName'];
     });
     super.initState();
@@ -1112,9 +1083,9 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                             minimumSize: const Size(350, 50),
                           ),
                           onPressed: () {
-                            _showDateRangeDialog();
+                            _refresh();
                           },
-                          child: Text(translation(context)!.shareStatement),
+                          child: Text(translation(context)!.refresh),
                         ),
                       ),
                     ],
