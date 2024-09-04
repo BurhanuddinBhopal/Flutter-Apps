@@ -32,6 +32,7 @@ class _AppDrawerState extends State<AppDrawer> {
   String finalNumber = "";
   String finalName = '';
   String finalLastname = '';
+  String finalOrganisationName = '';
   String? country;
   String version = "";
 
@@ -99,11 +100,28 @@ class _AppDrawerState extends State<AppDrawer> {
                           children: [
                             Text(
                               translation(context)!.welcometoHTA,
-                              // 'Welcome to HTA',
                               style: TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Text(
+                                  finalName,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black45),
+                                ),
+                                Text(
+                                  finalLastname,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black45),
+                                ),
+                              ],
+                            ),
                             Text(
                               finalNumber,
                               style: TextStyle(
@@ -188,6 +206,133 @@ class _AppDrawerState extends State<AppDrawer> {
                   // SizedBox(
                   //   height: MediaQuery.of(context).size.height * 0.01,
                   // ),
+
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              WidgetStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: AboutUs()),
+                          );
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.person_pin_sharp,
+                                    size: 25,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      translation(context)!.userMode,
+                                      // 'About Us',
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 23,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
+                  ),
+                  Container(
+                    child: TextButton(
+                        style: ButtonStyle(
+                          overlayColor:
+                              WidgetStateProperty.all(Colors.transparent),
+                        ),
+                        onPressed: (() {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: PrivacyPolicy()),
+                          );
+                        }),
+                        child: Container(
+                          margin: EdgeInsets.only(left: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                // mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.app_settings_alt,
+                                    size: 26,
+                                    color: Colors.black45,
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.only(left: 18),
+                                    child: Text(
+                                      translation(context)!.applicationMode,
+                                      // 'Privacy Policy',
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black54),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 5),
+                                    child: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 23,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.01,
+                  ),
+                  Divider(
+                    thickness: 1,
+                    indent: 60,
+                  ),
                   Container(
                     child: TextButton(
                         style: ButtonStyle(
@@ -317,137 +462,9 @@ class _AppDrawerState extends State<AppDrawer> {
                     indent: 60,
                     thickness: 1,
                   ),
+
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.01,
-                  ),
-                  Container(
-                    child: TextButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              WidgetStateProperty.all(Colors.transparent),
-                        ),
-                        onPressed: (() {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: AboutUs()),
-                          );
-                        }),
-                        child: Container(
-                          margin: EdgeInsets.only(left: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.info,
-                                    size: 25,
-                                    color: Colors.black45,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 18),
-                                    child: Text(
-                                      translation(context)!.aboutUs,
-                                      // 'About Us',
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black54),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 5),
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 23,
-                                      color: Colors.black45,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01,
-                  ),
-                  Divider(
-                    thickness: 1,
-                    indent: 60,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01,
-                  ),
-                  Container(
-                    child: TextButton(
-                        style: ButtonStyle(
-                          overlayColor:
-                              WidgetStateProperty.all(Colors.transparent),
-                        ),
-                        onPressed: (() {
-                          Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.fade,
-                                child: PrivacyPolicy()),
-                          );
-                        }),
-                        child: Container(
-                          margin: EdgeInsets.only(left: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    Icons.lock,
-                                    size: 26,
-                                    color: Colors.black45,
-                                  ),
-                                  Container(
-                                    margin: EdgeInsets.only(left: 18),
-                                    child: Text(
-                                      translation(context)!.privacyPolicy,
-                                      // 'Privacy Policy',
-                                      style: TextStyle(
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black54),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.only(right: 5),
-                                    child: Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 23,
-                                      color: Colors.black45,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01,
-                  ),
-                  Divider(
-                    thickness: 1,
-                    indent: 60,
                   ),
                 ],
               ),
@@ -495,14 +512,61 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
+                      TextButton(
+                          style: ButtonStyle(
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.transparent),
+                          ),
+                          onPressed: (() {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.fade,
+                                  child: AboutUs()),
+                            );
+                          }),
+                          child: Container(
+                            margin: EdgeInsets.only(left: 5),
+                            child: Text(
+                              translation(context)!.aboutUs,
+                              // 'About Us',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black54),
+                            ),
+                          )),
+                      TextButton(
+                          style: ButtonStyle(
+                            overlayColor:
+                                WidgetStateProperty.all(Colors.transparent),
+                          ),
+                          onPressed: (() {
+                            Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.fade,
+                                  child: PrivacyPolicy()),
+                            );
+                          }),
+                          child: Container(
+                            margin: EdgeInsets.only(left: 5),
+                            child: Text(
+                              translation(context)!.privacyPolicy,
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black54),
+                            ),
+                          )),
                       Container(
-                        margin: EdgeInsets.only(bottom: 10),
+                        margin: EdgeInsets.only(),
                         child: Text(
                           'version $version',
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 10,
                               fontWeight: FontWeight.w400,
                               color: Colors.black54),
                         ),

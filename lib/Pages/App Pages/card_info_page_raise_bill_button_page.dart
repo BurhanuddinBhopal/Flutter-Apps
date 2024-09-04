@@ -9,6 +9,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/language/language_constant.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -34,11 +35,10 @@ class RaiseBillPage extends StatefulWidget {
 }
 
 class _RaiseBillPageState extends State<RaiseBillPage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
   var customerData;
   DateTime datetime = DateTime.now();
-  final dateController = TextEditingController(
-    text: DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z").format(DateTime.now()),
-  );
+  final dateController = TextEditingController(); // For API
   final dateControllerForDisplay = TextEditingController();
 
   DateTime currentDatetime = DateTime.now();
@@ -232,6 +232,7 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
   @override
   void initState() {
     _getCountryCode();
+    _analyticsService.trackPage("RaiseBillPage");
     setState(() {
       customerData = widget.customerData;
       finalPendingAmount = widget.pendingAmount;
@@ -243,8 +244,9 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       });
     }
 
-    dateControllerForDisplay.text =
-        DateFormat("yyyy-MM-dd").format(DateTime.now());
+    final now = DateTime.now();
+    dateControllerForDisplay.text = DateFormat("yyyy-MM-dd").format(now);
+    dateController.text = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(now);
 
     super.initState();
   }
@@ -260,6 +262,8 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
       if (isButtonDisabled) {
         return;
       }
+
+      _analyticsService.trackEvent('Bill', 'Bill Raised');
 
       setState(() {
         isButtonDisabled = true;
@@ -327,6 +331,35 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
           isButtonDisabled = false;
         });
       }
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final now = DateTime.now();
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 1),
+    );
+
+    if (selectedDate != null) {
+      final displayDate = DateFormat('yyyy-MM-dd').format(selectedDate);
+      final apiDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(
+        DateTime(
+          selectedDate.year,
+          selectedDate.month,
+          selectedDate.day,
+          now.hour,
+          now.minute,
+          now.second,
+        ),
+      );
+
+      setState(() {
+        dateControllerForDisplay.text = displayDate;
+        dateController.text = apiDate;
+      });
     }
   }
 
@@ -599,7 +632,6 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: TextFormField(
-                        enabled: false,
                         focusNode: _focusNodes[2],
                         controller: dateControllerForDisplay,
                         style: TextStyle(
@@ -610,26 +642,41 @@ class _RaiseBillPageState extends State<RaiseBillPage> {
                             return translation(context)!
                                 .validateMessageDateNotEmpty;
                           }
-                          DateTime enteredDate = DateTime.parse(value);
+
+                          DateTime enteredDate;
+                          try {
+                            enteredDate = DateTime.parse(value);
+                          } catch (e) {
+                            return translation(context)!
+                                .validateMessageDateFormatInvalid; // Handle invalid date format
+                          }
 
                           if (enteredDate.isAfter(currentDatetime)) {
                             return translation(context)!
-                                .validateMessageDateLength;
+                                .validateMessageDateFuture; // Error message for future dates
                           }
+
                           return null;
                         },
                         decoration: InputDecoration(
-                            prefixIcon: Icon(
-                              Icons.calendar_month_rounded,
-                              size: 19.0,
+                          prefixIcon: Icon(
+                            Icons.calendar_month_rounded,
+                            size: 19.0,
+                            color: Color.fromRGBO(62, 13, 59, 1),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 2,
                               color: Color.fromRGBO(62, 13, 59, 1),
                             ),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(5.0)),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    width: 2,
-                                    color: Color.fromRGBO(62, 13, 59, 1)))),
+                          ),
+                        ),
+                        readOnly:
+                            true, // Make the field read-only to force users to use the date picker
+                        onTap: () => _selectDate(context),
                       ),
                     ),
                   ],

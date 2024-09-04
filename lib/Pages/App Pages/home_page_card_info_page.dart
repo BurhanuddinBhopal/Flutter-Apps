@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hta/Pages/App%20Pages/card_info_page_raise_bill_button_page.dart';
 import 'package:hta/Pages/App%20Pages/customerReport_page.dart';
 import 'package:hta/Pages/App%20Pages/editCustomer_page.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 
 import 'package:hta/language/language_constant.dart';
 import 'package:hta/utils/routes.dart';
@@ -44,6 +45,7 @@ class DetailedCardPage extends StatefulWidget {
 }
 
 class _DetailedCardPageState extends State<DetailedCardPage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
   Map<String, dynamic> _customerData = {};
   var transactionData1 = [];
   double? pendingAmount;
@@ -73,6 +75,7 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
     transactionData();
     customerData();
     _getCountryCode();
+    _analyticsService.trackPage('DetailedCardPage');
     setState(() {
       _customerData = widget.customerData;
 
@@ -373,7 +376,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                                                 _customerData["location"] !=
                                                         null
                                                     ? '${_customerData["location"]}'
-                                                    : '',
+                                                    : countryCode == 'KW'
+                                                        ? 'Kuwait'
+                                                        : 'India',
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(
                                                         62, 13, 59, 1),
@@ -742,7 +747,9 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
           );
         }),
         child: Container(
-          margin: EdgeInsets.only(left: 100, right: 20),
+          margin: isPaymentCollected
+              ? EdgeInsets.only(left: 20, right: 120)
+              : EdgeInsets.only(left: 120, right: 20),
           child: Slidable(
             endActionPane: ActionPane(
               motion: BehindMotion(),
@@ -845,10 +852,10 @@ class _DetailedCardPageState extends State<DetailedCardPage> {
                             child: Row(
                               children: [
                                 Container(
-                                  margin: EdgeInsets.only(right: 20),
+                                  margin: EdgeInsets.only(right: 5),
                                   child: Icon(
                                     Icons.calendar_today,
-                                    size: 18,
+                                    size: 15,
                                     color: Colors.white,
                                   ),
                                 ),

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/App%20Pages/bottom_navigation_page.dart';
 import 'package:hta/Pages/App%20Pages/home_page.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,7 @@ class EditCustomerPage extends StatefulWidget {
 }
 
 class _EditCustomerPageState extends State<EditCustomerPage> {
+  final AnalyticsService analytics = AnalyticsService();
   // ignore: unused_field
   var _organization;
   var _organizationName;
@@ -53,6 +55,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
       mobileNumber.text = _mobileNumber;
       location.text = _location;
     });
+    analytics.trackPage('EditCustomerPage');
 
     super.initState();
   }
@@ -90,6 +93,8 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
+                analytics.trackEvent('Customer', 'Edited',
+                    label: _customerData['_id']);
                 Navigator.push(
                     context,
                     MaterialPageRoute(

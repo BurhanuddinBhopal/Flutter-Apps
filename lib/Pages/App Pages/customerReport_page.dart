@@ -1,15 +1,20 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pdf/pdf.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,6 +30,7 @@ class CustomerReportPage extends StatefulWidget {
 }
 
 class _CustomerReportPageState extends State<CustomerReportPage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
   var transactionDetails = {};
   var todayRaised;
   var todayCollected;
@@ -49,216 +55,784 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
   List<String> years = [];
   List<double> yearlyValues = [];
   String currentYear = DateTime.now().year.toString();
-  // DateTime? _startDate;
-  // DateTime? _endDate;
+  DateTime? _startDate;
+  DateTime? _endDate;
 
-  // final TextEditingController _startDateController = TextEditingController();
-  // final TextEditingController _endDateController = TextEditingController();
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
 
-  // Future<void> _selectDate(
-  //   BuildContext context,
-  //   DateTime initialDate,
-  //   Function(DateTime) onDateSelected,
-  //   DateTime currentDate, // Add currentDate parameter
-  // ) async {
-  //   final DateTime? selectedDate = await showDatePicker(
-  //     context: context,
-  //     initialDate: initialDate,
-  //     firstDate: DateTime(1900), // Minimum selectable date
-  //     lastDate: currentDate, // Set the maximum date to currentDate
-  //   );
+  Future<void> _selectDate(
+    BuildContext context,
+    DateTime initialDate,
+    Function(DateTime) onDateSelected,
+    DateTime currentDate, // Add currentDate parameter
+  ) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900), // Minimum selectable date
+      lastDate: currentDate, // Set the maximum date to currentDate
+    );
 
-  //   if (selectedDate != null && selectedDate != initialDate) {
-  //     onDateSelected(selectedDate);
-  //   }
-  // }
+    if (selectedDate != null && selectedDate != initialDate) {
+      onDateSelected(selectedDate);
+    }
+  }
 
-  // void _showDateRangeDialog() {
-  //   showDialog(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Select Date Range'),
-  //         content: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             TextField(
-  //               readOnly: true,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'Start Date',
-  //               ),
-  //               onTap: () => _selectDate(
-  //                 context,
-  //                 _startDate ?? DateTime.now(),
-  //                 (selectedDate) {
-  //                   setState(() {
-  //                     _startDate = selectedDate;
-  //                     _startDateController.text =
-  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
-  //                   });
-  //                 },
-  //                 DateTime.now(), // Pass current date for validation
-  //               ),
-  //               controller: _startDateController,
-  //             ),
-  //             TextField(
-  //               readOnly: true,
-  //               decoration: const InputDecoration(
-  //                 labelText: 'End Date',
-  //               ),
-  //               onTap: () => _selectDate(
-  //                 context,
-  //                 _endDate ?? DateTime.now(),
-  //                 (selectedDate) {
-  //                   setState(() {
-  //                     _endDate = selectedDate;
-  //                     _endDateController.text =
-  //                         DateFormat('yyyy-MM-dd').format(selectedDate);
-  //                   });
-  //                 },
-  //                 DateTime.now(), // Pass current date for validation
-  //               ),
-  //               controller: _endDateController,
-  //             ),
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Center(
-  //                 child: Text(
-  //               'Submit',
-  //               style: TextStyle(fontWeight: FontWeight.w600),
-  //             )),
-  //             onPressed: () {
-  //               shareStatementData(
-  //                 _customerData['_id'],
-  //                 _startDate!,
-  //                 _endDate!,
-  //               );
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+  void _showDateRangeDialog() {
+    setState(() {
+      _startDate = null;
+      _endDate = null;
+      _startDateController.clear();
+      _endDateController.clear();
+    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Date Range'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'Start Date',
+                ),
+                onTap: () => _selectDate(
+                  context,
+                  _startDate ?? DateTime.now(),
+                  (selectedDate) {
+                    setState(() {
+                      _startDate = selectedDate;
+                      _startDateController.text =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                    });
+                  },
+                  DateTime.now(),
+                ),
+                controller: _startDateController,
+              ),
+              TextField(
+                readOnly: true,
+                decoration: const InputDecoration(
+                  labelText: 'End Date',
+                ),
+                onTap: () => _selectDate(
+                  context,
+                  _endDate ?? DateTime.now(),
+                  (selectedDate) {
+                    setState(() {
+                      _endDate = selectedDate;
+                      _endDateController.text =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                    });
+                  },
+                  DateTime.now(),
+                ),
+                controller: _endDateController,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: const Center(
+                  child: Text(
+                'Submit',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              )),
+              onPressed: () {
+                _showLoadingDialog(context); // Show the loading dialog
+                shareStatementData(
+                  _customerData['_id'],
+                  _startDate!,
+                  _endDate!,
+                ).then((_) {
+                  Navigator.of(context).pop(); // Close the loading dialog
+                  Navigator.of(context).pop(); // Close the date range dialog
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-  // Future<void> shareStatementData(
-  //     String customerId, DateTime startDate, DateTime endDate) async {
-  //   final SharedPreferences sharedPreferences =
-  //       await SharedPreferences.getInstance();
-  //   var token = sharedPreferences.getString('token');
+  void _showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible:
+          false, // Prevent dismissing the dialog by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor:
+              Colors.transparent, // Make the dialog background transparent
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(height: 15),
+              Text('Generating PDF, please wait...',
+                  style: TextStyle(color: Colors.white)),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-  //   final url = Uri.parse('${AppConstants.backendUrl}/api/report/getStatement');
+  Future<void> shareStatementData(
+      String customerId, DateTime startDate, DateTime endDate) async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var token = sharedPreferences.getString('token');
 
-  //   final body = {
-  //     "customerId": customerId,
-  //     "startDate": startDate.toUtc().toIso8601String(),
-  //     "endDate": endDate.toUtc().toIso8601String(),
-  //   };
+    final url = Uri.parse('${AppConstants.backendUrl}/api/report/getStatement');
 
-  //   try {
-  //     final response = await http.post(
-  //       url,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //       body: json.encode(body),
-  //     );
-  //     final responseData = jsonDecode(response.body.toString());
+    final body = {
+      "customerId": customerId,
+      "startDate": startDate.toUtc().toIso8601String(),
+      "endDate": endDate.toUtc().toIso8601String(),
+    };
 
-  //     if (response.statusCode == 200) {
-  //       final transactions =
-  //           responseData['cutomerTransaction'] as List<dynamic>? ?? [];
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(body),
+      );
 
-  //       final pdf = pw.Document();
-  //       double totalDebit = 0;
-  //       double totalCredit = 0;
+      final responseData = jsonDecode(response.body.toString());
 
-  //       pdf.addPage(
-  //         pw.Page(
-  //           build: (pw.Context context) {
-  //             return pw.Column(
-  //               crossAxisAlignment: pw.CrossAxisAlignment.start,
-  //               children: [
-  //                 pw.Text('Transaction Statement',
-  //                     style: const pw.TextStyle(fontSize: 24)),
-  //                 pw.SizedBox(height: 20),
-  //                 pw.Text(
-  //                     'Organisation: ${responseData['organisation']['OrganisationName']}'),
-  //                 pw.Text(
-  //                     'Contact: ${responseData['organisation']['OrganisationContact']}'),
-  //                 pw.SizedBox(height: 20),
-  //                 if (transactions.isEmpty)
-  //                   pw.Text(
-  //                       'No transactions available for the selected date range.'),
-  //                 if (transactions.isNotEmpty)
-  //                   pw.Table.fromTextArray(
-  //                     headers: [
-  //                       'Date',
-  //                       'Transaction Type',
-  //                       'Debit',
-  //                       'Credit',
-  //                       'Remaining Balance',
-  //                     ],
-  //                     data: [
-  //                       ...transactions.map((transaction) {
-  //                         final date = DateTime.parse(
-  //                             transaction['orderPlaceHolder']['date']);
-  //                         final orderStatus = transaction['orderStatus'];
-  //                         final amount = transaction['amount'] ?? 0.0;
-  //                         final dueAmount = transaction['dueAmount'] ?? 0.0;
-  //                         final isCredit = orderStatus == 'PAYMENT-COLLECTED';
+      if (response.statusCode == 200) {
+        final transactions =
+            responseData['cutomerTransaction'] as List<dynamic>? ?? [];
 
-  //                         if (isCredit) {
-  //                           totalCredit += amount;
-  //                         } else {
-  //                           totalDebit += amount;
-  //                         }
+        final pdf = pw.Document();
+        double totalDebit = 0;
+        double totalCredit = 0;
+        double totalRemainingBalance = 0;
 
-  //                         return [
-  //                           DateFormat('yyyy-MM-dd').format(date),
-  //                           orderStatus,
-  //                           isCredit ? '-' : amount.toString(),
-  //                           isCredit ? amount.toString() : '-',
-  //                           dueAmount.toString(),
-  //                         ];
-  //                       }).toList(),
-  //                       // Add the total row
-  //                       [
-  //                         '', // Empty date
-  //                         'Total', // Text under "Transaction Type"
-  //                         totalDebit
-  //                             .toString(), // Debit total under Debit column
-  //                         totalCredit
-  //                             .toString(), // Credit total under Credit column
-  //                         '' // Empty Remaining Balance
-  //                       ],
-  //                     ],
-  //                   ),
-  //               ],
-  //             );
-  //           },
-  //         ),
-  //       );
+        // Load font
+        final pdfFont = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Roboto-Regular.ttf'),
+        );
+        final pdfFontBold = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Roboto-Bold.ttf'),
+        );
+        final logoImage = pw.MemoryImage(
+          (await rootBundle.load('assets/images/TransperantLogo.png'))
+              .buffer
+              .asUint8List(),
+        );
 
-  //       final output = await getTemporaryDirectory();
-  //       final file = File("${output.path}/statement.pdf");
-  //       await file.writeAsBytes(await pdf.save());
+        // Get country code
+        final countryCurrencyCode = await _getCountryCurrencyCode();
 
-  //       await Share.shareXFiles(
-  //         [XFile(file.path)],
-  //         text: 'Here is your transaction statement',
-  //       );
-  //     } else {
-  //       print('Failed to share statement data: ${response.body}');
-  //     }
-  //   } catch (e) {
-  //     print('Error occurred while sharing statement data: $e');
-  //   }
-  // }
+        // Determine currency symbol
+        final currencySymbol = countryCurrencyCode == 'KW' ? 'KD' : '₹';
+
+        // Determine formatting function
+        String formatAmount(double amount) {
+          return amount % 1 == 0
+              ? '$currencySymbol ${amount.toStringAsFixed(0)}'
+              : '$currencySymbol ${amount.toStringAsFixed(2)}';
+        }
+
+        const int rowsPerPageFirstPage = 18;
+        const int rowsPerPageSubsequentPages = 30;
+
+        pw.TableRow createTableRow(transaction) {
+          final date = DateTime.parse(transaction['orderPlaceHolder']['date']);
+          final orderStatus = transaction['orderStatus'];
+          final amount = (transaction['amount'] ?? 0.0).toDouble();
+          final dueAmount = (transaction['dueAmount'] ?? 0.0).toDouble();
+          final isCredit = orderStatus == 'PAYMENT-COLLECTED';
+
+          // Format amounts
+          final formattedAmount = formatAmount(amount);
+          final formattedDueAmount = formatAmount(dueAmount);
+
+          if (isCredit) {
+            totalCredit += amount;
+          } else {
+            totalDebit += amount;
+          }
+
+          totalRemainingBalance = dueAmount; // Update total remaining balance
+
+          return pw.TableRow(
+            children: [
+              pw.Padding(
+                padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                child: pw.Text(
+                  DateFormat('dd-MM-yyyy').format(date),
+                ),
+              ),
+              pw.Padding(
+                padding: pw.EdgeInsets.symmetric(vertical: 3, horizontal: 5),
+                child: pw.Text(orderStatus),
+              ),
+              pw.Padding(
+                padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: pw.Text(isCredit ? '-' : formattedAmount),
+              ),
+              pw.Padding(
+                padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: pw.Text(isCredit ? formattedAmount : '-'),
+              ),
+              pw.Padding(
+                padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+                child: pw.Text(formattedDueAmount),
+              ),
+            ],
+          );
+        }
+
+        void addFirstPage(List transactions, int startIndex, int endIndex,
+            {bool isLastPage = false}) {
+          // Identify the first transaction in the selected date range
+          final firstTransaction =
+              transactions.isNotEmpty ? transactions.first : null;
+          double beginningBalance = 0;
+          double firstTransactionAmount = 0;
+          bool isFirstTransactionCredit = false;
+
+          if (firstTransaction != null) {
+            final firstTransactionDate =
+                DateTime.parse(firstTransaction['orderPlaceHolder']['date']);
+            final orderStatus = firstTransaction['orderStatus'];
+            firstTransactionAmount =
+                (firstTransaction['amount'] ?? 0.0).toDouble();
+            final remainingBalance =
+                (firstTransaction['dueAmount'] ?? 0.0).toDouble();
+
+            // Calculate beginning balance based on first transaction
+            if (orderStatus == 'PAYMENT-COLLECTED') {
+              isFirstTransactionCredit = true;
+              beginningBalance =
+                  remainingBalance - firstTransactionAmount; // Credit: subtract
+            } else {
+              isFirstTransactionCredit = false;
+              beginningBalance =
+                  remainingBalance + firstTransactionAmount; // Debit: add
+            }
+          }
+
+          // Add the first page with beginning balance and first transaction details
+          pdf.addPage(
+            pw.Page(
+              margin: pw.EdgeInsets.all(16),
+              build: (pw.Context context) {
+                final pageWidth = context.page.pageFormat.availableWidth;
+                return pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: pw.CrossAxisAlignment.start,
+                      children: [
+                        // Left side with logo
+                        pw.Image(
+                          logoImage,
+                          width: pageWidth * 0.3,
+                        ),
+
+                        // Right side with organization details
+                        pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.end,
+                          children: [
+                            pw.Text(
+                              'Organisation name: ${responseData['organisation']['OrganisationName']}',
+                              style:
+                                  pw.TextStyle(fontSize: 18, font: pdfFontBold),
+                            ),
+                            pw.SizedBox(height: 10),
+                            pw.Text(
+                              'Phone no.: ${responseData['organisation']['OrganisationContact'].startsWith('+91') ? responseData['organisation']['OrganisationContact'] : '+91${responseData['organisation']['OrganisationContact']}'}',
+                              style: pw.TextStyle(fontSize: 16, font: pdfFont),
+                            ),
+                            pw.Text(
+                              'Address: ${countryCurrencyCode == 'KW' ? 'Kuwait' : 'India'}',
+                              style: pw.TextStyle(fontSize: 16, font: pdfFont),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    pw.Divider(),
+                    pw.SizedBox(height: 20),
+                    // Centered and bold heading
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.center,
+                      children: [
+                        pw.Text(
+                          'Transaction Statement',
+                          style: pw.TextStyle(
+                            fontSize: 24,
+                            font: pdfFontBold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    pw.SizedBox(height: 20),
+
+                    // Organization and Contact details
+                    pw.Text(
+                      'Organisation name: ${responseData['customer']['organisationName']}',
+                      style: pw.TextStyle(fontSize: 20, font: pdfFontBold),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      'Contact no.: ${responseData['customer']['mobileNumber']}',
+                      style: pw.TextStyle(fontSize: 16, font: pdfFont),
+                    ),
+                    pw.Text(
+                      'Address: ${responseData['customer']['address']}',
+                      style: pw.TextStyle(fontSize: 16, font: pdfFont),
+                    ),
+                    pw.SizedBox(height: 20),
+
+                    // Date Range
+                    pw.Text(
+                      'Duration: From ${DateFormat('dd-MM-yyyy').format(startDate)} to ${DateFormat('dd-MM-yyyy').format(endDate)}',
+                      style: pw.TextStyle(
+                        fontSize: 18,
+                        font: pdfFontBold,
+                      ),
+                    ),
+                    pw.SizedBox(height: 20),
+
+                    // Conditional display for transactions
+                    if (transactions.isEmpty)
+                      pw.Text(
+                        'No transactions available for the selected date range.',
+                        style: pw.TextStyle(
+                          fontSize: 20,
+                          font: pdfFontBold,
+                          color: PdfColors.black,
+                        ),
+                      )
+                    else
+                      pw.Container(
+                        child: pw.Table(
+                          border: pw.TableBorder.all(
+                            color: PdfColors.black,
+                            width: 1,
+                          ),
+                          columnWidths: {
+                            0: pw.FixedColumnWidth(120),
+                            1: pw.FixedColumnWidth(200),
+                            2: pw.FixedColumnWidth(130),
+                            3: pw.FixedColumnWidth(130),
+                            4: pw.FixedColumnWidth(150),
+                          },
+                          children: [
+                            // Header row
+                            pw.TableRow(
+                              decoration: pw.BoxDecoration(
+                                color: PdfColors.grey400,
+                              ),
+                              children: [
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  child: pw.Text(
+                                    'Date',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    'Transaction Type',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    'Debit',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    'Credit',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    'Remaining Balance',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Beginning balance row
+                            pw.TableRow(
+                              children: [
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 10),
+                                  child: pw.Text(
+                                    DateFormat('dd-MM-yyyy').format(startDate),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      vertical: 3, horizontal: 5),
+                                  child: pw.Text('Beginning Balance'),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child: pw.Text(isFirstTransactionCredit
+                                      ? formatAmount(beginningBalance)
+                                      : '-'),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child: pw.Text(isFirstTransactionCredit
+                                      ? '-'
+                                      : formatAmount(beginningBalance)),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 5),
+                                  child:
+                                      pw.Text(formatAmount(beginningBalance)),
+                                ),
+                              ],
+                            ),
+
+                            // Data rows for the first page
+                            ...transactions
+                                .skip(startIndex)
+                                .take(endIndex - startIndex)
+                                .map((transaction) =>
+                                    createTableRow(transaction))
+                                .toList(),
+                            if (isLastPage)
+                              pw.TableRow(
+                                decoration: pw.BoxDecoration(
+                                  color: PdfColors.grey400,
+                                ),
+                                children: [
+                                  pw.Container(),
+                                  pw.Padding(
+                                    padding: pw.EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    child: pw.Text(
+                                      'Total',
+                                      style: pw.TextStyle(
+                                        fontSize: 16,
+                                        font: pdfFontBold,
+                                        color: PdfColors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw.EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 5),
+                                    child: pw.Text(
+                                      formatAmount(totalDebit),
+                                      style: pw.TextStyle(
+                                        fontSize: 16,
+                                        font: pdfFontBold,
+                                        color: PdfColors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw.EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 5),
+                                    child: pw.Text(
+                                      formatAmount(totalCredit),
+                                      style: pw.TextStyle(
+                                        fontSize: 16,
+                                        font: pdfFontBold,
+                                        color: PdfColors.black,
+                                      ),
+                                    ),
+                                  ),
+                                  pw.Padding(
+                                    padding: pw.EdgeInsets.symmetric(
+                                        horizontal: 5, vertical: 5),
+                                    child: pw.Text(
+                                      formatAmount(totalRemainingBalance),
+                                      style: pw.TextStyle(
+                                        fontSize: 16,
+                                        font: pdfFontBold,
+                                        color: PdfColors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          );
+        }
+
+        void addSubsequentPage(
+            List transactions, int startIndex, int endIndex, bool isLastPage) {
+          pdf.addPage(
+            pw.Page(
+              margin: pw.EdgeInsets.all(16),
+              build: (pw.Context context) {
+                return pw.Column(
+                  children: [
+                    pw.Container(
+                      child: pw.Table(
+                        border: pw.TableBorder.all(
+                          color: PdfColors.black,
+                          width: 1,
+                        ),
+                        columnWidths: {
+                          0: pw.FixedColumnWidth(120),
+                          1: pw.FixedColumnWidth(200),
+                          2: pw.FixedColumnWidth(130),
+                          3: pw.FixedColumnWidth(130),
+                          4: pw.FixedColumnWidth(150),
+                        },
+                        children: [
+                          // Header row (repeated on each subsequent page)
+                          pw.TableRow(
+                            decoration: pw.BoxDecoration(
+                              color: PdfColors.grey400,
+                            ),
+                            children: [
+                              pw.Padding(
+                                padding: pw.EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                child: pw.Text(
+                                  'Date',
+                                  style: pw.TextStyle(
+                                    fontSize: 16,
+                                    font: pdfFontBold,
+                                    color: PdfColors.black,
+                                  ),
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw.EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: pw.Text(
+                                  'Transaction Type',
+                                  style: pw.TextStyle(
+                                    fontSize: 16,
+                                    font: pdfFontBold,
+                                    color: PdfColors.black,
+                                  ),
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw.EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: pw.Text(
+                                  'Debit',
+                                  style: pw.TextStyle(
+                                    fontSize: 16,
+                                    font: pdfFontBold,
+                                    color: PdfColors.black,
+                                  ),
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw.EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: pw.Text(
+                                  'Credit',
+                                  style: pw.TextStyle(
+                                    fontSize: 16,
+                                    font: pdfFontBold,
+                                    color: PdfColors.black,
+                                  ),
+                                ),
+                              ),
+                              pw.Padding(
+                                padding: pw.EdgeInsets.symmetric(
+                                    horizontal: 5, vertical: 5),
+                                child: pw.Text(
+                                  'Remaining Balance',
+                                  style: pw.TextStyle(
+                                    fontSize: 16,
+                                    font: pdfFontBold,
+                                    color: PdfColors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // Data rows for subsequent pages
+                          ...transactions
+                              .skip(startIndex)
+                              .take(endIndex - startIndex)
+                              .map((transaction) => createTableRow(transaction))
+                              .toList(),
+                          // If this is the last page, add the total row
+                          if (isLastPage)
+                            pw.TableRow(
+                              decoration: pw.BoxDecoration(
+                                color: PdfColors.grey400,
+                              ),
+                              children: [
+                                pw.Container(),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  child: pw.Text(
+                                    'Total',
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    formatAmount(totalDebit),
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    formatAmount(totalCredit),
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                                pw.Padding(
+                                  padding: pw.EdgeInsets.symmetric(
+                                      horizontal: 5, vertical: 5),
+                                  child: pw.Text(
+                                    formatAmount(totalRemainingBalance),
+                                    style: pw.TextStyle(
+                                      fontSize: 16,
+                                      font: pdfFontBold,
+                                      color: PdfColors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        }
+
+// Main function to handle PDF generation with multiple pages
+        if (transactions.isEmpty) {
+          // No transactions, only add the first page with no rows.
+          addFirstPage(transactions, 0, 0, isLastPage: true);
+        } else {
+          // Calculate the total number of pages
+          int totalPages = ((transactions.length - rowsPerPageFirstPage) /
+                      rowsPerPageSubsequentPages)
+                  .ceil() +
+              1;
+
+          // Add the first page
+          addFirstPage(transactions, 0,
+              rowsPerPageFirstPage.clamp(0, transactions.length),
+              isLastPage: totalPages == 1);
+
+          // Add subsequent pages if there are more than one
+          for (int i = 1; i < totalPages; i++) {
+            int startIndex =
+                rowsPerPageFirstPage + (i - 1) * rowsPerPageSubsequentPages;
+            int endIndex = startIndex + rowsPerPageSubsequentPages;
+
+            if (endIndex > transactions.length) {
+              endIndex = transactions.length;
+            }
+
+            // Check if this is the last page
+            bool isLastPage = i == totalPages - 1;
+
+            // Add subsequent page with a check for the last page
+            addSubsequentPage(transactions, startIndex, endIndex, isLastPage);
+          }
+        }
+
+        final output = await getTemporaryDirectory();
+        final file = File("${output.path}/statement.pdf");
+        await file.writeAsBytes(await pdf.save());
+
+        await Share.shareXFiles(
+          [XFile(file.path)],
+          text: 'Here is your transaction statement',
+        );
+      } else {
+        print('Failed to share statement data: ${response.body}');
+      }
+    } catch (e) {
+      print('Error occurred while sharing statement data: $e');
+    }
+  }
+
+  Future<String> _getCountryCurrencyCode() async {
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    return sharedPreferences.getString('country') ?? 'IN';
+  }
 
   Future<void> _getCountryCode() async {
     final SharedPreferences sharedPreferences =
@@ -432,20 +1006,38 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     }
   }
 
+  // Future<void> _initData(
+  //     String customerId, DateTime startDate, DateTime endDate) async {
+  //   // Call async methods
+  //   await shareStatementData(customerId, startDate, endDate);
+  // }
+
   @override
   void initState() {
     customerData();
     _getCountryCode();
+    _analyticsService.trackPage('CustomerReportPage');
     customersMonthlyTransactionData();
     customersYearlyTransactionData();
+
     int currentYear = DateTime.now().year;
     for (int i = 0; i < 5; i++) {
       years.add((currentYear - i).toString());
     }
+    String? customerId;
+    DateTime? startDate;
+    DateTime? endDate;
     setState(() {
       _customerData = widget.customerData;
       _organizationName = _customerData['organisationName'];
+      customerId = _customerData['_id'];
+      startDate = DateTime.now()
+          .subtract(const Duration(days: 30)); // Example: 30 days back
+      endDate = DateTime.now();
     });
+    // if (customerId != null && startDate != null && endDate != null) {
+    //   _initData(customerId!, startDate!, endDate!);
+    // }
     super.initState();
   }
 
@@ -1083,9 +1675,9 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                             minimumSize: const Size(350, 50),
                           ),
                           onPressed: () {
-                            _refresh();
+                            _showDateRangeDialog();
                           },
-                          child: Text(translation(context)!.refresh),
+                          child: Text(translation(context)!.shareStatement),
                         ),
                       ),
                     ],

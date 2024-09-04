@@ -1,0 +1,43 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+
+class ConnectivityService {
+  final Connectivity _connectivity = Connectivity();
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+
+  ConnectivityService() {
+    _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      _connectionStatus = result;
+      // Show dialog or other actions based on connectivity change
+      if (_connectionStatus == ConnectivityResult.none) {
+        _showNoInternetDialog();
+      }
+    });
+  }
+
+  Future<bool> checkInternetConnection() async {
+    final result = await _connectivity.checkConnectivity();
+    return result != ConnectivityResult.none;
+  }
+
+  void _showNoInternetDialog() {
+    // Implement your dialog here
+    showDialog(
+      context: navigatorKey.currentContext!,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("No Internet Connection"),
+          content: Text("Please check your internet connection."),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+}

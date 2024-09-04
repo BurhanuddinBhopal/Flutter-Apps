@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 
 import 'package:hta/models/Usermodel.dart';
 
@@ -29,6 +30,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
+  final AnalyticsService _analyticsService = AnalyticsService();
   String finalNumber = '';
   bool isLoading = false;
   String countryCode = 'IN';
@@ -59,6 +61,7 @@ class _HomePageState extends State<HomePage>
     }
     fetchData();
     _checkConnectivity();
+    _analyticsService.trackPage('HomePage');
   }
 
   Future<bool> checkInternetConnection() async {
@@ -261,6 +264,11 @@ class _HomePageState extends State<HomePage>
         actions: [
           IconButton(
               onPressed: (() {
+                _analyticsService.trackEvent(
+                  'interaction',
+                  'add_customer_click',
+                  label: 'Add Customer Button Pressed',
+                );
                 Navigator.push(
                     context,
                     PageTransition(
@@ -301,6 +309,11 @@ class _HomePageState extends State<HomePage>
                                 final currentItem = filteredList[index];
                                 return GestureDetector(
                                     onTap: (() {
+                                      _analyticsService.trackEvent(
+                                        'interaction',
+                                        'customer_list_item_click',
+                                        label: 'Customer: ${currentItem.name}',
+                                      );
                                       Navigator.push(
                                           context,
                                           PageTransition(
@@ -423,15 +436,21 @@ class _HomePageState extends State<HomePage>
                                                                             .black26,
                                                                       ),
                                                                       Text(
-                                                                        currentItem
-                                                                            .location,
-                                                                        style: TextStyle(
-                                                                            fontSize:
-                                                                                12,
-                                                                            fontWeight:
-                                                                                FontWeight.bold,
-                                                                            color: Colors.black26),
-                                                                      ),
+                                                                        currentItem.location.isNotEmpty
+                                                                            ? currentItem.location
+                                                                            : countryCode == 'KW'
+                                                                                ? 'Kuwait'
+                                                                                : 'India',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              12,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                          color:
+                                                                              Colors.black26,
+                                                                        ),
+                                                                      )
                                                                     ],
                                                                   ),
                                                                   Container(

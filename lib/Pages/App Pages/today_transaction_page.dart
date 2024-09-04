@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/App%20Pages/home_page_detailed_card_info_page.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 
 import 'package:hta/models/Usermodel.dart';
 
@@ -30,6 +31,7 @@ class TodayPage extends StatefulWidget {
 
 class _TodayPageState extends State<TodayPage>
     with AutomaticKeepAliveClientMixin {
+  final AnalyticsService _analyticsService = AnalyticsService();
   String finalNumber = '';
   bool isLoading = false;
   var customerData;
@@ -78,6 +80,7 @@ class _TodayPageState extends State<TodayPage>
     todayCustomerTransactionReport();
 
     checkForUpdate();
+    _analyticsService.trackPage('TodayPage');
     fetchData();
     _checkConnectivity();
     fetchTodayTransactionData(DateTime.now());
@@ -400,6 +403,7 @@ class _TodayPageState extends State<TodayPage>
       // Update the TextField with the new filter value
       _searchController.text = newFilter;
     });
+    await todayCustomerTransactionReport();
     await fetchTodayTransactionData(DateTime.now());
   }
 

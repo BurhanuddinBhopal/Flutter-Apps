@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/language/language_constant.dart';
 
 import '../../language/language.dart';
@@ -13,6 +14,8 @@ class ChangeLanguage extends StatefulWidget {
 }
 
 class _ChangeLanguageState extends State<ChangeLanguage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
+
   List<Language> languages = Language.languageList();
   String selectedLanguageCode = '';
 
@@ -20,6 +23,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
   void initState() {
     super.initState();
     _loadCurrentLanguage();
+    _analyticsService.trackPage('ChangeLanguage');
   }
 
   _loadCurrentLanguage() async {

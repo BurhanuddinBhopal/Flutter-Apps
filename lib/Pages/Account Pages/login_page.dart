@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hta/Pages/Account%20Pages/signUp_page.dart';
 import 'package:hta/Pages/App%20Pages/bottom_navigation_page.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
@@ -23,6 +24,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
+
   final mobileNumber = TextEditingController();
   final password = TextEditingController();
 
@@ -94,8 +97,8 @@ class _LoginPageState extends State<LoginPage> {
             var name = responseData["user"]['name'] ?? ''; // Ensure not null
             var lastName =
                 responseData["user"]['lastName'] ?? ''; // Ensure not null
-            var organisation =
-                responseData["user"]['organisation'] ?? ''; // Ensure not null
+            var organisation = responseData["user"]['organisation'] ?? '';
+            ''; // Ensure not null
 
             // Now store in SharedPreferences
             final SharedPreferences sharedPreferences =
@@ -106,6 +109,8 @@ class _LoginPageState extends State<LoginPage> {
             sharedPreferences.setString('name', name);
             sharedPreferences.setString('lastName', lastName);
             sharedPreferences.setString('country', country);
+
+            _analyticsService.trackEvent('User', 'Login Success');
 
             Navigator.push(
               context,
@@ -209,6 +214,7 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {});
       });
     });
+    _analyticsService.trackPage('LoginPage');
     super.initState();
   }
 

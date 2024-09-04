@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
+import 'package:hta/widgets/first_letter_capital.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
 import '../../constant.dart';
@@ -17,6 +19,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final AnalyticsService _analyticsService = AnalyticsService();
   final organisationName = TextEditingController();
   final organisationDescription = TextEditingController();
   final adminName = TextEditingController();
@@ -40,14 +43,14 @@ class _SignUpPageState extends State<SignUpPage> {
     });
   }
 
-  void _showErrorDialog(BuildContext context, String message) {
+  void _showErrorDialog() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => Center(
         child: AlertDialog(
           title: Text(translation(context)!.errorOccurred),
-          content: Text(message),
+          content: const Text('Account already exists'),
           actions: <Widget>[
             Center(
               child: ElevatedButton(
@@ -111,9 +114,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             );
           } else {
-            String errorMessage =
-                responseData['message'] ?? 'Something went wrong';
-            _showGenericErrorDialog(errorMessage);
+            _showErrorDialog();
+            // String errorMessage =
+            //     responseData['message'] ?? 'Something went wrong';
+            // _showGenericErrorDialog(errorMessage);
           }
         } else {
           _showGenericErrorDialog(
@@ -210,6 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
         setState(() {});
       });
     }
+    _analyticsService.trackPage('SignUpPage');
     super.initState();
   }
 
@@ -305,6 +310,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
+                      inputFormatters: [
+                        CapitalizeFirstLetterFormatter(),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -338,6 +346,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
+                      inputFormatters: [
+                        CapitalizeFirstLetterFormatter(),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -369,6 +380,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
+                      inputFormatters: [
+                        CapitalizeFirstLetterFormatter(),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -400,6 +414,9 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
+                      inputFormatters: [
+                        CapitalizeFirstLetterFormatter(),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     TextFormField(

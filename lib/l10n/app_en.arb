@@ -1,5 +1,7 @@
 {
     "accountSettings": "Account Settings",
+    "userMode": "User Mode",
+    "applicationMode": "Application Mode",
     "contactUs": "Contact Us",
     "contactUsPara": "In case you need any help using HTA or you have any doubts, please reach out to us!",
     "contactUsWorkingTime": "(Working hours: 9am-10pm)",
@@ -44,6 +46,8 @@
     "password": "Password",
     "validateMessagePasswordNotEmpty": "Password cannot be empty",
     "validateMessagePasswordLength": "Password length should be atleast 6",
+    "validateMessageDateFormatInvalid": "Invalid date format",
+    "validateMessageDateFuture": "Future dates can't be selected",
     "passwordDoNotMatch": "Passwords do not match",
     "hintTextPassword": "Enter Password",
     "forgotPassword": "Forgot Password?",

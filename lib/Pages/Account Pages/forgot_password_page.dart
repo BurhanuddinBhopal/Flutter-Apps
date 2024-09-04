@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/language/language_constant.dart';
 
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  final AnalyticsService _analyticsService = AnalyticsService();
   List<bool> isHiddenPassword = [true, true, true];
   final _formKey = GlobalKey<FormState>();
   final oldPassword = TextEditingController();
@@ -182,6 +184,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         setState(() {});
       });
     }
+    _analyticsService.trackPage('ForgotPassword');
     super.initState();
   }
 

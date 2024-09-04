@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hta/google%20anaylitics/anaylitics_services.dart';
 import 'package:hta/widgets/drawer.dart';
 
 import 'package:http/http.dart' as http;
@@ -23,6 +24,7 @@ class ReportPage extends StatefulWidget {
 
 class _ReportPageState extends State<ReportPage>
     with AutomaticKeepAliveClientMixin {
+  final AnalyticsService _analyticsService = AnalyticsService();
   var transactionDetails = {};
   var todayRaised;
   var todayCollected;
@@ -78,6 +80,7 @@ class _ReportPageState extends State<ReportPage>
     customerData();
     _getCountryCode();
     _checkConnectivity();
+    _analyticsService.trackPage('ReportPage');
     customersMonthlyTransactionData();
     customersYearlyTransactionData();
     int currentYear = DateTime.now().year;

@@ -1,5 +1,7 @@
 {
     "accountSettings": "अकाउंट सेटिंग",
+    "userMode": "उपयोगकर्ता मोड",
+    "applicationMode": "आवेदन मोड",
     "contactUs": "संपर्क करें",
     "contactUsPara": "यदि आपको HTA का उपयोग करने में किसी सहायता की आवश्यकता है या आपको कोई संदेह है, तो कृपया हमसे संपर्क करें!",
     "contactUsWorkingTime": "(कार्य समय: सुबह 9 बजे से रात 10 बजे तक)",
@@ -93,6 +95,8 @@
     "amount": "मात्रा",
     "validateMessageAmountNotEmpty": "राशि रिक्त नहीं हो सकती",
     "validateMessageAmountLength": "राशि शून्य से अधिक होनी चाहिए",
+    "validateMessageDateFormatInvalid": "अमान्य दिनांक प्रारूप",
+    "validateMessageDateFuture": "भविष्य की तिथियाँ नहीं चुनी जा सकतीं",
     "validateMessageUpto2DecimalPlaces": "केवल 2 दशमलव स्थानों तक की अनुमति है",
     "hintTextAmount": "यहां अपनी राशि टाइप करें",
     "description": "विवरण",
