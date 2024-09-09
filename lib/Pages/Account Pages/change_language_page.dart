@@ -86,30 +86,28 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
             height: MediaQuery.of(context).size.height * 0.255,
             child: Container(
               margin: const EdgeInsets.only(top: 80),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      translation(context)!.changeLanguage,
-                      style: const TextStyle(
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.white),
-                    ),
-                    IconButton(
-                        onPressed: (() {
-                          Navigator.of(context).pop();
-                        }),
-                        icon: const Icon(
-                          Icons.close,
-                          color: Colors.white,
-                          size: 30,
-                        )),
-                  ],
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 25),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    translation(context)!.changeLanguage,
+                    style: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.white),
+                  ),
+                  IconButton(
+                      onPressed: (() {
+                        Navigator.of(context).pop();
+                      }),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 30,
+                      )),
+                ],
               ),
             ),
           ),

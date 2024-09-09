@@ -1,6 +1,8 @@
 // ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, duplicate_ignore, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:hta/Pages/Account%20Pages/change_mode_page.dart';
+import 'package:hta/Pages/Drawer%20Pages/edit_profile_page.dart';
 
 import 'package:hta/language/language_constant.dart';
 
@@ -64,6 +66,11 @@ class _AppDrawerState extends State<AppDrawer> {
     });
   }
 
+  Future<String?> _getSelectedMode() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('selectedMode') ?? 'Sales'; // Default to 'Sales'
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -86,53 +93,98 @@ class _AppDrawerState extends State<AppDrawer> {
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.02,
                   ),
-                  Row(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(left: 12),
-                        child: Image.asset('assets/profile_img/profile_pic.jpg',
-                            width: MediaQuery.of(context).size.width * 0.15),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              translation(context)!.welcometoHTA,
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w500),
-                            ),
-                            SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Text(
-                                  finalName,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black45),
-                                ),
-                                Text(
-                                  finalLastname,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black45),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              finalNumber,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black45),
-                            )
-                          ],
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.fade,
+                            child: EditMyprofilePage()),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(left: 12),
+                          child: Image.asset(
+                            'assets/profile_img/profile_pic.jpg',
+                            width: MediaQuery.of(context).size.width * 0.15,
+                          ),
                         ),
-                      )
-                    ],
+                        Container(
+                          margin: EdgeInsets.only(left: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                translation(context)!.welcometoHTA,
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  Text(
+                                    finalName,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Text(
+                                    finalLastname,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    margin: EdgeInsets.only(right: 50),
+                                    child: Text(
+                                      finalNumber,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black45,
+                                      ),
+                                    ),
+                                  ),
+                                  FutureBuilder<String?>(
+                                    future:
+                                        _getSelectedMode(), // Fetch the selected mode
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.done &&
+                                          snapshot.hasData) {
+                                        return Text(
+                                          snapshot.data == 'Purchase'
+                                              ? 'Purchase'
+                                              : 'Sales',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black54,
+                                          ),
+                                        );
+                                      } else {
+                                        return Container(); // Placeholder while loading
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.04,
@@ -140,9 +192,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   Divider(
                     thickness: 1,
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01,
-                  ),
+
                   // Container(
                   //   child: TextButton(
                   //       style: ButtonStyle(
@@ -281,7 +331,7 @@ class _AppDrawerState extends State<AppDrawer> {
                             context,
                             PageTransition(
                                 type: PageTransitionType.fade,
-                                child: PrivacyPolicy()),
+                                child: ChangeModePage()),
                           );
                         }),
                         child: Container(

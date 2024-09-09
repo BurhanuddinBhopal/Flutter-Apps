@@ -7,6 +7,7 @@ class Item {
   final double pendingAmount;
   final String mobileNumber;
   final DateTime date;
+  final String type;
 
   Item({
     required this.id,
@@ -17,6 +18,7 @@ class Item {
     required this.pendingAmount,
     required this.mobileNumber,
     required this.date,
+    required this.type,
   });
 
   factory Item.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class Item {
       location: json['location'] as String? ?? '',
       pendingAmount: (json['pendingAmount'] as num).toDouble(),
       mobileNumber: json['mobileNumber'] as String? ?? '',
+      type: json['type'] ?? 'Customer',
       date:
           json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
     );

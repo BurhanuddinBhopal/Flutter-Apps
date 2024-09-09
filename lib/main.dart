@@ -36,20 +36,34 @@ class Person implements Comparable<Person> {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  String mode = prefs.getString('selectedMode') ?? 'Sales';
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-  runApp(const MyApp(
+  runApp(MyApp(
+    mode: mode,
     customerData: [],
   ));
 }
 
 class MyApp extends StatefulWidget {
+  static void setMode(BuildContext context, String mode) {
+    final _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?.setMode(mode);
+  }
+
+  final String mode;
   final String? mobileNumber;
   final List<Customer> customerData;
 
-  const MyApp({super.key, this.mobileNumber, required this.customerData});
+  const MyApp(
+      {super.key,
+      this.mobileNumber,
+      required this.customerData,
+      required this.mode});
   @override
   State<MyApp> createState() => _MyAppState();
 
@@ -60,6 +74,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  String currentMode = 'Sales';
+
+  void setMode(String mode) {
+    setState(() {
+      currentMode = mode;
+    });
+  }
+
   Locale? _locale;
 
   setLocale(Locale locale) {

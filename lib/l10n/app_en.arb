@@ -78,6 +78,7 @@
     "validateMessageNameNotEmpty": "Name cannot be empty",
     "validateMessageAdminNameNotEmpty": "Admin Name cannot be empty",
     "hintTextName": "Name",
+    "hintTextFirstName": "First Name",
     "hintTextAdminName": "Admin Name",
     "hintTextLastName": "Last Name",
     "validateMessageLastNameNotEmpty": "Last Name cannot be empty",

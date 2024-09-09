@@ -75,6 +75,7 @@
     "validateMessageNameNotEmpty": "नाम खाली नहीं हो सकता",
     "validateMessageAdminNameNotEmpty": "व्यवस्थापक नाम रिक्त नहीं हो सकता",
     "hintTextName": "नाम",
+    "hintTextFirstName": "पहला नाम",
     "hintTextAdminName": "व्यवस्थापक का नाम",
     "hintTextLastName": "उपनाम",
     "validateMessageLastNameNotEmpty": "अंतिम नाम खाली नहीं हो सकता",

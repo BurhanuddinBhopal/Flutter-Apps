@@ -15,15 +15,15 @@ import 'package:http/http.dart' as http;
 
 import '../../constant.dart';
 
-class EditCustomerPage extends StatefulWidget {
-  final customerData;
+class EditMyprofilePage extends StatefulWidget {
+  // final customerData;
 
-  const EditCustomerPage({super.key, required this.customerData});
+  // const EditMyprofilePage({super.key, required this.customerData});
   @override
-  State<EditCustomerPage> createState() => _EditCustomerPageState();
+  State<EditMyprofilePage> createState() => _EditCustomerPageState();
 }
 
-class _EditCustomerPageState extends State<EditCustomerPage> {
+class _EditCustomerPageState extends State<EditMyprofilePage> {
   final AnalyticsService analytics = AnalyticsService();
   // ignore: unused_field
   var _organization;
@@ -42,20 +42,20 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
         setState(() {});
       });
     }
-    setState(() {
-      _customerData = widget.customerData;
-      _organizationName = _customerData['organisationName'];
-      _name = _customerData['name'];
-      _lastname = _customerData['lastName'];
-      _mobileNumber = _customerData['mobileNumber'];
-      _location = _customerData['location'] ?? "";
-      organisationName.text = _organizationName;
-      name.text = _name;
-      lastName.text = _lastname;
-      mobileNumber.text = _mobileNumber;
-      location.text = _location;
-    });
-    analytics.trackPage('EditCustomerPage');
+    // setState(() {
+    //   _customerData = widget.customerData;
+    //   _organizationName = _customerData['organisationName'];
+    //   _name = _customerData['name'];
+    //   _lastname = _customerData['lastName'];
+    //   _mobileNumber = _customerData['mobileNumber'];
+    //   _location = _customerData['location'] ?? "";
+    //   organisationName.text = _organizationName;
+    //   name.text = _name;
+    //   lastName.text = _lastname;
+    //   mobileNumber.text = _mobileNumber;
+    //   location.text = _location;
+    // });
+    analytics.trackPage('EditMyprofilePage');
 
     super.initState();
   }
@@ -81,7 +81,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text('Customer Edited Successfully'),
+        title: Text('Profile Edited Successfully'),
         actions: <Widget>[
           Center(
             child: ElevatedButton(
@@ -93,7 +93,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                 style: TextStyle(color: Colors.white),
               ),
               onPressed: () {
-                analytics.trackEvent('Customer', 'Edited',
+                analytics.trackEvent('Profile', 'Edited',
                     label: _customerData['_id']);
                 Navigator.push(
                     context,
@@ -229,7 +229,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
         backgroundColor: Color.fromRGBO(62, 13, 59, 1),
         centerTitle: true,
         title: Text(
-          'Edit Customer',
+          'Edit My Profile',
           style: TextStyle(
             fontSize: 16.0,
           ),
@@ -337,7 +337,7 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    translation(context)!.hintTextAdminName,
+                                    translation(context)!.hintTextFirstName,
                                     style: TextStyle(
                                       fontSize: 12.0,
                                       fontWeight: FontWeight.w600,
@@ -412,109 +412,6 @@ class _EditCustomerPageState extends State<EditCustomerPage> {
                                           EdgeInsets.only(left: 10.0),
                                       hintStyle: TextStyle(
                                         color: _focusNodes[2].hasFocus
-                                            ? Color.fromRGBO(62, 13, 59, 1)
-                                            : Colors.grey,
-                                        fontSize: 14.0,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 2,
-                                          color: Color.fromRGBO(62, 13, 59, 1),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: 12.0, right: 12.0, top: 12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    translation(context)!.mobileNumber,
-                                    style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(
-                                          62, 13, 59, 1), // Label color
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          5.0), // Margin between label and text field
-                                  TextFormField(
-                                    enabled: false,
-                                    focusNode: _focusNodes[3],
-                                    controller: mobileNumber,
-                                    keyboardType: TextInputType.phone,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return translation(context)!
-                                            .validateMessageMobileNumber;
-                                      }
-                                      return null;
-                                    },
-                                    decoration: InputDecoration(
-                                      hintText: translation(context)!
-                                          .hintTextMobileNumber,
-                                      contentPadding:
-                                          EdgeInsets.only(left: 10.0),
-                                      hintStyle: TextStyle(
-                                        color: _focusNodes[3].hasFocus
-                                            ? Color.fromRGBO(62, 13, 59, 1)
-                                            : Colors.grey,
-                                        fontSize: 14.0,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5.0),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          width: 2,
-                                          color: Color.fromRGBO(62, 13, 59, 1),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                  left: 12.0, right: 12.0, top: 12.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    translation(context)!.hintTextAddress,
-                                    style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color.fromRGBO(
-                                          62, 13, 59, 1), // Label color
-                                    ),
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          5.0), // Margin between label and text field
-                                  TextFormField(
-                                    controller: location,
-                                    focusNode: _focusNodes[4],
-                                    decoration: InputDecoration(
-                                      hintText:
-                                          translation(context)!.hintTextAddress,
-                                      contentPadding:
-                                          EdgeInsets.only(left: 10.0),
-                                      hintStyle: TextStyle(
-                                        color: _focusNodes[4].hasFocus
                                             ? Color.fromRGBO(62, 13, 59, 1)
                                             : Colors.grey,
                                         fontSize: 14.0,

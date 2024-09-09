@@ -135,23 +135,24 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
             ],
           ),
           actions: [
-            TextButton(
-              child: const Center(
-                  child: Text(
-                'Submit',
-                style: TextStyle(fontWeight: FontWeight.w600),
-              )),
-              onPressed: () {
-                _showLoadingDialog(context); // Show the loading dialog
-                shareStatementData(
-                  _customerData['_id'],
-                  _startDate!,
-                  _endDate!,
-                ).then((_) {
-                  Navigator.of(context).pop(); // Close the loading dialog
-                  Navigator.of(context).pop(); // Close the date range dialog
-                });
-              },
+            Center(
+              child: ElevatedButton(
+                child: Text(
+                  'Submit',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                onPressed: () {
+                  _showLoadingDialog(context);
+                  shareStatementData(
+                    _customerData['_id'],
+                    _startDate!,
+                    _endDate!,
+                  ).then((_) {
+                    Navigator.of(context).pop(); // Close the loading dialog
+                    Navigator.of(context).pop(); // Close the date range dialog
+                  });
+                },
+              ),
             ),
           ],
         );
@@ -1006,6 +1007,28 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
     }
   }
 
+  String formatAmount(dynamic amount) {
+    // Try to parse the amount to a double
+    double value;
+
+    // Check if the amount is a string
+    if (amount is String) {
+      value = double.tryParse(amount.replaceAll(',', '')) ?? 0.0;
+    }
+    // Check if the amount is already an int or double
+    else if (amount is int || amount is double) {
+      value = (amount is int) ? amount.toDouble() : amount;
+    } else {
+      return '0'; // Return 0 if the type is unhandled
+    }
+
+    // Check if the value is a whole number or has decimal places
+    if (value % 1 == 0) {
+      return value.toStringAsFixed(0); // Display as whole number
+    } else {
+      return value.toStringAsFixed(2); // Display with two decimal places
+    }
+  }
   // Future<void> _initData(
   //     String customerId, DateTime startDate, DateTime endDate) async {
   //   // Call async methods
@@ -1119,9 +1142,8 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                                   243, 31, 31, 1),
                                             ),
                                       Text(
-                                        transactionDetails[
-                                                'remainingFromCustomer'] ??
-                                            '',
+                                        formatAmount(transactionDetails[
+                                            'remainingFromCustomer']),
                                         style: const TextStyle(
                                           color: Color.fromRGBO(243, 31, 31, 1),
                                           fontWeight: FontWeight.bold,
@@ -1180,7 +1202,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         color: Color.fromRGBO(243, 31, 31, 1),
                                       ),
                                 Text(
-                                  monthlyRaised ?? '',
+                                  formatAmount(monthlyRaised),
                                   style: const TextStyle(
                                     color: Color.fromRGBO(243, 31, 31, 1),
                                     fontWeight: FontWeight.bold,
@@ -1211,7 +1233,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         color: Color.fromRGBO(52, 135, 89, 1),
                                       ),
                                 Text(
-                                  monthlyCollected ?? '',
+                                  formatAmount(monthlyCollected),
                                   style: const TextStyle(
                                     color: Color.fromRGBO(52, 135, 89, 1),
                                     fontWeight: FontWeight.bold,
@@ -1268,7 +1290,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         color: Color.fromRGBO(243, 31, 31, 1),
                                       ),
                                 Text(
-                                  yearlyRaised ?? '',
+                                  formatAmount(yearlyRaised),
                                   style: const TextStyle(
                                     color: Color.fromRGBO(243, 31, 31, 1),
                                     fontWeight: FontWeight.bold,
@@ -1299,7 +1321,7 @@ class _CustomerReportPageState extends State<CustomerReportPage> {
                                         color: Color.fromRGBO(52, 135, 89, 1),
                                       ),
                                 Text(
-                                  yearlyCollected ?? '',
+                                  formatAmount(yearlyCollected),
                                   style: const TextStyle(
                                     color: Color.fromRGBO(52, 135, 89, 1),
                                     fontWeight: FontWeight.bold,
